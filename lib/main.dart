@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 void main() => runApp(MyApp());
 
@@ -45,6 +46,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  FlutterTts tts = FlutterTts();
 
   void _incrementCounter() {
     setState(() {
@@ -55,6 +57,15 @@ class _MyHomePageState extends State<MyHomePage> {
       // called again, and so nothing would appear to happen.
       _counter++;
     });
+
+    _sayPoop();
+  }
+
+  void _sayPoop() async {
+    await tts.setLanguage('en-US');
+    await tts.setSpeechRate(0.8);
+    await tts.setVolume(1.0);
+    await tts.speak('Poopy poopy buttcheek');
   }
 
   @override
