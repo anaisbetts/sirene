@@ -1,5 +1,5 @@
 name: sirene
-description: A new Flutter project.
+description: text to speech for a voiceless tran
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -16,10 +16,17 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
-  flutter_tts: ^0.2.3
+  cloud_firestore: ^0.9.0
+  firebase_auth: ^0.8.0
+  google_sign_in: ^4.0.1
+  dio: ^1.0.14
+  fluro: ^1.4.0
+  rxdart: ^0.20.0
+  rx_command: ^4.1.0
+  rx_widgets: ^2.2.0
+  get_it: ^1.0.2
+  curved_navigation_bar: ^0.1.26
 
 dev_dependencies:
   flutter_test:
