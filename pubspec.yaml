@@ -27,6 +27,8 @@ dependencies:
   rx_widgets: ^2.2.0
   get_it: ^1.0.2
   curved_navigation_bar: ^0.1.26
+  flutter_tts: ^0.2.4
+  firebase_analytics: ^2.0.3
 
 dev_dependencies:
   flutter_test:

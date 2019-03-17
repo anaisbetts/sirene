@@ -1,4 +1,5 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 
@@ -53,6 +54,10 @@ class _HelloPageState extends State<HelloPage> {
 
   doSomething() async {
     final LoginManager lm = App.locator<LoginManager>();
+    FirebaseAnalytics track = App.locator<FirebaseAnalytics>();
+
+    track.logLogin();
+
     await lm.ensureNamedUser();
   }
 

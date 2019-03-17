@@ -1,3 +1,5 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:fluro/fluro.dart';
@@ -73,6 +75,9 @@ class App extends State<AppWidget> {
   static setupRegistration(GetIt l) {
     l.registerSingleton<Router>(setupRoutes(new Router()));
     l.registerSingleton<LoginManager>(new FirebaseLoginManager());
+    l.registerSingleton<FirebaseAnalytics>(new FirebaseAnalytics());
+    l.registerSingleton<RouteObserver>(
+        new FirebaseAnalyticsObserver(analytics: l<FirebaseAnalytics>()));
 
     return l;
   }
@@ -97,6 +102,9 @@ class App extends State<AppWidget> {
       initialRoute: '/login',
       theme: ThemeData(primarySwatch: Colors.blue, typography: typography),
       onGenerateRoute: App.locator<Router>().generator,
+      navigatorObservers: [
+        App.locator<RouteObserver>(),
+      ],
     );
   }
 }
