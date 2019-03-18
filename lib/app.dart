@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
@@ -6,11 +8,14 @@ import 'package:fluro/fluro.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart';
+import 'package:sirene/debug-analytics.dart';
 
 import 'package:sirene/interfaces.dart';
 import 'package:sirene/pages/login.dart';
 
 import './pages/hello.dart';
+
+enum ApplicationMode { Debug, Production, Test }
 
 // https://material.io/tools/color/#!/?view.left=0&view.right=0&primary.color=FFA5DD&secondary.color=7ED776&secondary.text.color=ffffff
 class ThemeMetrics {
@@ -115,10 +120,30 @@ class App extends State<AppWidget> {
     locator = App.setupRegistration(GetIt());
   }
 
+  static get analytics => App.locator<FirebaseAnalytics>();
+
   static setupRegistration(GetIt l) {
+    final isTestMode = Platform.resolvedExecutable.contains("_tester");
+    var isDebugMode = false;
+
+    // NB: Assert statements are stripped from release mode. Clever!
+    assert(isDebugMode = true);
+
     l.registerSingleton<Router>(setupRoutes(new Router()));
     l.registerSingleton<LoginManager>(new FirebaseLoginManager());
-    l.registerSingleton<FirebaseAnalytics>(new FirebaseAnalytics());
+
+    final appMode = isTestMode
+        ? ApplicationMode.Test
+        : isDebugMode ? ApplicationMode.Debug : ApplicationMode.Production;
+
+    l.registerSingleton<ApplicationMode>(appMode);
+
+    if (appMode == ApplicationMode.Production) {
+      l.registerSingleton<FirebaseAnalytics>(FirebaseAnalytics());
+    } else {
+      l.registerSingleton<FirebaseAnalytics>(DebugFirebaseAnalytics());
+    }
+
     l.registerSingleton<RouteObserver>(
         new FirebaseAnalyticsObserver(analytics: l<FirebaseAnalytics>()));
 
@@ -134,14 +159,14 @@ class App extends State<AppWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final routeObserver = App.locator<RouteObserver>();
+
     return MaterialApp(
       title: 'Sirene',
       theme: ThemeMetrics.fullTheme(),
       initialRoute: '/login',
       onGenerateRoute: App.locator<Router>().generator,
-      navigatorObservers: [
-        App.locator<RouteObserver>(),
-      ],
+      navigatorObservers: routeObserver != null ? [routeObserver] : [],
     );
   }
 }

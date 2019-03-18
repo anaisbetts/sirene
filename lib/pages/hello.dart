@@ -54,9 +54,7 @@ class _HelloPageState extends State<HelloPage> {
 
   doSomething() async {
     final LoginManager lm = App.locator<LoginManager>();
-    FirebaseAnalytics track = App.locator<FirebaseAnalytics>();
-
-    track.logLogin();
+    App.analytics.logLogin();
 
     await lm.ensureNamedUser();
   }
