@@ -19,5 +19,7 @@ pool:
 steps:
 - script: git submodule update --init --recursive
   displayName: 'Update submodules'
+- script: ./flutterw doctor
+  displayName: 'Set up Flutter'
 - script: ./flutterw test
   displayName: 'Flutter Test'
