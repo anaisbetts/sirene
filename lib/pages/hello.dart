@@ -64,10 +64,7 @@ class _HelloPageState extends State<HelloPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("sandwiches.",
-              style: Theme.of(context).typography.englishLike.title),
-        ),
+        appBar: AppBar(title: Text("Sirene")),
         bottomNavigationBar: CurvedNavigationBar(
             backgroundColor: Theme.of(context).primaryColorDark,
             initialIndex: currentIcon,

@@ -18,13 +18,16 @@ class ThemeMetrics {
   static const primaryColorLight = Color.fromARGB(0xff, 0xff, 0xd7, 0xff);
   static const primaryColorDark = Color.fromARGB(0xff, 0xcb, 0x75, 0xab);
 
-  static const primaryColorText = Color.fromARGB(0xff, 0, 0, 0);
+  static const primaryColorText = Colors.black;
 
   static const secondaryColor = Color.fromARGB(0xff, 0x7e, 0xd7, 0x76);
   static const secondaryColorLight = Color.fromARGB(0xff, 0xb1, 0xff, 0xa6);
   static const secondaryColorDark = Color.fromARGB(0xff, 0x4c, 0xa5, 0x48);
 
-  static const secondaryColorText = Color.fromARGB(0xff, 0xff, 0xff, 0xff);
+  static const secondaryColorText = Colors.white;
+
+  static const neutralDark = Color.fromARGB(0xff, 0xe1, 0xe2, 0xe1);
+  static const neutralLight = Color.fromARGB(0xff, 0xf5, 0xf5, 0xf6);
 
   static ThemeData fullTheme() {
     final titleFont =
@@ -37,10 +40,17 @@ class ThemeMetrics {
         tall: Typography.tall2018);
 
     return ThemeData(
-        primaryColor: ThemeMetrics.primaryColor,
-        primaryColorLight: ThemeMetrics.primaryColorLight,
-        primaryColorDark: ThemeMetrics.primaryColorDark,
-        accentColor: ThemeMetrics.secondaryColor,
+        primaryColor: primaryColor,
+        primaryColorLight: primaryColorLight,
+        primaryColorDark: primaryColorDark,
+        primaryTextTheme:
+            typography.englishLike.apply(bodyColor: primaryColorText),
+        backgroundColor: neutralLight,
+        dialogBackgroundColor: neutralLight,
+        scaffoldBackgroundColor: neutralLight,
+        accentColor: secondaryColor,
+        accentTextTheme:
+            typography.englishLike.apply(displayColor: secondaryColorText),
         typography: typography);
   }
 }
