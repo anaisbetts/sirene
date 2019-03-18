@@ -17,5 +17,7 @@ pool:
   vmImage: $(imageName)
 
 steps:
+- script: git submodule update --init --recursive
+  displayName: 'Update submodules'
 - script: ./flutterw test
   displayName: 'Flutter Test'
