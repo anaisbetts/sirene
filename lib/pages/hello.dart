@@ -64,11 +64,9 @@ class _HelloPageState extends State<HelloPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("sandwiches."),
-        ),
+        appBar: AppBar(title: Text("Sirene")),
         bottomNavigationBar: CurvedNavigationBar(
-            backgroundColor: ColorList[currentIcon],
+            backgroundColor: Theme.of(context).primaryColorDark,
             initialIndex: currentIcon,
             onTap: (i) {
               setState(() {
@@ -95,7 +93,7 @@ class _HelloPageState extends State<HelloPage> {
               ),
             ]),
         body: Container(
-            color: ColorList[currentIcon],
+            color: Theme.of(context).primaryColorDark,
             child: Center(
                 child: RaisedButton(
                     child: Text("Upgrade"), onPressed: doSomething))));
