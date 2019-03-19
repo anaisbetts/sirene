@@ -1,23 +1,10 @@
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 
-import 'package:sirene/app.dart';
-import 'package:sirene/interfaces.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluro/fluro.dart';
 
-class HelloPage extends StatefulWidget {
-  static setupRoutes(Router r) {
-    r.define("/",
-        handler: new Handler(
-            type: HandlerType.route, handlerFunc: (_b, _c) => HelloPage()));
-
-    return r;
-  }
-
-  @override
-  _HelloPageState createState() => _HelloPageState();
-}
+import 'package:sirene/services/login.dart';
 
 const ColorList = [
   Colors.redAccent,
@@ -49,20 +36,33 @@ class NavigationBarButton extends StatelessWidget {
   }
 }
 
-class _HelloPageState extends State<HelloPage> {
+class HelloPage extends StatefulWidget {
+  static setupRoutes(Router r) {
+    r.define("/",
+        handler: new Handler(
+            type: HandlerType.route, handlerFunc: (_b, _c) => HelloPage()));
+
+    return r;
+  }
+
+  @override
+  _HelloPageState createState() => _HelloPageState();
+}
+
+class _HelloPageState extends State<HelloPage> with UserEnabledPage<HelloPage> {
   var currentIcon = 0;
 
   doSomething() async {
-    final LoginManager lm = App.locator<LoginManager>();
-    App.analytics.logLogin();
-
-    await lm.ensureNamedUser();
+    withUser(requireNamed: true);
   }
 
   @override
   Widget build(BuildContext context) {
+    final UserInfo user = withUser();
+    final userName = user != null ? user.displayName : '(none!)';
+
     return Scaffold(
-        appBar: AppBar(title: Text("Sirene")),
+        appBar: AppBar(title: Text("Sirene - $userName")),
         bottomNavigationBar: CurvedNavigationBar(
             backgroundColor: Theme.of(context).primaryColorDark,
             initialIndex: currentIcon,

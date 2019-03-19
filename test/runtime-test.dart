@@ -1,7 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:get_it/get_it.dart';
+
 import 'package:sirene/app.dart';
+import 'package:sirene/interfaces.dart';
 
 void main() {
   testWidgets('Make sure the test runner works', (WidgetTester tester) {
