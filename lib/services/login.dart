@@ -85,6 +85,7 @@ mixin UserEnabledPage<T extends StatefulWidget> on State<T> {
         : App.locator<LoginManager>().ensureUser();
 
     getUser.then((_) {
+      // NB: This is to trigger the change from no user => some kind of user
       setState(() {});
     });
 
