@@ -23,16 +23,16 @@ class NavigationBarButton extends StatelessWidget {
   Widget build(BuildContext context) {
     if (this.selected) {
       return icon;
-    } else {
-      return Padding(
-          padding: EdgeInsets.only(top: 8),
-          child: Column(
-            children: <Widget>[
-              icon,
-              Text(caption, style: Theme.of(context).textTheme.caption),
-            ],
-          ));
     }
+
+    return Padding(
+        padding: EdgeInsets.only(top: 8),
+        child: Column(
+          children: <Widget>[
+            icon,
+            Text(caption, style: Theme.of(context).textTheme.caption),
+          ],
+        ));
   }
 }
 
@@ -51,6 +51,17 @@ class HelloPage extends StatefulWidget {
 
 class _HelloPageState extends State<HelloPage> with UserEnabledPage<HelloPage> {
   var currentIcon = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    userRequestError.listen((e) => {
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("aw jeez. $e"),
+          ))
+        });
+  }
 
   doSomething() async {
     withUser(requireNamed: true);

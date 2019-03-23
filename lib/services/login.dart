@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'package:sirene/app.dart';
 import 'package:sirene/interfaces.dart';
@@ -69,6 +70,8 @@ class FirebaseLoginManager extends LoginManager {
 }
 
 mixin UserEnabledPage<T extends StatefulWidget> on State<T> {
+  var userRequestError = new PublishSubject<Error>();
+
   withUser({bool requireNamed = false}) {
     final user = App.locator<LoginManager>().currentUser;
 
@@ -87,6 +90,8 @@ mixin UserEnabledPage<T extends StatefulWidget> on State<T> {
     getUser.then((_) {
       // NB: This is to trigger the change from no user => some kind of user
       setState(() {});
+    }, onError: (e) {
+      userRequestError.add(e);
     });
 
     return user;
