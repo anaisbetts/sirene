@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 
 import 'package:sirene/interfaces.dart';
 import 'package:sirene/pages/main/page.dart';
+import 'package:sirene/services/database.dart';
 import 'package:sirene/services/debug-analytics.dart';
 import 'package:sirene/services/login.dart';
 import 'package:sirene/services/router.dart';
@@ -36,6 +37,7 @@ class App extends State<AppWidget> {
 
     l.registerSingleton<ApplicationMode>(appMode);
     l.registerSingleton<Router>(setupRoutes(Router()));
+    l.registerSingleton<StorageManager>(FirebaseStorageManager());
 
     if (appMode == ApplicationMode.Production) {
       l.registerSingleton<FirebaseAnalytics>(FirebaseAnalytics());
