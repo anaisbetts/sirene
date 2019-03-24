@@ -7,8 +7,7 @@ import 'package:get_it/get_it.dart';
 
 import 'package:sirene/debug-analytics.dart';
 import 'package:sirene/interfaces.dart';
-import 'package:sirene/pages/foo.dart';
-import 'package:sirene/pages/hello.dart';
+import 'package:sirene/pages/main/page.dart';
 import 'package:sirene/services/login.dart';
 import 'package:sirene/services/router.dart';
 import 'package:sirene/services/theming.dart';
@@ -51,8 +50,7 @@ class App extends State<AppWidget> {
   }
 
   static setupRoutes(Router r) {
-    HelloPage.setupRoutes(r);
-    FooPage.setupRoutes(r);
+    MainPage.setupRoutes(r);
     return r;
   }
 
