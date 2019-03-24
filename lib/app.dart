@@ -1,17 +1,16 @@
 import 'dart:io' show Platform;
+import 'package:flutter/material.dart';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
-import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:fluro/fluro.dart';
+
 import 'package:sirene/debug-analytics.dart';
-
 import 'package:sirene/interfaces.dart';
+import 'package:sirene/pages/main/page.dart';
 import 'package:sirene/services/login.dart';
+import 'package:sirene/services/router.dart';
 import 'package:sirene/services/theming.dart';
-
-import './pages/hello.dart';
 
 class App extends State<AppWidget> {
   static GetIt locator;
@@ -29,7 +28,6 @@ class App extends State<AppWidget> {
     // NB: Assert statements are stripped from release mode. Clever!
     assert(isDebugMode = true);
 
-    l.registerSingleton<Router>(setupRoutes(new Router()));
     l.registerSingleton<LoginManager>(new FirebaseLoginManager());
 
     final appMode = isTestMode
@@ -37,6 +35,7 @@ class App extends State<AppWidget> {
         : isDebugMode ? ApplicationMode.Debug : ApplicationMode.Production;
 
     l.registerSingleton<ApplicationMode>(appMode);
+    l.registerSingleton<Router>(setupRoutes(Router()));
 
     if (appMode == ApplicationMode.Production) {
       l.registerSingleton<FirebaseAnalytics>(FirebaseAnalytics());
@@ -51,8 +50,7 @@ class App extends State<AppWidget> {
   }
 
   static setupRoutes(Router r) {
-    HelloPage.setupRoutes(r);
-
+    MainPage.setupRoutes(r);
     return r;
   }
 
