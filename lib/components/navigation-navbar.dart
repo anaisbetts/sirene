@@ -29,6 +29,7 @@ class NavigationBarButton extends StatelessWidget {
   }
 }
 
+/*
 class RoutingNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -72,6 +73,7 @@ class RoutingNavigationBar extends StatelessWidget {
         items: buttons);
   }
 }
+*/
 
 class PageBodyContainer extends StatelessWidget {
   const PageBodyContainer({@required this.child, Key key}) : super(key: key);

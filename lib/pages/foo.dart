@@ -29,7 +29,12 @@ class _HelloPageState extends State<FooPage> with UserEnabledPage<FooPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: Text("Sirene")),
-        bottomNavigationBar: RoutingNavigationBar(),
-        body: PageBodyContainer(child: Center(child: Text("u did it"))));
+        //bottomNavigationBar: RoutingNavigationBar(),
+        body: PageBodyContainer(
+            child: Center(
+                child: RaisedButton(
+          child: Text("leave"),
+          onPressed: () => Navigator.of(context).pop(),
+        ))));
   }
 }

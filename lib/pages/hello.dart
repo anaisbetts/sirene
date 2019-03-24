@@ -41,7 +41,8 @@ class _HelloPageState extends State<HelloPage> with UserEnabledPage<HelloPage> {
   }
 
   doSomething() async {
-    withUser(requireNamed: true);
+    //withUser(requireNamed: true);
+    Navigator.of(context).pushNamed("/foo");
   }
 
   @override
@@ -51,10 +52,10 @@ class _HelloPageState extends State<HelloPage> with UserEnabledPage<HelloPage> {
 
     return Scaffold(
         appBar: AppBar(title: Text("Sirene - $userName")),
-        bottomNavigationBar: RoutingNavigationBar(),
+        //bottomNavigationBar: RoutingNavigationBar(),
         body: PageBodyContainer(
             child: Center(
                 child: RaisedButton(
-                    child: Text("Upgrade"), onPressed: doSomething))));
+                    child: Text("Push"), onPressed: doSomething))));
   }
 }
