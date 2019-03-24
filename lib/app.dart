@@ -5,9 +5,9 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:get_it/get_it.dart';
 
-import 'package:sirene/debug-analytics.dart';
 import 'package:sirene/interfaces.dart';
 import 'package:sirene/pages/main/page.dart';
+import 'package:sirene/services/debug-analytics.dart';
 import 'package:sirene/services/login.dart';
 import 'package:sirene/services/router.dart';
 import 'package:sirene/services/theming.dart';
