@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fluro/fluro.dart';
 
 import 'package:sirene/services/login.dart';
+import 'package:sirene/services/router.dart';
 
 const ColorList = [
   Colors.redAccent,
@@ -38,9 +38,8 @@ class NavigationBarButton extends StatelessWidget {
 
 class HelloPage extends StatefulWidget {
   static setupRoutes(Router r) {
-    r.define("/",
-        handler: new Handler(
-            type: HandlerType.route, handlerFunc: (_b, _c) => HelloPage()));
+    r.routeHandlers
+        .add(Router.exactMatchFor(route: '/', builder: (_) => HelloPage()));
 
     return r;
   }
