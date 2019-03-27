@@ -305,13 +305,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.11.3+2"
-  lumberdash:
-    dependency: "direct main"
-    description:
-      name: lumberdash
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2"
   matcher:
     dependency: transitive
     description:
@@ -340,6 +333,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
+  package_info:
+    dependency: "direct main"
+    description:
+      name: package_info
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.0+2"
   package_resolver:
     dependency: transitive
     description:
@@ -424,13 +424,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.0"
-  sentry_lumberdash:
-    dependency: "direct main"
-    description:
-      name: sentry_lumberdash
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.1"
   shelf:
     dependency: transitive
     description:

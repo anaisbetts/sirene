@@ -17,8 +17,7 @@ dependencies:
     sdk: flutter
 
   sentry: ^2.2.0
-  lumberdash: ^1.0.2
-  sentry_lumberdash: ^1.0.1
+  package_info: ^0.4.0+2
   cupertino_icons: ^0.1.2
   jaguar_serializer: ^2.2.12
   cloud_firestore: ^0.9.0
