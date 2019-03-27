@@ -7,8 +7,9 @@ import 'package:rxdart/rxdart.dart';
 
 import 'package:sirene/app.dart';
 import 'package:sirene/interfaces.dart';
+import 'package:sirene/services/logging.dart';
 
-class FirebaseLoginManager extends LoginManager {
+class FirebaseLoginManager with LoggerMixin implements LoginManager {
   UserInfo _currentUser;
   UserInfo get currentUser => _currentUser;
 
@@ -21,11 +22,10 @@ class FirebaseLoginManager extends LoginManager {
     if (ret == null) {
       ret = await FirebaseAuth.instance.signInAnonymously();
 
-      final future = (new User(isAnonymous: true))
-          .toDocument(Firestore.instance.collection('users').document(ret.uid));
-
-      // TODO: Replace with Sentry
-      future.catchError((e) => debugPrint("oh crap. $e"));
+      catchToAsyncLog(() async {
+        await (new User(isAnonymous: true)).toDocument(
+            Firestore.instance.collection('users').document(ret.uid));
+      });
     }
 
     _currentUser = ret;
@@ -57,12 +57,24 @@ class FirebaseLoginManager extends LoginManager {
       return _currentUser;
     }
 
-    // TODO: analytics the shit out of this
-    final newUser = await _upgradeAnonymousUser();
+    final newUser = await catchToAsyncLog(() async {
+      final ret = await _upgradeAnonymousUser();
+      App.analytics.logEvent(name: "upgrade_user", parameters: {
+        "uid": ret.uid,
+        "email": ret.email,
+      });
+
+      return ret;
+    });
+
     _currentUser = newUser;
 
-    await (new User(isAnonymous: false, email: newUser.email)).toDocument(
-        Firestore.instance.collection('users').document(newUser.uid));
+    // NB: This is intentionally not awaited, there's no reason to
+    // block on this
+    catchToAsyncLog(() async {
+      await (new User(isAnonymous: false, email: newUser.email)).toDocument(
+          Firestore.instance.collection('users').document(newUser.uid));
+    });
 
     return newUser;
   }
@@ -99,11 +111,12 @@ mixin UserEnabledPage<T extends StatefulWidget> on State<T> {
         : App.locator<LoginManager>().ensureUser();
 
     getUser.then((_) {
-      // TODO: Send success to analytics
-      // NB: This is to trigger the change from no user => some kind of user
+      App.analytics.logLogin();
       setState(() {});
-    }, onError: (e) {
-      // TODO: Send error to analytics
+    }, onError: (e, st) {
+      final log = App.locator.get<LogWriter>();
+
+      log.logError(e, st, "Failed to ensure user, named = $requireNamed");
       userRequestError.add(e);
     });
 
