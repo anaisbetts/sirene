@@ -16,6 +16,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  catcher: ^0.1.4
   sentry: ^2.2.0
   package_info: ^0.4.0+2
   cupertino_icons: ^0.1.2

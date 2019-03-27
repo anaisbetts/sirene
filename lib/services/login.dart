@@ -116,7 +116,8 @@ mixin UserEnabledPage<T extends StatefulWidget> on State<T> {
     }, onError: (e, st) {
       final log = App.locator.get<LogWriter>();
 
-      log.logError(e, st, "Failed to ensure user, named = $requireNamed");
+      log.logError(e, st,
+          message: "Failed to ensure user, named = $requireNamed");
       userRequestError.add(e);
     });
 

@@ -1,6 +1,8 @@
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 
+import 'package:catcher/core/catcher.dart';
+import 'package:catcher/catcher_plugin.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:get_it/get_it.dart';
@@ -31,8 +33,6 @@ class App extends State<AppWidget> {
     // NB: Assert statements are stripped from release mode. Clever!
     assert(isDebugMode = true);
 
-    l.registerSingleton<LoginManager>(new FirebaseLoginManager());
-
     final appMode = isTestMode
         ? ApplicationMode.Test
         : isDebugMode ? ApplicationMode.Debug : ApplicationMode.Production;
@@ -50,6 +50,8 @@ class App extends State<AppWidget> {
       l.registerSingleton<FirebaseAnalytics>(DebugFirebaseAnalytics());
       l.registerSingleton<LogWriter>(new DebugLogWriter());
     }
+
+    l.registerSingleton<LoginManager>(new FirebaseLoginManager());
 
     l.registerSingleton<RouteObserver>(
         new FirebaseAnalyticsObserver(analytics: l<FirebaseAnalytics>()));

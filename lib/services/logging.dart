@@ -1,6 +1,6 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 
+import 'package:catcher/catcher_plugin.dart';
 import 'package:package_info/package_info.dart';
 import 'package:sentry/sentry.dart' as sentry;
 
@@ -16,20 +16,20 @@ import 'package:sirene/interfaces.dart';
 final Map<int, String> _typeNameMap = Map();
 
 abstract class LogWriter {
-  void log(String message, [bool isDebug, Map<String, dynamic> extras]);
+  void log(String message, {bool isDebug, Map<String, dynamic> extras});
   void logError(Exception ex, StackTrace st,
-      [String message, Map<String, dynamic> extras]) {}
+      {String message, Map<String, dynamic> extras}) {}
 }
 
 class DebugLogWriter implements LogWriter {
   @override
-  void log(String message, [bool isDebug, Map<String, dynamic> extras]) {
+  void log(String message, {bool isDebug, Map<String, dynamic> extras}) {
     debugPrint(message);
   }
 
   @override
   void logError(Exception ex, StackTrace st,
-      [String message, Map<String, dynamic> extras]) {
+      {String message, Map<String, dynamic> extras}) {
     if (message != null) {
       debugPrint('$message ($ex)\n$st');
     }
@@ -61,7 +61,7 @@ class ProductionLogWriter implements LogWriter {
   }
 
   @override
-  void log(String message, [bool isDebug, Map<String, dynamic> extras]) {
+  void log(String message, {bool isDebug, Map<String, dynamic> extras}) {
     if (isDebug) return;
 
     _ringBuffer.add(_LogMessage(message: message, extras: extras));
@@ -72,7 +72,7 @@ class ProductionLogWriter implements LogWriter {
 
   @override
   void logError(Exception ex, StackTrace st,
-      [String message, Map<String, dynamic> extras]) {
+      {String message, Map<String, dynamic> extras}) {
     final user = App.locator.get<LoginManager>().currentUser;
 
     // TODO: Fork flutter/sentry to support breadcrumbs
@@ -93,22 +93,29 @@ class ProductionLogWriter implements LogWriter {
 }
 
 mixin LoggerMixin {
-  LogWriter logger = App.locator.get<LogWriter>();
+  LogWriter _logger;
+
+  _ensureLogger() {
+    return _logger ?? (_logger = App.locator.get<LogWriter>());
+  }
 
   log(String message) {
     final name = _typeNameMap[this.runtimeType.hashCode] ??
         (_typeNameMap[this.runtimeType.hashCode] = this.runtimeType.toString());
-    logger.log("$name: $message");
+
+    _ensureLogger().log("$name: $message");
   }
 
   debug(String message) {
     final name = _typeNameMap[this.runtimeType.hashCode] ??
         (_typeNameMap[this.runtimeType.hashCode] = this.runtimeType.toString());
-    logger.log("$name: $message", true);
+
+    _ensureLogger().log("$name: $message", isDebug: true);
   }
 
-  logError(Exception ex, StackTrace st, [String message]) {
-    logger.logError(ex, st, message);
+  logError(Exception ex, StackTrace st,
+      {String message, Map<String, dynamic> extras}) {
+    _ensureLogger().logError(ex, st, message: message, extras: extras);
   }
 
   logException<TRet>(TRet Function() block,
@@ -116,7 +123,7 @@ mixin LoggerMixin {
     try {
       return block();
     } catch (e, st) {
-      logger.logError(e, st, message);
+      _ensureLogger().logError(e, st, message: message);
       if (rethrowIt) rethrow;
     }
   }
@@ -126,8 +133,16 @@ mixin LoggerMixin {
     try {
       return await block();
     } catch (e, st) {
-      logger.logError(e, st, message);
+      _ensureLogger().logError(e, st, message: message);
       if (rethrowIt) rethrow;
     }
+  }
+}
+
+class LoggingCatcherHandler with LoggerMixin implements ReportHandler {
+  @override
+  Future<bool> handle(Report report) async {
+    logError(report.error, report.stackTrace, extras: report.deviceParameters);
+    return true;
   }
 }
