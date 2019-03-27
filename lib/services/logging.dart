@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import 'package:catcher/catcher_plugin.dart';
+import 'package:device_info/device_info.dart';
 import 'package:package_info/package_info.dart';
 import 'package:sentry/sentry.dart' as sentry;
 
@@ -51,8 +52,21 @@ const kMaxBufferSize = 16;
 class ProductionLogWriter implements LogWriter {
   var _ringBuffer = <_LogMessage>[];
   PackageInfo _packageInfo;
+  AndroidDeviceInfo _androidDeviceInfo;
+  IosDeviceInfo _iosDeviceInfo;
 
   ProductionLogWriter() {
+    final dip = DeviceInfoPlugin();
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      dip.iosInfo.then((di) => _iosDeviceInfo = di).catchError((e, st) {
+        debugPrint("Couldn't get device info! $e\n$st");
+      });
+    } else {
+      dip.androidInfo.then((di) => _androidDeviceInfo = di).catchError((e, st) {
+        debugPrint("Couldn't get device info! $e\n$st");
+      });
+    }
+
     PackageInfo.fromPlatform()
         .then((pi) => _packageInfo = pi)
         .catchError((e, st) {
@@ -74,6 +88,14 @@ class ProductionLogWriter implements LogWriter {
   void logError(Exception ex, StackTrace st,
       {String message, Map<String, dynamic> extras}) {
     final user = App.locator.get<LoginManager>().currentUser;
+
+    if (_androidDeviceInfo != null) {
+      extras.addAll(androidToMap(_androidDeviceInfo));
+    }
+
+    if (_iosDeviceInfo != null) {
+      extras.addAll(iosToMap(_iosDeviceInfo));
+    }
 
     // TODO: Fork flutter/sentry to support breadcrumbs
     App.locator.get<sentry.SentryClient>().capture(
@@ -145,4 +167,58 @@ class LoggingCatcherHandler with LoggerMixin implements ReportHandler {
     logError(report.error, report.stackTrace, extras: report.deviceParameters);
     return true;
   }
+}
+
+void setMapValue(Map<String, dynamic> map, String key, dynamic value) {
+  map[key] = value;
+}
+
+void setMapValueIfNotNull(Map<String, dynamic> map, String key, dynamic value) {
+  if (value != null) map[key] = value;
+}
+
+List<T> codeIterable<T>(Iterable values, T callback(value)) =>
+    values?.map<T>(callback)?.toList();
+
+Map<String, dynamic> androidToMap(AndroidDeviceInfo model) {
+  if (model == null) return null;
+  Map<String, dynamic> ret = <String, dynamic>{};
+  setMapValue(ret, 'board', model.board);
+  setMapValue(ret, 'bootloader', model.bootloader);
+  setMapValue(ret, 'brand', model.brand);
+  setMapValue(ret, 'device', model.device);
+  setMapValue(ret, 'display', model.display);
+  setMapValue(ret, 'fingerprint', model.fingerprint);
+  setMapValue(ret, 'hardware', model.hardware);
+  setMapValue(ret, 'host', model.host);
+  setMapValue(ret, 'id', model.id);
+  setMapValue(ret, 'manufacturer', model.manufacturer);
+  setMapValue(ret, 'model', model.model);
+  setMapValue(ret, 'product', model.product);
+  setMapValue(ret, 'supported32BitAbis',
+      codeIterable(model.supported32BitAbis, (val) => val as String));
+  setMapValue(ret, 'supported64BitAbis',
+      codeIterable(model.supported64BitAbis, (val) => val as String));
+  setMapValue(ret, 'supportedAbis',
+      codeIterable(model.supportedAbis, (val) => val as String));
+  setMapValue(ret, 'tags', model.tags);
+  setMapValue(ret, 'type', model.type);
+  setMapValue(ret, 'isPhysicalDevice', model.isPhysicalDevice);
+  setMapValue(ret, 'androidId', model.androidId);
+
+  ret['version'] = model.version.toString();
+  return ret;
+}
+
+Map<String, dynamic> iosToMap(IosDeviceInfo model) {
+  if (model == null) return null;
+  Map<String, dynamic> ret = <String, dynamic>{};
+  setMapValue(ret, 'name', model.name);
+  setMapValue(ret, 'systemName', model.systemName);
+  setMapValue(ret, 'systemVersion', model.systemVersion);
+  setMapValue(ret, 'model', model.model);
+  setMapValue(ret, 'localizedModel', model.localizedModel);
+  setMapValue(ret, 'identifierForVendor', model.identifierForVendor);
+  setMapValue(ret, 'isPhysicalDevice', model.isPhysicalDevice);
+  return ret;
 }
