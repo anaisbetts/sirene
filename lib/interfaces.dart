@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 enum ApplicationMode { Debug, Production, Test }
 
@@ -14,18 +15,26 @@ abstract class LoginManager {
 }
 
 class Phrase {
-  Phrase({this.text, this.writtenText, this.isReply});
+  Phrase({@required this.text, this.spokenText, this.isReply});
 
   String text;
-  String writtenText;
+  String spokenText;
 
   bool isReply;
 
   static Phrase fromDocument(DocumentSnapshot ds) {
     return Phrase(
         text: ds.data['text'],
-        writtenText: ds.data['writtenText'],
+        spokenText: ds.data['spokenText'],
         isReply: ds.data['isReply']);
+  }
+
+  toDocument(DocumentReference dr) {
+    return dr.setData({
+      'text': text,
+      'spokenText': spokenText,
+      'isReply': isReply,
+    });
   }
 }
 
