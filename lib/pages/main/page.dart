@@ -74,12 +74,7 @@ class _MainPageState extends State<MainPage> with UserEnabledPage<MainPage> {
           controller: controller,
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            var phrase =
-                Phrase(text: 'Foobar', isReply: true, spokenText: 'Foo bar');
-
-            phrase.toDocument(dr);
-          },
+          onPressed: () async {},
         ),
         body: PagedViewBody(
           items: panes,

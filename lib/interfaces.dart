@@ -30,7 +30,7 @@ class User {
     return userSerializer.fromDocument(ds);
   }
 
-  toDocument(DocumentReference dr) {
+  Future<void> toDocument(DocumentReference dr) {
     return userSerializer.toDocument(this, dr);
   }
 }
@@ -56,7 +56,7 @@ mixin FirebaseSerializerMixin<T> on Serializer<T> {
     return this.fromMap(ds.data);
   }
 
-  toDocument(T item, DocumentReference dr) {
+  Future<void> toDocument(T item, DocumentReference dr) {
     return dr.setData(this.toMap(item));
   }
 }

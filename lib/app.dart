@@ -20,7 +20,7 @@ class App extends State<AppWidget> {
     locator = App.setupRegistration(GetIt());
   }
 
-  static get analytics => App.locator<FirebaseAnalytics>();
+  static FirebaseAnalytics get analytics => App.locator<FirebaseAnalytics>();
 
   static setupRegistration(GetIt l) {
     final isTestMode = Platform.resolvedExecutable.contains("_tester");
