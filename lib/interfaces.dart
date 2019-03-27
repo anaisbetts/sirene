@@ -7,7 +7,7 @@ part 'interfaces.jser.dart';
 enum ApplicationMode { Debug, Production, Test }
 
 abstract class LoginManager {
-  UserInfo currentUser;
+  UserInfo get currentUser;
 
   Future<UserInfo> login();
   Future<void> logout();

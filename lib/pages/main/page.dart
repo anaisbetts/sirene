@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:sirene/components/paged-bottom-navbar.dart';
 import 'package:sirene/interfaces.dart';
+import 'package:sirene/services/logging.dart';
 import 'package:sirene/services/login.dart';
 import 'package:sirene/services/router.dart';
 
@@ -28,12 +29,15 @@ class MainPage extends StatefulWidget {
   _MainPageState createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> with UserEnabledPage<MainPage> {
+class _MainPageState extends State<MainPage>
+    with UserEnabledPage<MainPage>, LoggerMixin {
   final PagedViewController controller = PagedViewController();
 
   @override
   void initState() {
     super.initState();
+
+    debug('Starting main page!');
 
     userRequestError.listen((e) => {
           Scaffold.of(context).showSnackBar(SnackBar(
@@ -74,7 +78,11 @@ class _MainPageState extends State<MainPage> with UserEnabledPage<MainPage> {
           controller: controller,
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () async {},
+          onPressed: () {
+            catchToLog(() {
+              throw Exception("kerplowie");
+            });
+          },
         ),
         body: PagedViewBody(
           items: panes,
