@@ -17,19 +17,19 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^0.1.2
+  jaguar_serializer: ^2.2.12
   cloud_firestore: ^0.9.0
   firebase_auth: ^0.8.0
   google_sign_in: ^4.0.1
-  dio: ^1.0.14
   rxdart: ^0.20.0
   rx_command: ^4.1.0
-  rx_widgets: ^2.2.0
   get_it: ^1.0.2
-  curved_navigation_bar: ^0.1.26
   flutter_tts: ^0.2.4
   firebase_analytics: ^2.0.3
 
 dev_dependencies:
+  build_runner:
+  jaguar_serializer_cli: ^2.2.5
   flutter_test:
     sdk: flutter
 
