@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:sirene/components/paged-bottom-navbar.dart';
+import 'package:sirene/interfaces.dart';
 import 'package:sirene/services/login.dart';
 import 'package:sirene/services/router.dart';
 
@@ -46,7 +48,7 @@ class _MainPageState extends State<MainPage> with UserEnabledPage<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    final UserInfo user = withUser();
+    final UserInfo user = withUser(requireNamed: true);
     final userName = user != null ? user.displayName : '(none!)';
 
     final panes = <NavigationItem>[
@@ -70,6 +72,9 @@ class _MainPageState extends State<MainPage> with UserEnabledPage<MainPage> {
         bottomNavigationBar: PagedViewBottomNavBar(
           items: panes,
           controller: controller,
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {},
         ),
         body: PagedViewBody(
           items: panes,
