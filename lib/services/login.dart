@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rxdart/rxdart.dart';
@@ -19,6 +20,11 @@ class FirebaseLoginManager extends LoginManager {
 
     if (ret == null) {
       ret = await FirebaseAuth.instance.signInAnonymously();
+
+      await Firestore.instance
+          .collection('users')
+          .document(ret.uid)
+          .setData({"email": ret.email, "anonymous": true}, merge: true);
     }
 
     _currentUser = ret;
@@ -52,6 +58,11 @@ class FirebaseLoginManager extends LoginManager {
 
     final newUser = await _upgradeAnonymousUser();
     _currentUser = newUser;
+
+    await Firestore.instance
+        .collection('users')
+        .document(newUser.uid)
+        .setData({"email": newUser.email, "anonymous": false}, merge: true);
 
     return newUser;
   }
