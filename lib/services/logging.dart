@@ -111,19 +111,23 @@ mixin LoggerMixin {
     logger.logError(ex, st, message);
   }
 
-  catchToLog<TRet>(TRet Function() block, [String message]) {
+  logException<TRet>(TRet Function() block,
+      {bool rethrowIt = true, String message}) {
     try {
       return block();
     } catch (e, st) {
       logger.logError(e, st, message);
+      if (rethrowIt) rethrow;
     }
   }
 
-  catchToAsyncLog<TRet>(Future<TRet> Function() block, [String message]) async {
+  logAsyncException<TRet>(Future<TRet> Function() block,
+      {bool rethrowIt = true, String message}) async {
     try {
       return await block();
     } catch (e, st) {
       logger.logError(e, st, message);
+      if (rethrowIt) rethrow;
     }
   }
 }

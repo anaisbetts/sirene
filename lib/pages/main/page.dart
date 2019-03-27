@@ -79,9 +79,9 @@ class _MainPageState extends State<MainPage>
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            catchToLog(() {
+            logException(() {
               throw Exception("kerplowie");
-            });
+            }, rethrowIt: false);
           },
         ),
         body: PagedViewBody(

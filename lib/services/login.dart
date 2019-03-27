@@ -22,10 +22,10 @@ class FirebaseLoginManager with LoggerMixin implements LoginManager {
     if (ret == null) {
       ret = await FirebaseAuth.instance.signInAnonymously();
 
-      catchToAsyncLog(() async {
+      logAsyncException(() async {
         await (new User(isAnonymous: true)).toDocument(
             Firestore.instance.collection('users').document(ret.uid));
-      });
+      }, rethrowIt: false);
     }
 
     _currentUser = ret;
@@ -57,7 +57,7 @@ class FirebaseLoginManager with LoggerMixin implements LoginManager {
       return _currentUser;
     }
 
-    final newUser = await catchToAsyncLog(() async {
+    final newUser = await logAsyncException(() async {
       final ret = await _upgradeAnonymousUser();
       App.analytics.logEvent(name: "upgrade_user", parameters: {
         "uid": ret.uid,
@@ -71,10 +71,10 @@ class FirebaseLoginManager with LoggerMixin implements LoginManager {
 
     // NB: This is intentionally not awaited, there's no reason to
     // block on this
-    catchToAsyncLog(() async {
+    logAsyncException(() async {
       await (new User(isAnonymous: false, email: newUser.email)).toDocument(
           Firestore.instance.collection('users').document(newUser.uid));
-    });
+    }, rethrowIt: false);
 
     return newUser;
   }
