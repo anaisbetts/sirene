@@ -21,10 +21,8 @@ class FirebaseLoginManager extends LoginManager {
     if (ret == null) {
       ret = await FirebaseAuth.instance.signInAnonymously();
 
-      await Firestore.instance
-          .collection('users')
-          .document(ret.uid)
-          .setData({"email": ret.email, "anonymous": true}, merge: true);
+      await (new User(isAnonymous: true))
+          .toDocument(Firestore.instance.collection('users').document(ret.uid));
     }
 
     _currentUser = ret;
@@ -58,6 +56,9 @@ class FirebaseLoginManager extends LoginManager {
 
     final newUser = await _upgradeAnonymousUser();
     _currentUser = newUser;
+
+    await (new User(isAnonymous: false, email: newUser.email)).toDocument(
+        Firestore.instance.collection('users').document(newUser.uid));
 
     await Firestore.instance
         .collection('users')

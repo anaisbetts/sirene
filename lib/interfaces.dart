@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:jaguar_serializer/jaguar_serializer.dart';
@@ -27,6 +25,14 @@ class User {
 
   String email;
   bool isAnonymous;
+
+  static User fromDocument(DocumentSnapshot ds) {
+    return userSerializer.fromDocument(ds);
+  }
+
+  toDocument(DocumentReference dr) {
+    return userSerializer.toDocument(this, dr);
+  }
 }
 
 class Phrase {
@@ -66,6 +72,7 @@ class PhraseJsonSerializer extends Serializer<Phrase>
 final phraseSerializer = PhraseJsonSerializer();
 
 @GenSerializer()
-class UserJsonSerializer extends Serializer<User> with _$UserJsonSerializer {}
+class UserJsonSerializer extends Serializer<User>
+    with _$UserJsonSerializer, FirebaseSerializerMixin<User> {}
 
 final userSerializer = UserJsonSerializer();
