@@ -18,7 +18,7 @@ final Map<int, String> _typeNameMap = Map();
 
 abstract class LogWriter {
   void log(String message, {bool isDebug, Map<String, dynamic> extras});
-  void logError(Exception ex, StackTrace st,
+  void logError(dynamic ex, StackTrace st,
       {String message, Map<String, dynamic> extras}) {}
 }
 
@@ -29,7 +29,7 @@ class DebugLogWriter implements LogWriter {
   }
 
   @override
-  void logError(Exception ex, StackTrace st,
+  void logError(dynamic ex, StackTrace st,
       {String message, Map<String, dynamic> extras}) {
     if (message != null) {
       debugPrint('$message ($ex)\n$st');
@@ -85,16 +85,26 @@ class ProductionLogWriter implements LogWriter {
   }
 
   @override
-  void logError(Exception ex, StackTrace st,
+  void logError(dynamic ex, StackTrace st,
       {String message, Map<String, dynamic> extras}) {
+    extras ??= Map();
     final user = App.locator.get<LoginManager>().currentUser;
+    var deviceFingerprint = '';
+    var device = '';
+    var os = '';
 
     if (_androidDeviceInfo != null) {
       extras.addAll(androidToMap(_androidDeviceInfo));
+      deviceFingerprint = _androidDeviceInfo.fingerprint;
+      device = '${_androidDeviceInfo.manufacturer} ${_androidDeviceInfo.model}';
+      os = '${_androidDeviceInfo.version.sdkInt}';
     }
 
     if (_iosDeviceInfo != null) {
       extras.addAll(iosToMap(_iosDeviceInfo));
+      deviceFingerprint = _iosDeviceInfo.utsname.machine;
+      device = _iosDeviceInfo.localizedModel;
+      os = _iosDeviceInfo.systemVersion;
     }
 
     // TODO: Fork flutter/sentry to support breadcrumbs
@@ -104,6 +114,11 @@ class ProductionLogWriter implements LogWriter {
             stackTrace: st,
             extra: extras,
             message: message,
+            tags: {
+              "device": device,
+              "deviceFingerprint": deviceFingerprint,
+              "os": os,
+            },
             userContext: sentry.User(email: user.email, id: user.uid),
             release: _packageInfo.version));
 
@@ -135,7 +150,7 @@ mixin LoggerMixin {
     _ensureLogger().log("$name: $message", isDebug: true);
   }
 
-  logError(Exception ex, StackTrace st,
+  logError(dynamic ex, StackTrace st,
       {String message, Map<String, dynamic> extras}) {
     _ensureLogger().logError(ex, st, message: message, extras: extras);
   }
@@ -206,7 +221,8 @@ Map<String, dynamic> androidToMap(AndroidDeviceInfo model) {
   setMapValue(ret, 'isPhysicalDevice', model.isPhysicalDevice);
   setMapValue(ret, 'androidId', model.androidId);
 
-  ret['version'] = model.version.toString();
+  ret['version'] =
+      "Android ${model.version.sdkInt} ${model.version.release} - ${model.version.incremental} Patch Level ${model.version.securityPatch}";
   return ret;
 }
 
