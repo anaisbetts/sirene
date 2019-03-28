@@ -322,7 +322,7 @@ class DebugFirebaseAnalytics implements FirebaseAnalytics {
   /// has logged in.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#LOGIN
-  Future<void> logLogin() {
+  Future<void> logLogin({String loginMethod}) {
     return logEvent(name: 'login');
   }
 

@@ -1,7 +1,30 @@
-import 'package:catcher/catcher_plugin.dart';
-import 'package:sirene/services/logging.dart';
+import 'package:flutter/widgets.dart';
 
-import './app.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
-final config = CatcherOptions(SilentReportMode(), [LoggingCatcherHandler()]);
-void main() => Catcher(AppWidget(), debugConfig: config, releaseConfig: config);
+import 'package:sirene/app.dart';
+import 'package:sirene/interfaces.dart';
+
+void main() {
+  FlutterError.onError = (details) {
+    var isDebug = false;
+    assert(isDebug = true);
+
+    if (isDebug) {
+      FlutterError.dumpErrorToConsole(details);
+    } else {
+      final user = App.locator != null
+          ? App.locator.get<LoginManager>().currentUser
+          : null;
+
+      if (user != null) {
+        Crashlytics.instance.setUserIdentifier(user.uid);
+        Crashlytics.instance.setUserEmail(user.email);
+      }
+
+      Crashlytics.instance.onError(details);
+    }
+  };
+
+  runApp(AppWidget());
+}
