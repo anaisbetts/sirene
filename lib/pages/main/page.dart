@@ -1,10 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:sirene/components/paged-bottom-navbar.dart';
-import 'package:sirene/interfaces.dart';
+import 'package:sirene/pages/main/phrase-list.dart';
 import 'package:sirene/services/logging.dart';
 import 'package:sirene/services/login.dart';
 import 'package:sirene/services/router.dart';
@@ -57,12 +56,9 @@ class _MainPageState extends State<MainPage>
 
     final panes = <NavigationItem>[
       NavigationItem(
-        icon: Icon(Icons.settings, size: 30),
-        caption: "foo",
-        contents: Center(
-          child: Text("hi"),
-        ),
-      ),
+          icon: Icon(Icons.speaker, size: 30),
+          caption: "Speak",
+          contents: PhraseListPage()),
       NavigationItem(
           icon: Icon(Icons.bluetooth, size: 30),
           caption: "bar",
