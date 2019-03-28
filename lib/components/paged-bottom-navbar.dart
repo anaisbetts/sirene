@@ -131,3 +131,47 @@ class _PagedViewBodyState extends State<PagedViewBody> {
     );
   }
 }
+
+class PagedViewSelector extends StatefulWidget {
+  PagedViewSelector(
+      {@required this.children, @required this.controller, Key key})
+      : super(key: key);
+
+  final List<Widget> children;
+  final PagedViewController controller;
+
+  @override
+  _PagedViewSelectorState createState() => _PagedViewSelectorState(
+      children: this.children, controller: this.controller);
+}
+
+class _PagedViewSelectorState extends State<PagedViewSelector> {
+  _PagedViewSelectorState({@required this.children, @required this.controller});
+
+  final List<Widget> children;
+  final PagedViewController controller;
+
+  int selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller.selectionChanged.addListener(_pageChanged);
+    selectedIndex = controller.selectionChanged.value;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.selectionChanged.removeListener(_pageChanged);
+  }
+
+  void _pageChanged() =>
+      setState(() => selectedIndex = controller.selectionChanged.value);
+
+  @override
+  Widget build(BuildContext context) {
+    return children[selectedIndex];
+  }
+}
