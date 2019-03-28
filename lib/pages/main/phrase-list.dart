@@ -7,44 +7,6 @@ import 'package:sirene/interfaces.dart';
 import 'package:sirene/services/logging.dart';
 import 'package:sirene/services/login.dart';
 
-class _ReplyAndHeading extends StatefulWidget {
-  @override
-  _ReplyAndHeadingState createState() => _ReplyAndHeadingState();
-}
-
-class _ReplyAndHeadingState extends State<_ReplyAndHeading> {
-  var toggle = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final shadow = TextStyle(shadows: [
-      Shadow(
-          blurRadius: 5.0,
-          offset: Offset(3.0, 3.0),
-          color: Theme.of(context).primaryColorLight.withOpacity(0.2))
-    ]);
-
-    return Flex(
-      direction: Axis.horizontal,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Container(
-          child: Text("Phrases",
-              style: Theme.of(context).primaryTextTheme.title.merge(shadow)),
-        ),
-        Expanded(
-          child: Container(),
-        ),
-        Text("Replies", style: Theme.of(context).primaryTextTheme.body1),
-        Switch(
-          value: toggle,
-          onChanged: (_) => setState(() => toggle = !toggle),
-        )
-      ],
-    );
-  }
-}
-
 final TextStyle italics = TextStyle(fontStyle: FontStyle.italic);
 
 class PhraseCard extends StatelessWidget {
@@ -58,7 +20,7 @@ class PhraseCard extends StatelessWidget {
           blurRadius: 4.0,
           offset: Offset(3.0, 3.0),
           color:
-              Theme.of(context).primaryTextTheme.title.color.withOpacity(0.2))
+              Theme.of(context).primaryTextTheme.title.color.withOpacity(0.15))
     ]);
 
     return ConstrainedBox(
@@ -114,25 +76,22 @@ class _PhraseListPageState extends State<PhraseListPage>
 
   @override
   Widget build(BuildContext context) {
+    final list = ListView.separated(
+      padding: EdgeInsets.all(16),
+      itemCount: phrases.length,
+      separatorBuilder: (ctx, i) => Padding(
+            padding: EdgeInsets.all(8),
+            child: Container(),
+          ),
+      itemBuilder: (ctx, i) => PhraseCard(
+            phrase: phrases[i],
+          ),
+    );
+
     return Flex(
       direction: Axis.vertical,
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.all(4),
-        ),
-        _ReplyAndHeading(),
-        Expanded(
-            child: Padding(
-                padding: EdgeInsets.all(8),
-                child: ListView.builder(
-                  padding: EdgeInsets.all(8),
-                  itemCount: phrases.length,
-                  itemBuilder: (ctx, i) => PhraseCard(
-                        phrase: phrases[i],
-                      ),
-                )))
-      ],
+      children: <Widget>[Expanded(child: list)],
     );
   }
 }
