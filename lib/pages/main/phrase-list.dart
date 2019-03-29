@@ -67,6 +67,7 @@ class _PhraseListPageState extends State<PhraseListPage>
       //final docs = await sm.allPhrasesQuery().getDocuments();
       //setState(() =>
       //   phrases = docs.documents.map((x) => Phrase.fromDocument(x)).toList());
+      App.traces['app_startup'].stop();
       sm.getPhrases().listen((xs) {
         debug("Phrase update! ${xs.length} items");
         setState(() => phrases = xs);
