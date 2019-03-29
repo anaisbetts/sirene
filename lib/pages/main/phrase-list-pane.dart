@@ -177,6 +177,7 @@ class _PhraseListPaneState extends BindableState<PhraseListPane>
     lm.ensureUser().then((_) async {
       sm.getPhrases().listen((xs) {
         debug("Phrase update! ${xs.length} items");
+        App.traces['app_startup'].stop();
         setState(() => phrases = xs);
       });
     });
