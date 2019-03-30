@@ -36,18 +36,6 @@ class DebugLogWriter implements LogWriter {
   }
 }
 
-class _LogMessage {
-  _LogMessage({this.message, this.extras}) {
-    time = DateTime.now().millisecondsSinceEpoch;
-  }
-
-  int time;
-  final String message;
-  final Map<String, dynamic> extras;
-}
-
-const kMaxBufferSize = 16;
-
 class ProductionLogWriter implements LogWriter {
   @override
   void log(String message, {bool isDebug, Map<String, dynamic> extras}) {
