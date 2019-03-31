@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:sirene/components/paged-bottom-navbar.dart';
 import 'package:sirene/pages/main/phrase-list-pane.dart';
+import 'package:sirene/pages/main/speak-pane.dart';
 import 'package:sirene/services/logging.dart';
 import 'package:sirene/services/login.dart';
 import 'package:sirene/services/router.dart';
@@ -78,9 +79,7 @@ class _MainPageState extends State<MainPage>
       NavigationItem(
           icon: Icon(Icons.chat_bubble_outline, size: 30),
           caption: "speak",
-          contents: Center(
-            child: Text("yes."),
-          )),
+          contents: SpeakPane()),
     ];
 
     final appBarActions =
@@ -104,7 +103,10 @@ class _MainPageState extends State<MainPage>
         child: Icon(Icons.add),
         onPressed: () => {},
       ),
-      Container()
+      FloatingActionButton(
+        child: Icon(Icons.speaker),
+        onPressed: () => {},
+      ),
     ]);
 
     return Scaffold(
