@@ -104,7 +104,7 @@ class _MainPageState extends State<MainPage>
         PagedViewSelector(controller: controller, children: <Widget>[
       FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () => {},
+        onPressed: () => throw Exception("die die die"),
       ),
       Container()
     ]);
