@@ -45,12 +45,12 @@ class PhraseCard extends StatelessWidget {
   }
 }
 
-class PhraseListPage extends StatefulWidget {
+class PhraseListPane extends StatefulWidget {
   @override
-  _PhraseListPageState createState() => _PhraseListPageState();
+  _PhraseListPaneState createState() => _PhraseListPaneState();
 }
 
-class _PhraseListPageState extends State<PhraseListPage>
+class _PhraseListPaneState extends State<PhraseListPane>
     with UserEnabledPage, LoggerMixin {
   bool replyMode = false;
   List<Phrase> phrases = <Phrase>[];

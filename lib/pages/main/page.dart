@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:sirene/components/paged-bottom-navbar.dart';
-import 'package:sirene/pages/main/phrase-list.dart';
+import 'package:sirene/pages/main/phrase-list-pane.dart';
 import 'package:sirene/services/logging.dart';
 import 'package:sirene/services/login.dart';
 import 'package:sirene/services/router.dart';
@@ -61,8 +61,6 @@ class _MainPageState extends State<MainPage>
   void initState() {
     super.initState();
 
-    debug('Starting main page!');
-
     userRequestError.listen((e) => {
           Scaffold.of(context).showSnackBar(SnackBar(
             content: Text("aw jeez. $e"),
@@ -76,7 +74,7 @@ class _MainPageState extends State<MainPage>
       NavigationItem(
           icon: Icon(Icons.record_voice_over, size: 30),
           caption: "phrases",
-          contents: PhraseListPage()),
+          contents: PhraseListPane()),
       NavigationItem(
           icon: Icon(Icons.chat_bubble_outline, size: 30),
           caption: "speak",
