@@ -28,35 +28,37 @@ class PagedViewBottomNavBar extends StatefulWidget {
   final PagedViewController controller;
 
   @override
-  _PagedViewBottomNavBarState createState() =>
-      _PagedViewBottomNavBarState(items: items, controller: controller);
+  _PagedViewBottomNavBarState createState() => _PagedViewBottomNavBarState();
 }
 
 class _PagedViewBottomNavBarState extends State<PagedViewBottomNavBar> {
-  _PagedViewBottomNavBarState(
-      {@required this.items, @required this.controller});
-
-  final List<NavigationItem> items;
-  final PagedViewController controller;
-
   int selectedIndex;
 
   @override
   void initState() {
     super.initState();
 
-    controller.selectionChanged.addListener(_pageChanged);
-    selectedIndex = controller.selectionChanged.value;
+    widget.controller.selectionChanged.addListener(_pageChanged);
+    selectedIndex = widget.controller.selectionChanged.value;
+  }
+
+  @override
+  void didUpdateWidget(PagedViewBottomNavBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    oldWidget.controller.selectionChanged.removeListener(_pageChanged);
+    widget.controller.selectionChanged.addListener(_pageChanged);
+    selectedIndex = widget.controller.selectionChanged.value;
   }
 
   @override
   void dispose() {
     super.dispose();
-    controller.selectionChanged.removeListener(_pageChanged);
+    widget.controller.selectionChanged.removeListener(_pageChanged);
   }
 
   _pageChanged() {
-    setState(() => selectedIndex = controller.selectionChanged.value);
+    setState(() => selectedIndex = widget.controller.selectionChanged.value);
   }
 
   @override
@@ -64,8 +66,8 @@ class _PagedViewBottomNavBarState extends State<PagedViewBottomNavBar> {
     final buttons = <BottomNavigationBarItem>[];
 
     const inactiveOpacity = 0.5;
-    for (var i = 0; i < items.length; i++) {
-      var cur = items[i];
+    for (var i = 0; i < widget.items.length; i++) {
+      var cur = widget.items[i];
 
       buttons.add(BottomNavigationBarItem(
           title: Opacity(
@@ -81,7 +83,7 @@ class _PagedViewBottomNavBarState extends State<PagedViewBottomNavBar> {
         backgroundColor: Theme.of(context).primaryColor,
         unselectedItemColor: Theme.of(context).colorScheme.onPrimary,
         selectedItemColor: Theme.of(context).colorScheme.onPrimary,
-        onTap: (i) => controller.selectionChanged.value = i);
+        onTap: (i) => widget.controller.selectionChanged.value = i);
   }
 }
 
