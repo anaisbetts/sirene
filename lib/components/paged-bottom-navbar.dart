@@ -61,14 +61,26 @@ class _PagedViewBottomNavBarState extends State<PagedViewBottomNavBar> {
 
   @override
   Widget build(BuildContext context) {
-    final buttons = items
-        .map((x) =>
-            BottomNavigationBarItem(title: Text(x.caption), icon: x.icon))
-        .toList();
+    final buttons = <BottomNavigationBarItem>[];
+
+    const inactiveOpacity = 0.5;
+    for (var i = 0; i < items.length; i++) {
+      var cur = items[i];
+
+      buttons.add(BottomNavigationBarItem(
+          title: Opacity(
+              opacity: i == selectedIndex ? 1.0 : inactiveOpacity,
+              child: Text(cur.caption)),
+          icon: Opacity(opacity: inactiveOpacity, child: cur.icon),
+          activeIcon: cur.icon));
+    }
 
     return BottomNavigationBar(
         currentIndex: selectedIndex,
         items: buttons,
+        backgroundColor: Theme.of(context).primaryColor,
+        unselectedItemColor: Theme.of(context).colorScheme.onPrimary,
+        selectedItemColor: Theme.of(context).colorScheme.onPrimary,
         onTap: (i) => controller.selectionChanged.value = i);
   }
 }
