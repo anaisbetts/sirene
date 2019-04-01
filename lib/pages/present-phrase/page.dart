@@ -34,10 +34,11 @@ class PresentPhrasePage extends StatefulWidget {
 
 class _PresentPhrasePageState extends State<PresentPhrasePage>
     with LoggerMixin {
-  bool isCancelled = false;
-  bool isPlaying = false;
   final tts = FlutterTts();
   final ttsCompletion = PublishSubject();
+
+  bool isCancelled = false;
+  bool isPlaying = false;
 
   @override
   void initState() {
@@ -86,7 +87,7 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
   Widget build(BuildContext context) {
     final isPortrait =
         MediaQuery.of(context).orientation == Orientation.portrait;
-    final turns = isPortrait ? 1 : 0;
+    final turns = isPortrait ? -1 : 0;
     final scrollAxis = isPortrait ? Axis.horizontal : Axis.vertical;
 
     PresentPhraseOptions settings = ModalRoute.of(context).settings.arguments;
@@ -108,15 +109,19 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
             scrollDirection: scrollAxis,
             child: RotatedBox(
                 quarterTurns: turns,
-                child: Center(
-                  child: Text(
-                    settings.text,
-                    overflow: TextOverflow.fade,
-                    style: Theme.of(context)
-                        .primaryTextTheme
-                        .headline
-                        .merge(TextStyle(fontSize: 96)),
-                  ),
+                child: Flex(
+                  direction: Axis.vertical,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      settings.text,
+                      overflow: TextOverflow.fade,
+                      style: Theme.of(context)
+                          .primaryTextTheme
+                          .headline
+                          .merge(TextStyle(fontSize: 96)),
+                    )
+                  ],
                 )),
           ),
         ),
