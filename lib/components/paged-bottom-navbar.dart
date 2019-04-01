@@ -31,7 +31,7 @@ class PagedViewBottomNavBar extends StatefulWidget {
 }
 
 class _PagedViewBottomNavBarState extends BindableState<PagedViewBottomNavBar> {
-  int selectedIndex;
+  int selectedIndex = 0;
 
   _PagedViewBottomNavBarState() {
     setupBinds([
@@ -125,7 +125,7 @@ class PagedViewSelector extends StatefulWidget {
 }
 
 class _PagedViewSelectorState extends BindableState<PagedViewSelector> {
-  int selectedIndex;
+  int selectedIndex = 0;
 
   _PagedViewSelectorState() {
     setupBinds([

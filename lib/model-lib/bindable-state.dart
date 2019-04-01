@@ -65,7 +65,7 @@ abstract class BindableState<T extends StatefulWidget> extends State<T> {
 
 Observable<T> fromValueListener<T>(ValueListenable<T> listener) {
   // ignore: close_sinks
-  Subject<T> subj = BehaviorSubject(seedValue: listener.value, sync: true);
+  Subject<T> subj = BehaviorSubject(seedValue: listener.value);
 
   final next = () {
     subj.add(listener.value);
