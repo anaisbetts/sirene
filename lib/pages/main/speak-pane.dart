@@ -13,9 +13,17 @@ class _SpeakPaneState extends State<SpeakPane> {
     final actualContent = Card(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: TextField(
-          controller: toSpeak,
-        ),
+        child: Flex(
+            direction: Axis.vertical,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Text("Phrase to say:",
+                  style: Theme.of(context).primaryTextTheme.headline),
+              Expanded(
+                  child: TextField(
+                controller: toSpeak,
+              )),
+            ]),
       ),
     );
 
