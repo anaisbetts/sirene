@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:sirene/app.dart';
 import 'package:sirene/interfaces.dart';
+import 'package:sirene/pages/present-phrase/page.dart';
 import 'package:sirene/services/logging.dart';
 import 'package:sirene/services/login.dart';
 
@@ -73,6 +74,15 @@ class _PhraseListPaneState extends State<PhraseListPane>
 
   @override
   Widget build(BuildContext context) {
+    if (phrases.length == 0) {
+      return Center(
+        child: RaisedButton(
+          child: Text("Login"),
+          onPressed: () => App.locator.get<LoginManager>().ensureNamedUser(),
+        ),
+      );
+    }
+
     final list = ListView.separated(
       padding: EdgeInsets.all(16),
       itemCount: phrases.length,
