@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:rxdart/rxdart.dart';
+
 import 'package:sirene/services/logging.dart';
 import 'package:sirene/services/router.dart';
 
@@ -31,32 +34,91 @@ class PresentPhrasePage extends StatefulWidget {
 
 class _PresentPhrasePageState extends State<PresentPhrasePage>
     with LoggerMixin {
+  bool isCancelled = false;
+  bool isPlaying = false;
+  final tts = FlutterTts();
+  final ttsCompletion = PublishSubject();
+
+  @override
+  void initState() {
+    super.initState();
+
+    tts.completionHandler = () => ttsCompletion.add(null);
+    tts.errorHandler = (e) => ttsCompletion.addError(e);
+
+    Future.delayed(Duration(milliseconds: 10)).then((_) => speakText());
+  }
+
+  Future<void> speakText() async {
+    PresentPhraseOptions settings = ModalRoute.of(context).settings.arguments;
+
+    if (isCancelled) {
+      return;
+    }
+
+    await tts.setVolume(1.0);
+
+    if (isCancelled) {
+      return;
+    }
+
+    isPlaying = true;
+    await tts.speak(settings.text);
+    await ttsCompletion.take(1).last;
+    isPlaying = false;
+
+    if (isCancelled) {
+      return;
+    }
+
+    if (!settings.pauseAfterFinished) {
+      await Future.delayed(Duration(seconds: 5));
+
+      if (isCancelled) {
+        return;
+      }
+
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isPortrait =
         MediaQuery.of(context).orientation == Orientation.portrait;
     final turns = isPortrait ? 1 : 0;
     final scrollAxis = isPortrait ? Axis.horizontal : Axis.vertical;
+
     PresentPhraseOptions settings = ModalRoute.of(context).settings.arguments;
 
     return Container(
       color: Theme.of(context).primaryColor,
       child: Padding(
         padding: const EdgeInsets.all(24.0),
-        child: SingleChildScrollView(
-          scrollDirection: scrollAxis,
-          child: RotatedBox(
-              quarterTurns: turns,
-              child: Center(
-                child: Text(
-                  settings.text,
-                  overflow: TextOverflow.fade,
-                  style: Theme.of(context)
-                      .primaryTextTheme
-                      .headline
-                      .merge(TextStyle(fontSize: 96)),
-                ),
-              )),
+        child: GestureDetector(
+          onTap: () async {
+            isCancelled = true;
+            if (isPlaying) {
+              await tts.stop();
+            }
+
+            Navigator.of(context).pop();
+          },
+          child: SingleChildScrollView(
+            scrollDirection: scrollAxis,
+            child: RotatedBox(
+                quarterTurns: turns,
+                child: Center(
+                  child: Text(
+                    settings.text,
+                    overflow: TextOverflow.fade,
+                    style: Theme.of(context)
+                        .primaryTextTheme
+                        .headline
+                        .merge(TextStyle(fontSize: 96)),
+                  ),
+                )),
+          ),
         ),
       ),
     );
