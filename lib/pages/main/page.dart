@@ -64,6 +64,7 @@ class _MainPageState extends BindableState<MainPage>
   bool speakFabCanExecute = false;
 
   _MainPageState() {
+    // NB: This code sucks so hard, how can we get rid of it
     setupBinds([
       () => fromValueListener(controller.fabButton)
           .listen((x) => setState(() => speakPaneFab = x)),
