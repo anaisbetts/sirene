@@ -10,6 +10,7 @@ import 'package:sentry/sentry.dart';
 
 import 'package:sirene/interfaces.dart';
 import 'package:sirene/pages/main/page.dart';
+import 'package:sirene/pages/present-phrase/page.dart';
 import 'package:sirene/services/database.dart';
 import 'package:sirene/services/debug-analytics.dart';
 import 'package:sirene/services/logging.dart';
@@ -61,6 +62,7 @@ class App extends State<AppWidget> {
 
   static setupRoutes(Router r) {
     MainPage.setupRoutes(r);
+    PresentPhrasePage.setupRoutes(r);
     return r;
   }
 
