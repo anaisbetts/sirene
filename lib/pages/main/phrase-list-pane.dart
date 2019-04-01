@@ -26,19 +26,26 @@ class PhraseCard extends StatelessWidget {
 
     return ConstrainedBox(
         constraints: BoxConstraints(minHeight: 64.0, maxHeight: 256.0),
-        child: Card(
-          elevation: 8,
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Text(
-                phrase.text,
-                overflow: TextOverflow.fade,
-                style: Theme.of(context)
-                    .primaryTextTheme
-                    .display1
-                    .merge(italics)
-                    .merge(shadow),
+        child: GestureDetector(
+          onTap: () => Navigator.of(context).pushNamed("/present",
+              arguments: PresentPhraseOptions(
+                text: phrase.text,
+                pauseAfterFinished: false,
+              )),
+          child: Card(
+            elevation: 8,
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  phrase.text,
+                  overflow: TextOverflow.fade,
+                  style: Theme.of(context)
+                      .primaryTextTheme
+                      .display1
+                      .merge(italics)
+                      .merge(shadow),
+                ),
               ),
             ),
           ),
