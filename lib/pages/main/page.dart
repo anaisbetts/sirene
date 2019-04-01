@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:rx_command/rx_command.dart';
 
 import 'package:sirene/components/paged-bottom-navbar.dart';
-import 'package:sirene/pages/main/phrase-list.dart';
+import 'package:sirene/model-lib/bindable-state.dart';
+import 'package:sirene/pages/main/phrase-list-pane.dart';
+import 'package:sirene/pages/main/speak-pane.dart';
 import 'package:sirene/services/logging.dart';
 import 'package:sirene/services/login.dart';
 import 'package:sirene/services/router.dart';
@@ -53,21 +56,22 @@ class MainPage extends StatefulWidget {
   _MainPageState createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage>
+class _MainPageState extends BindableState<MainPage>
     with UserEnabledPage<MainPage>, LoggerMixin {
   final PagedViewController controller = PagedViewController();
 
-  @override
-  void initState() {
-    super.initState();
+  RxCommand<dynamic, dynamic> speakPaneFab = RxCommand.createSync((_) => {});
+  bool speakFabCanExecute = false;
 
-    debug('Starting main page!');
-
-    userRequestError.listen((e) => {
-          Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text("aw jeez. $e"),
-          ))
-        });
+  _MainPageState() {
+    // NB: This code sucks so hard, how can we get rid of it
+    setupBinds([
+      () => fromValueListener(controller.fabButton)
+          .listen((x) => setState(() => speakPaneFab = x)),
+      () => fromValueListener(controller.fabButton)
+          .flatMap((x) => x.canExecute)
+          .listen((x) => setState(() => speakFabCanExecute = x))
+    ]);
   }
 
   @override
@@ -76,13 +80,11 @@ class _MainPageState extends State<MainPage>
       NavigationItem(
           icon: Icon(Icons.record_voice_over, size: 30),
           caption: "phrases",
-          contents: PhraseListPage()),
+          contents: PhraseListPane()),
       NavigationItem(
           icon: Icon(Icons.chat_bubble_outline, size: 30),
           caption: "speak",
-          contents: Center(
-            child: Text("yes."),
-          )),
+          contents: SpeakPane(controller: controller)),
     ];
 
     final appBarActions =
@@ -106,7 +108,12 @@ class _MainPageState extends State<MainPage>
         child: Icon(Icons.add),
         onPressed: () => {},
       ),
-      Container()
+      FloatingActionButton(
+          child: Icon(Icons.speaker),
+          backgroundColor:
+              speakFabCanExecute ? null : Theme.of(context).disabledColor,
+          onPressed:
+              this.speakFabCanExecute ? () => speakPaneFab.execute() : null),
     ]);
 
     return Scaffold(

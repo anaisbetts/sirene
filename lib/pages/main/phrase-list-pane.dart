@@ -45,12 +45,12 @@ class PhraseCard extends StatelessWidget {
   }
 }
 
-class PhraseListPage extends StatefulWidget {
+class PhraseListPane extends StatefulWidget {
   @override
-  _PhraseListPageState createState() => _PhraseListPageState();
+  _PhraseListPaneState createState() => _PhraseListPaneState();
 }
 
-class _PhraseListPageState extends State<PhraseListPage>
+class _PhraseListPaneState extends State<PhraseListPane>
     with UserEnabledPage, LoggerMixin {
   bool replyMode = false;
   List<Phrase> phrases = <Phrase>[];
@@ -64,9 +64,6 @@ class _PhraseListPageState extends State<PhraseListPage>
 
     // XXX: This code won't handle logouts properly :cry:
     lm.ensureUser().then((_) async {
-      //final docs = await sm.allPhrasesQuery().getDocuments();
-      //setState(() =>
-      //   phrases = docs.documents.map((x) => Phrase.fromDocument(x)).toList());
       sm.getPhrases().listen((xs) {
         debug("Phrase update! ${xs.length} items");
         setState(() => phrases = xs);

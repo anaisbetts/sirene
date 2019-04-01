@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:rx_command/rx_command.dart';
+import 'package:sirene/model-lib/bindable-state.dart';
 
 class NavigationItem extends StatelessWidget {
-  const NavigationItem(
-      {@required this.icon, @required this.caption, @required this.contents});
-
   final Widget icon;
   final String caption;
   final Widget contents;
+
+  const NavigationItem(
+      {@required this.icon, @required this.caption, @required this.contents});
 
   @override
   Widget build(BuildContext context) {
@@ -17,100 +19,82 @@ class NavigationItem extends StatelessWidget {
 class PagedViewController {
   final PageController pageController = PageController();
   final ValueNotifier<int> selectionChanged = ValueNotifier(0);
+
+  final ValueNotifier<RxCommand<dynamic, dynamic>> fabButton =
+      ValueNotifier(RxCommand.createSync((_) => {}));
 }
 
 class PagedViewBottomNavBar extends StatefulWidget {
-  PagedViewBottomNavBar({@required this.items, @required this.controller}) {
-    this.controller.selectionChanged.addListener(() {});
-  }
-
   final List<NavigationItem> items;
   final PagedViewController controller;
 
+  PagedViewBottomNavBar({@required this.items, @required this.controller});
+
   @override
-  _PagedViewBottomNavBarState createState() =>
-      _PagedViewBottomNavBarState(items: items, controller: controller);
+  _PagedViewBottomNavBarState createState() => _PagedViewBottomNavBarState();
 }
 
-class _PagedViewBottomNavBarState extends State<PagedViewBottomNavBar> {
-  _PagedViewBottomNavBarState(
-      {@required this.items, @required this.controller});
+class _PagedViewBottomNavBarState extends BindableState<PagedViewBottomNavBar> {
+  int selectedIndex = 0;
 
-  final List<NavigationItem> items;
-  final PagedViewController controller;
-
-  int selectedIndex;
-
-  @override
-  void initState() {
-    super.initState();
-
-    controller.selectionChanged.addListener(_pageChanged);
-    selectedIndex = controller.selectionChanged.value;
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    controller.selectionChanged.removeListener(_pageChanged);
-  }
-
-  _pageChanged() {
-    setState(() => selectedIndex = controller.selectionChanged.value);
+  _PagedViewBottomNavBarState() {
+    setupBinds([
+      () => fromValueListener(widget.controller.selectionChanged)
+          .listen((x) => setState(() => selectedIndex = x))
+    ]);
   }
 
   @override
   Widget build(BuildContext context) {
-    final buttons = items
-        .map((x) =>
-            BottomNavigationBarItem(title: Text(x.caption), icon: x.icon))
-        .toList();
+    final buttons = <BottomNavigationBarItem>[];
+
+    const inactiveOpacity = 0.5;
+    for (var i = 0; i < widget.items.length; i++) {
+      var cur = widget.items[i];
+
+      buttons.add(BottomNavigationBarItem(
+          title: Opacity(
+              opacity: i == selectedIndex ? 1.0 : inactiveOpacity,
+              child: Text(cur.caption)),
+          icon: Opacity(opacity: inactiveOpacity, child: cur.icon),
+          activeIcon: cur.icon));
+    }
 
     return BottomNavigationBar(
         currentIndex: selectedIndex,
         items: buttons,
-        onTap: (i) => controller.selectionChanged.value = i);
+        backgroundColor: Theme.of(context).primaryColor,
+        unselectedItemColor: Theme.of(context).colorScheme.onPrimary,
+        selectedItemColor: Theme.of(context).colorScheme.onPrimary,
+        onTap: (i) => widget.controller.selectionChanged.value = i);
   }
 }
 
 class PagedViewBody extends StatefulWidget {
+  final List<NavigationItem> items;
+  final PagedViewController controller;
+
   PagedViewBody({@required this.items, @required this.controller, Key key})
       : super(key: key);
 
-  final List<NavigationItem> items;
-  final PagedViewController controller;
-
   @override
-  _PagedViewBodyState createState() =>
-      _PagedViewBodyState(items: items, controller: controller);
+  _PagedViewBodyState createState() => _PagedViewBodyState();
 }
 
-class _PagedViewBodyState extends State<PagedViewBody> {
-  _PagedViewBodyState({@required this.items, @required this.controller});
-
-  final List<NavigationItem> items;
-  final PagedViewController controller;
-
-  @override
-  void initState() {
-    super.initState();
-
-    controller.selectionChanged.addListener(_pageChanged);
+class _PagedViewBodyState extends BindableState<PagedViewBody> {
+  _PagedViewBodyState() {
+    setupBinds([
+      () => fromValueListener(widget.controller.selectionChanged)
+          .listen(_pageChanged),
+    ]);
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    controller.selectionChanged.removeListener(_pageChanged);
-  }
-
-  _pageChanged() {
-    if (controller.pageController.page.floor() ==
-        controller.selectionChanged.value) {
+  _pageChanged(int page) {
+    if (widget.controller.pageController.page?.floor() == page) {
       return;
     }
 
-    controller.pageController.animateToPage(controller.selectionChanged.value,
+    widget.controller.pageController.animateToPage(page,
         curve: Curves.easeInOutCubic, duration: Duration(milliseconds: 250));
   }
 
@@ -121,57 +105,41 @@ class _PagedViewBodyState extends State<PagedViewBody> {
       child: Padding(
           padding: EdgeInsets.all(8),
           child: PageView.builder(
-            controller: controller.pageController,
+            controller: widget.controller.pageController,
             physics: AlwaysScrollableScrollPhysics(),
-            itemCount: items.length,
+            itemCount: widget.items.length,
             onPageChanged: (i) =>
-                setState(() => controller.selectionChanged.value = i),
-            itemBuilder: (ctx, i) => items[i].contents,
+                setState(() => widget.controller.selectionChanged.value = i),
+            itemBuilder: (ctx, i) => widget.items[i].contents,
           )),
     );
   }
 }
 
 class PagedViewSelector extends StatefulWidget {
+  final List<Widget> children;
+  final PagedViewController controller;
+
   PagedViewSelector(
       {@required this.children, @required this.controller, Key key})
       : super(key: key);
 
-  final List<Widget> children;
-  final PagedViewController controller;
-
   @override
-  _PagedViewSelectorState createState() => _PagedViewSelectorState(
-      children: this.children, controller: this.controller);
+  _PagedViewSelectorState createState() => _PagedViewSelectorState();
 }
 
-class _PagedViewSelectorState extends State<PagedViewSelector> {
-  _PagedViewSelectorState({@required this.children, @required this.controller});
+class _PagedViewSelectorState extends BindableState<PagedViewSelector> {
+  int selectedIndex = 0;
 
-  final List<Widget> children;
-  final PagedViewController controller;
-
-  int selectedIndex;
-
-  @override
-  void initState() {
-    super.initState();
-
-    controller.selectionChanged.addListener(_pageChanged);
-    selectedIndex = controller.selectionChanged.value;
+  _PagedViewSelectorState() {
+    setupBinds([
+      () => fromValueListener(widget.controller.selectionChanged)
+          .listen((x) => setState(() => selectedIndex = x)),
+    ]);
   }
-
-  @override
-  void dispose() {
-    super.dispose();
-    controller.selectionChanged.removeListener(_pageChanged);
-  }
-
-  void _pageChanged() =>
-      setState(() => selectedIndex = controller.selectionChanged.value);
 
   @override
   Widget build(BuildContext context) {
-    return children[selectedIndex];
+    return widget.children[selectedIndex];
   }
 }
