@@ -64,18 +64,15 @@ abstract class BindableState<T extends StatefulWidget> extends State<T> {
 }
 
 Observable<T> fromValueListener<T>(ValueListenable<T> listener) {
-  return Observable.defer(() {
-    // ignore: close_sinks
-    Subject<T> subj = PublishSubject(sync: true);
+  // ignore: close_sinks
+  Subject<T> subj = BehaviorSubject(seedValue: listener.value, sync: true);
 
-    final next = () {
-      subj.add(listener.value);
-    };
+  final next = () {
+    subj.add(listener.value);
+  };
 
-    listener.addListener(next);
+  subj.onCancel = () => listener.removeListener(next);
+  listener.addListener(next);
 
-    return subj
-        .startWith(listener.value)
-        .doOnCancel(() => listener.removeListener(next));
-  }, reusable: true);
+  return subj;
 }
