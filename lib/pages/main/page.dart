@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:rx_command/rx_command.dart';
 
 import 'package:sirene/components/paged-bottom-navbar.dart';
+import 'package:sirene/model-lib/bindable-state.dart';
 import 'package:sirene/pages/main/phrase-list-pane.dart';
 import 'package:sirene/pages/main/speak-pane.dart';
 import 'package:sirene/services/logging.dart';
@@ -54,19 +56,21 @@ class MainPage extends StatefulWidget {
   _MainPageState createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage>
+class _MainPageState extends BindableState<MainPage>
     with UserEnabledPage<MainPage>, LoggerMixin {
   final PagedViewController controller = PagedViewController();
 
-  @override
-  void initState() {
-    super.initState();
+  RxCommand<dynamic, dynamic> speakPaneFab = RxCommand.createSync((_) => {});
+  bool speakFabCanExecute = false;
 
-    userRequestError.listen((e) => {
-          Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text("aw jeez. $e"),
-          ))
-        });
+  _MainPageState() {
+    setupBinds([
+      () => fromValueListener(controller.fabButton)
+          .listen((x) => setState(() => speakPaneFab = x)),
+      () => fromValueListener(controller.fabButton)
+          .flatMap((x) => x.canExecute)
+          .listen((x) => setState(() => speakFabCanExecute = x))
+    ]);
   }
 
   @override
@@ -79,7 +83,7 @@ class _MainPageState extends State<MainPage>
       NavigationItem(
           icon: Icon(Icons.chat_bubble_outline, size: 30),
           caption: "speak",
-          contents: SpeakPane()),
+          contents: SpeakPane(controller: controller)),
     ];
 
     final appBarActions =
@@ -104,9 +108,11 @@ class _MainPageState extends State<MainPage>
         onPressed: () => {},
       ),
       FloatingActionButton(
-        child: Icon(Icons.speaker),
-        onPressed: () => {},
-      ),
+          child: Icon(Icons.speaker),
+          backgroundColor:
+              speakFabCanExecute ? null : Theme.of(context).disabledColor,
+          onPressed:
+              this.speakFabCanExecute ? () => speakPaneFab.execute() : null),
     ]);
 
     return Scaffold(

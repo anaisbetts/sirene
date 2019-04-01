@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rx_command/rx_command.dart';
 import 'package:sirene/model-lib/bindable-state.dart';
 
 class NavigationItem extends StatelessWidget {
@@ -18,6 +19,9 @@ class NavigationItem extends StatelessWidget {
 class PagedViewController {
   final PageController pageController = PageController();
   final ValueNotifier<int> selectionChanged = ValueNotifier(0);
+
+  final ValueNotifier<RxCommand<dynamic, dynamic>> fabButton =
+      ValueNotifier(RxCommand.createSync((_) => {}));
 }
 
 class PagedViewBottomNavBar extends StatefulWidget {

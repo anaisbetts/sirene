@@ -64,9 +64,6 @@ class _PhraseListPaneState extends State<PhraseListPane>
 
     // XXX: This code won't handle logouts properly :cry:
     lm.ensureUser().then((_) async {
-      //final docs = await sm.allPhrasesQuery().getDocuments();
-      //setState(() =>
-      //   phrases = docs.documents.map((x) => Phrase.fromDocument(x)).toList());
       sm.getPhrases().listen((xs) {
         debug("Phrase update! ${xs.length} items");
         setState(() => phrases = xs);
