@@ -90,7 +90,13 @@ class _PagedViewBodyState extends BindableState<PagedViewBody> {
   }
 
   _pageChanged(int page) {
-    if (widget.controller.pageController.page?.floor() == page) {
+    // NB: Somehow on startup this is null. How the hell that can happen,
+    // I don't know.
+    if (widget.controller.pageController.page == null) {
+      return;
+    }
+
+    if (widget.controller.pageController.page.floor() == page) {
       return;
     }
 
