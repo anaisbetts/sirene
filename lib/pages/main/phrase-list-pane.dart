@@ -10,9 +10,25 @@ import 'package:sirene/services/login.dart';
 
 final TextStyle italics = TextStyle(fontStyle: FontStyle.italic);
 
-class PhraseCard extends StatelessWidget {
+class PhraseCard extends StatelessWidget with LoggerMixin {
   PhraseCard({this.phrase});
   final Phrase phrase;
+
+  presentPhrase(BuildContext ctx) {
+    logAsyncException(
+        () =>
+            App.analytics.logEvent(name: "saved_phrase_presented", parameters: {
+              "length": phrase.text.length,
+              "pauseAfterFinished": false,
+            }),
+        rethrowIt: false);
+
+    Navigator.of(ctx).pushNamed("/present",
+        arguments: PresentPhraseOptions(
+          text: phrase.text,
+          pauseAfterFinished: false,
+        ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +43,7 @@ class PhraseCard extends StatelessWidget {
     return ConstrainedBox(
         constraints: BoxConstraints(minHeight: 64.0, maxHeight: 256.0),
         child: GestureDetector(
-          onTap: () => Navigator.of(context).pushNamed("/present",
-              arguments: PresentPhraseOptions(
-                text: phrase.text,
-                pauseAfterFinished: false,
-              )),
+          onTap: () => presentPhrase(context),
           child: Card(
             elevation: 8,
             child: Center(

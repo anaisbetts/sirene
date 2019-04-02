@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:sirene/app.dart';
+import 'package:sirene/interfaces.dart';
 
 import 'package:sirene/services/logging.dart';
 import 'package:sirene/services/router.dart';
@@ -65,9 +67,17 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
       return;
     }
 
+    // NB: If writing the custom phrase fails, we don't care, we're just
+    // letting it go
+    final sm = App.locator.get<StorageManager>();
+    logAsyncException(() => sm.saveCustomPhrase(settings.text),
+        rethrowIt: false, message: "Failed to fetch custom phrase");
+
     isPlaying = true;
-    await tts.speak(settings.text);
-    await ttsCompletion.take(1).last;
+    await logAsyncException(() async {
+      await tts.speak(settings.text);
+      await ttsCompletion.take(1).last;
+    }, rethrowIt: false, message: "Failed to utter text");
     isPlaying = false;
 
     if (isCancelled) {

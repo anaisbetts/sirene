@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:rx_command/rx_command.dart';
+import 'package:sirene/app.dart';
 
 import 'package:sirene/components/paged-bottom-navbar.dart';
+import 'package:sirene/interfaces.dart';
 import 'package:sirene/model-lib/bindable-state.dart';
 import 'package:sirene/pages/present-phrase/page.dart';
 import 'package:sirene/services/logging.dart';
@@ -27,11 +29,29 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
     final textHasContent =
         fromValueListener(toSpeak).map((x) => x.text.length > 0);
 
-    widget.controller.fabButton.value = RxCommand.createSync(
-        (_) => Navigator.of(context).pushNamed("/present",
-            arguments: PresentPhraseOptions(
-                text: toSpeak.text, pauseAfterFinished: pauseAfterFinished)),
-        canExecute: textHasContent);
+    widget.controller.fabButton.value = RxCommand.createSync((_) {
+      logAsyncException(
+          () => App.analytics
+                  .logEvent(name: "custom_phrase_presented", parameters: {
+                "length": toSpeak.text.length,
+                "pauseAfterFinished": pauseAfterFinished,
+              }),
+          rethrowIt: false);
+
+      Navigator.of(context).pushNamed("/present",
+          arguments: PresentPhraseOptions(
+              text: toSpeak.text, pauseAfterFinished: pauseAfterFinished));
+    }, canExecute: textHasContent);
+
+    final sm = App.locator.get<StorageManager>();
+    logAsyncException(
+        () => sm.getCustomPhrase().then((s) => setState(() {
+              if (s != null && toSpeak.text.isEmpty) {
+                toSpeak.text = s;
+              }
+            })),
+        rethrowIt: false,
+        message: "Failed to get saved custom phrase");
   }
 
   @override
