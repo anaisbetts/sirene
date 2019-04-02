@@ -35,6 +35,9 @@ abstract class _$UserJsonSerializer implements Serializer<User> {
     Map<String, dynamic> ret = <String, dynamic>{};
     setMapValue(ret, 'email', model.email);
     setMapValue(ret, 'isAnonymous', model.isAnonymous);
+    setMapValue(ret, 'lastCustomPhrase', model.lastCustomPhrase);
+    setMapValue(ret, 'lastCustomPhraseCreatedOn',
+        dateTimeUtcProcessor.serialize(model.lastCustomPhraseCreatedOn));
     return ret;
   }
 
@@ -44,6 +47,9 @@ abstract class _$UserJsonSerializer implements Serializer<User> {
     final obj = new User();
     obj.email = map['email'] as String;
     obj.isAnonymous = map['isAnonymous'] as bool;
+    obj.lastCustomPhrase = map['lastCustomPhrase'] as String;
+    obj.lastCustomPhraseCreatedOn = dateTimeUtcProcessor
+        .deserialize(map['lastCustomPhraseCreatedOn'] as String);
     return obj;
   }
 }

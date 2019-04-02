@@ -32,4 +32,35 @@ class FirebaseStorageManager implements StorageManager {
         .document(user.uid)
         .collection('phrases');
   }
+
+  @override
+  getCustomPhrase({UserInfo forUser}) async {
+    final userInfo = forUser ?? App.locator.get<LoginManager>().currentUser;
+
+    final user = User.fromDocument(await Firestore.instance
+        .collection('users')
+        .document(userInfo.uid)
+        .get());
+
+    if (user.lastCustomPhrase == null ||
+        StorageManager.isCustomPhraseExpired(user.lastCustomPhraseCreatedOn)) {
+      return null;
+    }
+
+    return user.lastCustomPhrase;
+  }
+
+  @override
+  saveCustomPhrase(String phrase, {UserInfo forUser}) async {
+    final userInfo = forUser ?? App.locator.get<LoginManager>().currentUser;
+
+    final userRef =
+        Firestore.instance.collection('users').document(userInfo.uid);
+    final user = User.fromDocument(await userRef.get());
+
+    user.lastCustomPhrase = phrase;
+    user.lastCustomPhraseCreatedOn = DateTime.now();
+
+    await user.toDocument(userRef);
+  }
 }
