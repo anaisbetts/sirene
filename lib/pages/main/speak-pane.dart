@@ -20,6 +20,8 @@ class SpeakPane extends StatefulWidget {
 
 class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
   TextEditingController toSpeak = TextEditingController(text: "");
+  FocusNode textBoxFocus = FocusNode();
+
   bool pauseAfterFinished = false;
 
   @override
@@ -38,6 +40,12 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
               }),
           rethrowIt: false);
 
+      // NB: If writing the custom phrase fails, we don't care, we're just
+      // letting it go
+      final sm = App.locator.get<StorageManager>();
+      logAsyncException(() => sm.saveCustomPhrase(toSpeak.text),
+          rethrowIt: false, message: "Failed to fetch custom phrase");
+
       Navigator.of(context).pushNamed("/present",
           arguments: PresentPhraseOptions(
               text: toSpeak.text, pauseAfterFinished: pauseAfterFinished));
@@ -48,10 +56,15 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
         () => sm.getCustomPhrase().then((s) => setState(() {
               if (s != null && toSpeak.text.isEmpty) {
                 toSpeak.text = s;
+                toSpeak.selection =
+                    TextSelection(baseOffset: 0, extentOffset: s.length);
               }
             })),
         rethrowIt: false,
         message: "Failed to get saved custom phrase");
+
+    Future.delayed(Duration(milliseconds: 5))
+        .then((_) => FocusScope.of(context).requestFocus(textBoxFocus));
   }
 
   @override
@@ -71,6 +84,7 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
           Expanded(
               child: TextField(
             controller: toSpeak,
+            focusNode: textBoxFocus,
           )),
           Flex(
               direction: Axis.horizontal,
@@ -82,6 +96,8 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
                 ),
                 Text(
                   "Pause after phrase is complete",
+                  maxLines: 10,
+                  softWrap: true,
                   style: Theme.of(context).primaryTextTheme.body1,
                 )
               ])
