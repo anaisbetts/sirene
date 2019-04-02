@@ -67,12 +67,6 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
       return;
     }
 
-    // NB: If writing the custom phrase fails, we don't care, we're just
-    // letting it go
-    final sm = App.locator.get<StorageManager>();
-    logAsyncException(() => sm.saveCustomPhrase(settings.text),
-        rethrowIt: false, message: "Failed to fetch custom phrase");
-
     isPlaying = true;
     await logAsyncException(() async {
       await tts.speak(settings.text);
