@@ -34,8 +34,8 @@ class PresentPhrasePage extends StatefulWidget {
 
 class _PresentPhrasePageState extends State<PresentPhrasePage>
     with LoggerMixin {
-  final tts = FlutterTts();
-  final ttsCompletion = PublishSubject();
+  FlutterTts tts;
+  PublishSubject<Null> ttsCompletion;
 
   bool isCancelled = false;
   bool isPlaying = false;
@@ -44,6 +44,8 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
   void initState() {
     super.initState();
 
+    tts = FlutterTts();
+    ttsCompletion = PublishSubject();
     tts.completionHandler = () => ttsCompletion.add(null);
     tts.errorHandler = (e) => ttsCompletion.addError(e);
 
