@@ -4,14 +4,31 @@ import 'package:flutter/material.dart';
 
 import 'package:sirene/app.dart';
 import 'package:sirene/interfaces.dart';
+import 'package:sirene/pages/present-phrase/page.dart';
 import 'package:sirene/services/logging.dart';
 import 'package:sirene/services/login.dart';
 
 final TextStyle italics = TextStyle(fontStyle: FontStyle.italic);
 
-class PhraseCard extends StatelessWidget {
+class PhraseCard extends StatelessWidget with LoggerMixin {
   PhraseCard({this.phrase});
   final Phrase phrase;
+
+  presentPhrase(BuildContext ctx) {
+    logAsyncException(
+        () =>
+            App.analytics.logEvent(name: "saved_phrase_presented", parameters: {
+              "length": phrase.text.length,
+              "pauseAfterFinished": false,
+            }),
+        rethrowIt: false);
+
+    Navigator.of(ctx).pushNamed("/present",
+        arguments: PresentPhraseOptions(
+          text: phrase.text,
+          pauseAfterFinished: false,
+        ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,19 +42,22 @@ class PhraseCard extends StatelessWidget {
 
     return ConstrainedBox(
         constraints: BoxConstraints(minHeight: 64.0, maxHeight: 256.0),
-        child: Card(
-          elevation: 8,
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Text(
-                phrase.text,
-                overflow: TextOverflow.fade,
-                style: Theme.of(context)
-                    .primaryTextTheme
-                    .display1
-                    .merge(italics)
-                    .merge(shadow),
+        child: GestureDetector(
+          onTap: () => presentPhrase(context),
+          child: Card(
+            elevation: 8,
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  phrase.text,
+                  overflow: TextOverflow.fade,
+                  style: Theme.of(context)
+                      .primaryTextTheme
+                      .display1
+                      .merge(italics)
+                      .merge(shadow),
+                ),
               ),
             ),
           ),
@@ -73,6 +93,15 @@ class _PhraseListPaneState extends State<PhraseListPane>
 
   @override
   Widget build(BuildContext context) {
+    if (phrases.length == 0) {
+      return Center(
+        child: RaisedButton(
+          child: Text("Login"),
+          onPressed: () => App.locator.get<LoginManager>().ensureNamedUser(),
+        ),
+      );
+    }
+
     final list = ListView.separated(
       padding: EdgeInsets.all(16),
       itemCount: phrases.length,

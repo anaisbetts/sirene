@@ -19,6 +19,14 @@ abstract class LoginManager {
 abstract class StorageManager {
   Query allPhrasesQuery({UserInfo forUser});
   Stream<List<Phrase>> getPhrases({Query query});
+
+  Future<void> saveCustomPhrase(String phrase, {UserInfo forUser});
+  Future<String> getCustomPhrase({UserInfo forUser});
+
+  static isCustomPhraseExpired(DateTime forDate) {
+    final expiration = forDate.add(Duration(hours: 1));
+    return expiration.isBefore(DateTime.now());
+  }
 }
 
 class User {
@@ -26,6 +34,9 @@ class User {
 
   String email;
   bool isAnonymous;
+
+  String lastCustomPhrase;
+  DateTime lastCustomPhraseCreatedOn;
 
   static User fromDocument(DocumentSnapshot ds) {
     return userSerializer.fromDocument(ds);

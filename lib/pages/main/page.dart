@@ -99,7 +99,7 @@ class _MainPageState extends BindableState<MainPage>
         "Phrases",
         style: Theme.of(context).primaryTextTheme.title,
       ),
-      Text("Text")
+      Text("Speak text")
     ]);
 
     final floatingActionButtons =
