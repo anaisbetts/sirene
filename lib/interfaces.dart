@@ -20,12 +20,12 @@ abstract class StorageManager {
   Query allPhrasesQuery({UserInfo forUser});
   Stream<List<Phrase>> getPhrases({Query query});
 
-  saveCustomPhrase(String phrase, {UserInfo forUser});
-  getCustomPhrase({UserInfo forUser});
+  Future<void> saveCustomPhrase(String phrase, {UserInfo forUser});
+  Future<String> getCustomPhrase({UserInfo forUser});
 
   static isCustomPhraseExpired(DateTime forDate) {
     final expiration = forDate.add(Duration(hours: 1));
-    return expiration.isAfter(DateTime.now());
+    return expiration.isBefore(DateTime.now());
   }
 }
 
