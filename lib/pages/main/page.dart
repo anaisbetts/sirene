@@ -96,7 +96,7 @@ class _MainPageState extends BindableState<MainPage>
     final appBarTitles =
         PagedViewSelector(controller: controller, children: <Widget>[
       Text(
-        "Phrases",
+        "Saved Phrases",
         style: Theme.of(context).primaryTextTheme.title,
       ),
       Text("Speak text")
