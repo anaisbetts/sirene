@@ -48,7 +48,8 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
 
       Navigator.of(context).pushNamed("/present",
           arguments: PresentPhraseOptions(
-              text: toSpeak.text, pauseAfterFinished: pauseAfterFinished));
+              phrase: Phrase(text: toSpeak.text, isReply: false),
+              pauseAfterFinished: pauseAfterFinished));
     }, canExecute: textHasContent);
 
     final sm = App.locator.get<StorageManager>();

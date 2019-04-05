@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:sirene/app.dart';
-import 'package:sirene/interfaces.dart';
 
+import 'package:sirene/interfaces.dart';
 import 'package:sirene/services/logging.dart';
 import 'package:sirene/services/router.dart';
 
 class PresentPhraseOptions {
-  final String text;
+  final Phrase phrase;
   final bool pauseAfterFinished;
 
-  PresentPhraseOptions({this.text, this.pauseAfterFinished});
+  PresentPhraseOptions({this.phrase, this.pauseAfterFinished});
 }
 
 class PresentPhrasePage extends StatefulWidget {
@@ -69,7 +68,7 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
 
     isPlaying = true;
     await logAsyncException(() async {
-      await tts.speak(settings.text);
+      await tts.speak(settings.phrase.spokenText ?? settings.phrase.text);
       await ttsCompletion.take(1).last;
     }, rethrowIt: false, message: "Failed to utter text");
     isPlaying = false;
@@ -120,7 +119,7 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      settings.text,
+                      settings.phrase.text,
                       overflow: TextOverflow.fade,
                       style: Theme.of(context)
                           .primaryTextTheme

@@ -25,7 +25,7 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
 
     Navigator.of(ctx).pushNamed("/present",
         arguments: PresentPhraseOptions(
-          text: phrase.text,
+          phrase: phrase,
           pauseAfterFinished: false,
         ));
   }
