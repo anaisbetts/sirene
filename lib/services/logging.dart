@@ -1,3 +1,4 @@
+import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:catcher/catcher_plugin.dart';
@@ -173,6 +174,14 @@ mixin LoggerMixin {
       _ensureLogger().logError(e, st, message: message);
       if (rethrowIt) rethrow;
     }
+  }
+
+  traceAsync<TRet>(String name, Future<TRet> block) async {
+    final trace = await FirebasePerformance.startTrace(name);
+    final ret = await block;
+    trace.stop();
+
+    return ret;
   }
 }
 
