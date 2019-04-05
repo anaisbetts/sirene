@@ -1,10 +1,9 @@
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 
-import 'package:catcher/core/catcher.dart';
-import 'package:catcher/catcher_plugin.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_performance/firebase_performance.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sentry/sentry.dart';
 
@@ -20,8 +19,12 @@ import 'package:sirene/services/theming.dart';
 
 class App extends State<AppWidget> {
   static GetIt locator;
+  static Map<String, Trace> traces = Map();
 
   App() {
+    traces['app_startup'] =
+        FirebasePerformance.instance.newTrace('app_startup');
+    traces['app_startup'].start();
     locator = App.setupRegistration(GetIt());
   }
 

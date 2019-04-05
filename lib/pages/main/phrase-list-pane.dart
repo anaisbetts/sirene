@@ -39,11 +39,10 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
 
   presentPhrase(BuildContext ctx) {
     logAsyncException(
-        () =>
-            App.analytics.logEvent(name: "saved_phrase_presented", parameters: {
-              "length": phrase.text.length,
-              "pauseAfterFinished": false,
-            }),
+        App.analytics.logEvent(name: "saved_phrase_presented", parameters: {
+          "length": phrase.text.length,
+          "pauseAfterFinished": false,
+        }),
         rethrowIt: false);
 
     Navigator.of(ctx).pushNamed("/present",
@@ -76,10 +75,10 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
     if (shouldDelete != true) return false;
 
     logAsyncException(
-        () => App.analytics.logEvent(name: "phrase_deleted", parameters: {
-              "length": phrase.text.length,
-              "isReply": phrase.isReply,
-            }),
+        App.analytics.logEvent(name: "phrase_deleted", parameters: {
+          "length": phrase.text.length,
+          "isReply": phrase.isReply,
+        }),
         rethrowIt: false);
 
     App.locator.get<StorageManager>().deletePhrase(phrase);
@@ -130,6 +129,7 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
     return Dismissible(
         key: Key(phrase.id),
         confirmDismiss: (_) => tryDeletePhrase(context),
+        direction: DismissDirection.startToEnd,
         child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: 64.0, maxHeight: 256.0),
             child: GestureDetector(
@@ -157,6 +157,7 @@ class _PhraseListPaneState extends BindableState<PhraseListPane>
     with UserEnabledPage, LoggerMixin {
   List<Phrase> phrases = <Phrase>[];
   final ScrollController scrollController = ScrollController();
+  bool hasLoggedPhraseCount = false;
 
   _PhraseListPaneState() {
     setupBinds([
@@ -177,6 +178,22 @@ class _PhraseListPaneState extends BindableState<PhraseListPane>
     lm.ensureUser().then((_) async {
       sm.getPhrases().listen((xs) {
         debug("Phrase update! ${xs.length} items");
+
+        if (App.traces.containsKey('app_startup')) {
+          App.traces['app_startup'].stop();
+          App.traces.remove('app_startup');
+        }
+
+        if (!hasLoggedPhraseCount && xs.length > 0) {
+          logAsyncException(
+              App.analytics.logEvent(
+                  name: "saved_phrase_list_size",
+                  parameters: {"length": xs.length}),
+              rethrowIt: false);
+
+          hasLoggedPhraseCount = true;
+        }
+
         setState(() => phrases = xs);
       });
     });
