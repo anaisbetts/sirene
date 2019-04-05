@@ -99,12 +99,15 @@ class _MainPageState extends BindableState<MainPage>
           icon: Icon(Icons.record_voice_over, size: 30),
           caption: "phrases",
           contents: PhraseListPane(
-            replyMode: currentReplyMode,
+            replyMode: replyMode,
           )),
       NavigationItem(
           icon: Icon(Icons.chat_bubble_outline, size: 30),
           caption: "speak",
-          contents: SpeakPane(controller: controller)),
+          contents: SpeakPane(
+            controller: controller,
+            replyMode: replyMode,
+          )),
     ];
 
     final appBarActions =

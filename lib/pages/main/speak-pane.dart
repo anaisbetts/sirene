@@ -11,8 +11,9 @@ import 'package:sirene/services/logging.dart';
 
 class SpeakPane extends StatefulWidget {
   final PagedViewController controller;
+  final ValueNotifier<bool> replyMode;
 
-  SpeakPane({this.controller});
+  SpeakPane({@required this.controller, @required this.replyMode});
 
   @override
   _SpeakPaneState createState() => _SpeakPaneState();
@@ -39,6 +40,8 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
                 "pauseAfterFinished": pauseAfterFinished,
               }),
           rethrowIt: false);
+
+      widget.replyMode.value = true;
 
       Navigator.of(context).pushNamed("/present",
           arguments: PresentPhraseOptions(

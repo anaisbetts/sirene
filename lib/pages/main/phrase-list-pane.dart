@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import 'package:sirene/app.dart';
 import 'package:sirene/interfaces.dart';
+import 'package:sirene/model-lib/bindable-state.dart';
 import 'package:sirene/pages/present-phrase/page.dart';
 import 'package:sirene/services/logging.dart';
 import 'package:sirene/services/login.dart';
@@ -32,7 +33,7 @@ class _ReplyHighlightBox extends StatelessWidget {
 // ignore: must_be_immutable
 class PhraseCard extends StatelessWidget with LoggerMixin {
   final Phrase phrase;
-  final bool replyMode;
+  final ValueNotifier<bool> replyMode;
 
   PhraseCard({@required this.phrase, @required this.replyMode});
 
@@ -50,6 +51,8 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
           phrase: phrase,
           pauseAfterFinished: false,
         ));
+
+    replyMode.value = true;
   }
 
   Future<bool> tryDeletePhrase(BuildContext context) async {
@@ -124,8 +127,6 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
           )
         ]);
 
-    if (replyMode && phrase.isReply) {}
-
     return Dismissible(
         key: Key(phrase.id),
         confirmDismiss: (_) => tryDeletePhrase(context),
@@ -134,7 +135,7 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
             child: GestureDetector(
                 onTap: () => presentPhrase(context),
                 child: _ReplyHighlightBox(
-                  shouldHighlight: replyMode && phrase.isReply,
+                  shouldHighlight: replyMode.value && phrase.isReply,
                   child: Card(
                     elevation: 8,
                     child: cardContents,
@@ -144,7 +145,7 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
 }
 
 class PhraseListPane extends StatefulWidget {
-  final bool replyMode;
+  final ValueNotifier<bool> replyMode;
 
   PhraseListPane({@required this.replyMode});
 
@@ -152,9 +153,18 @@ class PhraseListPane extends StatefulWidget {
   _PhraseListPaneState createState() => _PhraseListPaneState();
 }
 
-class _PhraseListPaneState extends State<PhraseListPane>
+class _PhraseListPaneState extends BindableState<PhraseListPane>
     with UserEnabledPage, LoggerMixin {
   List<Phrase> phrases = <Phrase>[];
+  final ScrollController scrollController = ScrollController();
+
+  _PhraseListPaneState() {
+    setupBinds([
+      () => fromValueListener(widget.replyMode)
+          .skip(1)
+          .listen((_) => scrollController.jumpTo(0.0))
+    ]);
+  }
 
   @override
   void initState() {
@@ -186,9 +196,10 @@ class _PhraseListPaneState extends State<PhraseListPane>
       );
     }
 
-    final sortedPhrases = Phrase.recencySort(phrases, widget.replyMode);
+    final sortedPhrases = Phrase.recencySort(phrases, widget.replyMode.value);
 
     final list = ListView.separated(
+      controller: scrollController,
       padding: EdgeInsets.all(16),
       itemCount: phrases.length,
       separatorBuilder: (ctx, i) => Padding(
