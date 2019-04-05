@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:rx_command/rx_command.dart';
-import 'package:sirene/app.dart';
 
+import 'package:rx_command/rx_command.dart';
+
+import 'package:sirene/app.dart';
 import 'package:sirene/components/paged-bottom-navbar.dart';
 import 'package:sirene/interfaces.dart';
 import 'package:sirene/model-lib/bindable-state.dart';
@@ -120,10 +120,12 @@ class _MainPageState extends BindableState<MainPage>
           if (newPhrase == null) return;
           final sm = App.locator.get<StorageManager>();
 
-          App.analytics.logEvent(name: "add_new_phrase", parameters: {
-            "length": newPhrase.text.length,
-            "isReply": newPhrase.isReply,
-          });
+          logAsyncException(
+              () => App.analytics.logEvent(name: "add_new_phrase", parameters: {
+                    "length": newPhrase.text.length,
+                    "isReply": newPhrase.isReply,
+                  }),
+              rethrowIt: false);
 
           await sm.addSavedPhrase(newPhrase);
         },

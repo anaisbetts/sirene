@@ -49,6 +49,14 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
             ));
 
     if (shouldDelete != true) return false;
+
+    logAsyncException(
+        () => App.analytics.logEvent(name: "phrase_deleted", parameters: {
+              "length": phrase.text.length,
+              "isReply": phrase.isReply,
+            }),
+        rethrowIt: false);
+
     App.locator.get<StorageManager>().deletePhrase(phrase);
 
     return true;
