@@ -11,8 +11,9 @@ import 'package:sirene/services/logging.dart';
 
 class SpeakPane extends StatefulWidget {
   final PagedViewController controller;
+  final ValueNotifier<bool> replyMode;
 
-  SpeakPane({this.controller});
+  SpeakPane({@required this.controller, @required this.replyMode});
 
   @override
   _SpeakPaneState createState() => _SpeakPaneState();
@@ -40,15 +41,12 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
               }),
           rethrowIt: false);
 
-      // NB: If writing the custom phrase fails, we don't care, we're just
-      // letting it go
-      final sm = App.locator.get<StorageManager>();
-      logAsyncException(() => sm.saveCustomPhrase(toSpeak.text),
-          rethrowIt: false, message: "Failed to fetch custom phrase");
+      widget.replyMode.value = true;
 
       Navigator.of(context).pushNamed("/present",
           arguments: PresentPhraseOptions(
-              text: toSpeak.text, pauseAfterFinished: pauseAfterFinished));
+              phrase: Phrase(text: toSpeak.text, isReply: false),
+              pauseAfterFinished: pauseAfterFinished));
     }, canExecute: textHasContent);
 
     final sm = App.locator.get<StorageManager>();

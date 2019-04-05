@@ -37,6 +37,10 @@ class FirebaseStorageManager implements StorageManager {
   getCustomPhrase({UserInfo forUser}) async {
     final userInfo = forUser ?? App.locator.get<LoginManager>().currentUser;
 
+    if (userInfo == null) {
+      return null;
+    }
+
     final user = User.fromDocument(await Firestore.instance
         .collection('users')
         .document(userInfo.uid)
@@ -64,7 +68,8 @@ class FirebaseStorageManager implements StorageManager {
     await user.toDocument(userRef);
   }
 
-  Future<void> addSavedPhrase(Phrase phrase, {UserInfo forUser}) async {
+  Future<void> upsertSavedPhrase(Phrase phrase,
+      {UserInfo forUser, bool addOnly = false}) async {
     final userInfo = forUser ?? App.locator.get<LoginManager>().currentUser;
     final phrasesList = Firestore.instance
         .collection('users')
@@ -77,7 +82,13 @@ class FirebaseStorageManager implements StorageManager {
         .getDocuments();
 
     if (match.documents.length > 0) {
-      await phrase.toDocument(match.documents[0].reference);
+      // NB: We add an addOnly feature here because otherwise,
+      // accidentally adding an already-added phrase would clear
+      // the recency information
+      if (!addOnly) {
+        await phrase.toDocument(match.documents[0].reference);
+      }
+
       return;
     } else {
       await phrase.addToCollection(phrasesList);
@@ -99,5 +110,22 @@ class FirebaseStorageManager implements StorageManager {
         .document(phrase.id);
 
     return phraseRef.delete();
+  }
+
+  Future<void> presentPhrase(Phrase phrase, {UserInfo forUser}) {
+    if (phrase.id == null) {
+      return saveCustomPhrase(phrase.text, forUser: forUser);
+    }
+
+    phrase.usageCount ??= 0;
+    phrase.usageCount++;
+    phrase.recentUsages ??= [];
+
+    phrase.recentUsages.add(DateTime.now());
+    while (phrase.recentUsages.length > kMaxRecentUsagesCount) {
+      phrase.recentUsages.removeAt(0);
+    }
+
+    return upsertSavedPhrase(phrase, forUser: forUser);
   }
 }

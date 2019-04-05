@@ -5,14 +5,37 @@ import 'package:flutter/services.dart';
 
 import 'package:sirene/app.dart';
 import 'package:sirene/interfaces.dart';
+import 'package:sirene/model-lib/bindable-state.dart';
 import 'package:sirene/pages/present-phrase/page.dart';
 import 'package:sirene/services/logging.dart';
 import 'package:sirene/services/login.dart';
 
+class _ReplyHighlightBox extends StatelessWidget {
+  final bool shouldHighlight;
+  final Widget child;
+
+  _ReplyHighlightBox({this.shouldHighlight, this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    if (!shouldHighlight) return child;
+    return DecoratedBox(
+        decoration: BoxDecoration(boxShadow: [
+          BoxShadow(
+              color: Theme.of(context).accentColor.withOpacity(0.9),
+              blurRadius: 5,
+              spreadRadius: 4)
+        ], borderRadius: BorderRadius.all(Radius.circular(6))),
+        child: child);
+  }
+}
+
 // ignore: must_be_immutable
 class PhraseCard extends StatelessWidget with LoggerMixin {
-  PhraseCard({this.phrase});
   final Phrase phrase;
+  final ValueNotifier<bool> replyMode;
+
+  PhraseCard({@required this.phrase, @required this.replyMode});
 
   presentPhrase(BuildContext ctx) {
     logAsyncException(
@@ -25,9 +48,11 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
 
     Navigator.of(ctx).pushNamed("/present",
         arguments: PresentPhraseOptions(
-          text: phrase.text,
+          phrase: phrase,
           pauseAfterFinished: false,
         ));
+
+    replyMode.value = true;
   }
 
   Future<bool> tryDeletePhrase(BuildContext context) async {
@@ -72,7 +97,7 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
               Theme.of(context).primaryTextTheme.title.color.withOpacity(0.15))
     ]);
 
-    final cardContents = Flex(
+    Widget cardContents = Flex(
         direction: Axis.vertical,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
@@ -108,24 +133,38 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
         child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: 64.0, maxHeight: 256.0),
             child: GestureDetector(
-              onTap: () => presentPhrase(context),
-              child: Card(
-                elevation: 8,
-                child: cardContents,
-              ),
-            )));
+                onTap: () => presentPhrase(context),
+                child: _ReplyHighlightBox(
+                  shouldHighlight: replyMode.value && phrase.isReply,
+                  child: Card(
+                    elevation: 8,
+                    child: cardContents,
+                  ),
+                ))));
   }
 }
 
 class PhraseListPane extends StatefulWidget {
+  final ValueNotifier<bool> replyMode;
+
+  PhraseListPane({@required this.replyMode});
+
   @override
   _PhraseListPaneState createState() => _PhraseListPaneState();
 }
 
-class _PhraseListPaneState extends State<PhraseListPane>
+class _PhraseListPaneState extends BindableState<PhraseListPane>
     with UserEnabledPage, LoggerMixin {
-  bool replyMode = false;
   List<Phrase> phrases = <Phrase>[];
+  final ScrollController scrollController = ScrollController();
+
+  _PhraseListPaneState() {
+    setupBinds([
+      () => fromValueListener(widget.replyMode)
+          .skip(1)
+          .listen((_) => scrollController.jumpTo(0.0))
+    ]);
+  }
 
   @override
   void initState() {
@@ -157,7 +196,10 @@ class _PhraseListPaneState extends State<PhraseListPane>
       );
     }
 
+    final sortedPhrases = Phrase.recencySort(phrases, widget.replyMode.value);
+
     final list = ListView.separated(
+      controller: scrollController,
       padding: EdgeInsets.all(16),
       itemCount: phrases.length,
       separatorBuilder: (ctx, i) => Padding(
@@ -165,7 +207,8 @@ class _PhraseListPaneState extends State<PhraseListPane>
             child: Container(),
           ),
       itemBuilder: (ctx, i) => PhraseCard(
-            phrase: phrases[i],
+            phrase: sortedPhrases[i],
+            replyMode: widget.replyMode,
           ),
     );
 

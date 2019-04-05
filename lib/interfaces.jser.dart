@@ -14,6 +14,14 @@ abstract class _$PhraseJsonSerializer implements Serializer<Phrase> {
     setMapValue(ret, 'text', model.text);
     setMapValue(ret, 'spokenText', model.spokenText);
     setMapValue(ret, 'isReply', model.isReply);
+    setMapValue(
+        ret,
+        'recentUsages',
+        codeIterable(
+            model.recentUsages,
+            (val) =>
+                dateTimeUtcProcessor.serialize(val as DateTime) as String));
+    setMapValue(ret, 'usageCount', model.usageCount);
     return ret;
   }
 
@@ -24,6 +32,9 @@ abstract class _$PhraseJsonSerializer implements Serializer<Phrase> {
     obj.text = map['text'] as String;
     obj.spokenText = map['spokenText'] as String;
     obj.isReply = map['isReply'] as bool;
+    obj.recentUsages = codeIterable<DateTime>(map['recentUsages'] as Iterable,
+        (val) => dateTimeUtcProcessor.deserialize(val as String));
+    obj.usageCount = map['usageCount'] as int;
     return obj;
   }
 }

@@ -23,14 +23,17 @@ abstract class StorageManager {
   Future<void> saveCustomPhrase(String phrase, {UserInfo forUser});
   Future<String> getCustomPhrase({UserInfo forUser});
 
-  Future<void> addSavedPhrase(Phrase phrase, {UserInfo forUser});
+  Future<void> upsertSavedPhrase(Phrase phrase,
+      {UserInfo forUser, bool addOnly = false});
+
+  Future<void> deletePhrase(Phrase phrase, {UserInfo forUser});
+
+  Future<void> presentPhrase(Phrase phrase, {UserInfo forUser});
 
   static isCustomPhraseExpired(DateTime forDate) {
     final expiration = forDate.add(Duration(hours: 1));
     return expiration.isBefore(DateTime.now());
   }
-
-  Future<void> deletePhrase(Phrase phrase, {UserInfo forUser});
 }
 
 abstract class FirebaseDocument {
@@ -58,6 +61,8 @@ class User implements FirebaseDocument {
   }
 }
 
+const kMaxRecentUsagesCount = 8;
+
 class Phrase implements FirebaseDocument {
   Phrase({this.text, this.spokenText, this.isReply});
 
@@ -68,8 +73,15 @@ class Phrase implements FirebaseDocument {
   String spokenText;
   bool isReply;
 
+  List<DateTime> recentUsages;
+  int usageCount;
+
   static Phrase fromDocument(DocumentSnapshot ds) {
-    return phraseSerializer.fromDocument(ds);
+    final ret = phraseSerializer.fromDocument(ds);
+
+    ret.usageCount ??= 0;
+    ret.recentUsages ??= [];
+    return ret;
   }
 
   Future<void> toDocument(DocumentReference dr) {
@@ -78,6 +90,54 @@ class Phrase implements FirebaseDocument {
 
   Future<void> addToCollection(CollectionReference cr) {
     return phraseSerializer.addToCollection(this, cr);
+  }
+
+  static List<Phrase> recencySort(List<Phrase> phrases, bool repliesFirst) {
+    /*
+     * replies mode:
+     * 
+     * is a reply =>
+     * number of usages =>
+     * recency of latest usage =>
+     * alphebetical by text 
+     * 
+     * no replies mode:
+     * 
+     * number of usages =>
+     * recency of latest usage => 
+     * alphebetical by text 
+     */
+
+    final ret = phrases.toList();
+    ret.sort((l, r) {
+      if (repliesFirst && l.isReply != r.isReply) {
+        return l.isReply ? -1 : 1;
+      }
+
+      if (l.usageCount != r.usageCount) {
+        return r.usageCount.compareTo(l.usageCount);
+      }
+
+      if (l.recentUsages.length > 0 && r.recentUsages.length > 0) {
+        var latestL = l.recentUsages.fold<DateTime>(
+          DateTime.fromMicrosecondsSinceEpoch(0),
+          (acc, x) => acc.isBefore(x) ? acc : x,
+        );
+
+        var latestR = l.recentUsages.fold<DateTime>(
+          DateTime.fromMicrosecondsSinceEpoch(0),
+          (acc, x) => acc.isBefore(x) ? acc : x,
+        );
+
+        if (!latestL.isAtSameMomentAs(latestR)) {
+          return latestR.compareTo(latestL);
+        }
+      }
+
+      return l.text.toLowerCase().compareTo(r.text.toLowerCase());
+    });
+
+    return ret;
   }
 }
 
