@@ -87,6 +87,33 @@ class Phrase implements FirebaseDocument {
   Future<void> addToCollection(CollectionReference cr) {
     return phraseSerializer.addToCollection(this, cr);
   }
+
+  static List<Phrase> recencySort(List<Phrase> phrases, bool repliesFirst) {
+    /*
+     * replies mode:
+     * 
+     * is a reply =>
+     * number of usages =>
+     * recency of latest usage =>
+     * alphebetical by text 
+     * 
+     * no replies mode:
+     * 
+     * number of usages =>
+     * recency of latest usage => 
+     */
+
+    final ret = phrases.toList();
+    ret.sort((l, r) {
+      if (repliesFirst && l.isReply != r.isReply) {
+        return l.isReply ? -1 : 1;
+      }
+
+      return l.text.toLowerCase().compareTo(r.text.toLowerCase());
+    });
+
+    return ret;
+  }
 }
 
 mixin FirebaseSerializerMixin<T extends FirebaseDocument> on Serializer<T> {
