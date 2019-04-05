@@ -130,6 +130,7 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
     return Dismissible(
         key: Key(phrase.id),
         confirmDismiss: (_) => tryDeletePhrase(context),
+        direction: DismissDirection.startToEnd,
         child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: 64.0, maxHeight: 256.0),
             child: GestureDetector(
