@@ -23,6 +23,8 @@ abstract class StorageManager {
   Future<void> saveCustomPhrase(String phrase, {UserInfo forUser});
   Future<String> getCustomPhrase({UserInfo forUser});
 
+  Future<void> addSavedPhrase(Phrase phrase, {UserInfo forUser});
+
   static isCustomPhraseExpired(DateTime forDate) {
     final expiration = forDate.add(Duration(hours: 1));
     return expiration.isBefore(DateTime.now());
@@ -58,7 +60,7 @@ class Phrase {
     return phraseSerializer.fromDocument(ds);
   }
 
-  toDocument(DocumentReference dr) {
+  Future<void> toDocument(DocumentReference dr) {
     return phraseSerializer.toDocument(this, dr);
   }
 }
