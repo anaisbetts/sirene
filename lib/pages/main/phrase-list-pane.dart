@@ -39,16 +39,16 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
                 "Are you sure you want to remove this phrase?",
               ),
               actions: <Widget>[
-                RaisedButton(
+                FlatButton(
                     child: Text("Remove"),
                     onPressed: () => Navigator.of(ctx).pop(true)),
-                RaisedButton(
+                FlatButton(
                     child: Text("Cancel"),
                     onPressed: () => Navigator.of(ctx).pop(false)),
               ],
             ));
 
-    if (!shouldDelete) return false;
+    if (shouldDelete != true) return false;
     App.locator.get<StorageManager>().deletePhrase(phrase);
 
     return true;
