@@ -11,6 +11,7 @@ import 'package:sirene/services/login.dart';
 
 final TextStyle italics = TextStyle(fontStyle: FontStyle.italic);
 
+// ignore: must_be_immutable
 class PhraseCard extends StatelessWidget with LoggerMixin {
   PhraseCard({this.phrase});
   final Phrase phrase;
