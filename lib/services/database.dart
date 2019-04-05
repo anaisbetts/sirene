@@ -83,4 +83,21 @@ class FirebaseStorageManager implements StorageManager {
       await phrase.addToCollection(phrasesList);
     }
   }
+
+  @override
+  Future<void> deletePhrase(Phrase phrase, {UserInfo forUser}) async {
+    final userInfo = forUser ?? App.locator.get<LoginManager>().currentUser;
+
+    if (phrase.id == null) {
+      throw Exception("Phrase ID can't be null!");
+    }
+
+    final phraseRef = Firestore.instance
+        .collection('users')
+        .document(userInfo.uid)
+        .collection('phrases')
+        .document(phrase.id);
+
+    return phraseRef.delete();
+  }
 }

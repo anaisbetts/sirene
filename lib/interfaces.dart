@@ -29,10 +29,19 @@ abstract class StorageManager {
     final expiration = forDate.add(Duration(hours: 1));
     return expiration.isBefore(DateTime.now());
   }
+
+  Future<void> deletePhrase(Phrase phrase, {UserInfo forUser});
 }
 
-class User {
+abstract class FirebaseDocument {
+  String id;
+}
+
+class User implements FirebaseDocument {
   User({this.email, this.isAnonymous});
+
+  @ignore
+  String id;
 
   String email;
   bool isAnonymous;
@@ -49,8 +58,11 @@ class User {
   }
 }
 
-class Phrase {
+class Phrase implements FirebaseDocument {
   Phrase({this.text, this.spokenText, this.isReply});
+
+  @ignore
+  String id;
 
   String text;
   String spokenText;
@@ -69,9 +81,12 @@ class Phrase {
   }
 }
 
-mixin FirebaseSerializerMixin<T> on Serializer<T> {
+mixin FirebaseSerializerMixin<T extends FirebaseDocument> on Serializer<T> {
   T fromDocument(DocumentSnapshot ds) {
-    return this.fromMap(ds.data);
+    final ret = this.fromMap(ds.data);
+    ret.id = ds.documentID;
+
+    return ret;
   }
 
   Future<void> toDocument(T item, DocumentReference dr) {
