@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:sirene/app.dart';
 import 'package:sirene/interfaces.dart';
@@ -89,6 +90,9 @@ class _PhraseListPaneState extends State<PhraseListPane>
         setState(() => phrases = xs);
       });
     });
+
+    // Dismiss the keyboard on this pane if it's active
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
   }
 
   @override
