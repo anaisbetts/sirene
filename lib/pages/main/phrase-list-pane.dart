@@ -30,6 +30,30 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
         ));
   }
 
+  Future<bool> tryDeletePhrase(BuildContext context) async {
+    final shouldDelete = await showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: Text("Remove Phrase"),
+              content: Text(
+                "Are you sure you want to remove this phrase?",
+              ),
+              actions: <Widget>[
+                RaisedButton(
+                    child: Text("Remove"),
+                    onPressed: () => Navigator.of(ctx).pop(true)),
+                RaisedButton(
+                    child: Text("Cancel"),
+                    onPressed: () => Navigator.of(ctx).pop(false)),
+              ],
+            ));
+
+    if (!shouldDelete) return false;
+    App.locator.get<StorageManager>().deletePhrase(phrase);
+
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     final shadow = TextStyle(fontStyle: FontStyle.italic, shadows: [
@@ -51,9 +75,7 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
                   Icons.delete,
                   color: Theme.of(context).unselectedWidgetColor,
                 ),
-                onPressed: () {
-                  log("DESTROYYYYYY");
-                },
+                onPressed: () => tryDeletePhrase,
               )),
           Expanded(
               child: Center(
@@ -72,15 +94,18 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
           )
         ]);
 
-    return ConstrainedBox(
-        constraints: BoxConstraints(minHeight: 64.0, maxHeight: 256.0),
-        child: GestureDetector(
-          onTap: () => presentPhrase(context),
-          child: Card(
-            elevation: 8,
-            child: cardContents,
-          ),
-        ));
+    return Dismissible(
+        key: Key(phrase.id),
+        confirmDismiss: (_) => tryDeletePhrase(context),
+        child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: 64.0, maxHeight: 256.0),
+            child: GestureDetector(
+              onTap: () => presentPhrase(context),
+              child: Card(
+                elevation: 8,
+                child: cardContents,
+              ),
+            )));
   }
 }
 
