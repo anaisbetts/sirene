@@ -37,6 +37,10 @@ class FirebaseStorageManager implements StorageManager {
   getCustomPhrase({UserInfo forUser}) async {
     final userInfo = forUser ?? App.locator.get<LoginManager>().currentUser;
 
+    if (userInfo == null) {
+      return null;
+    }
+
     final user = User.fromDocument(await Firestore.instance
         .collection('users')
         .document(userInfo.uid)
