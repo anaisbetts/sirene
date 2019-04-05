@@ -157,6 +157,7 @@ class _PhraseListPaneState extends BindableState<PhraseListPane>
     with UserEnabledPage, LoggerMixin {
   List<Phrase> phrases = <Phrase>[];
   final ScrollController scrollController = ScrollController();
+  bool hasLoggedPhraseCount = false;
 
   _PhraseListPaneState() {
     setupBinds([
@@ -177,7 +178,22 @@ class _PhraseListPaneState extends BindableState<PhraseListPane>
     lm.ensureUser().then((_) async {
       sm.getPhrases().listen((xs) {
         debug("Phrase update! ${xs.length} items");
-        App.traces['app_startup'].stop();
+
+        if (App.traces.containsKey('app_startup')) {
+          App.traces['app_startup'].stop();
+          App.traces.remove('app_startup');
+        }
+
+        if (!hasLoggedPhraseCount && xs.length > 0) {
+          logAsyncException(
+              App.analytics.logEvent(
+                  name: "saved_phrase_list_size",
+                  parameters: {"length": xs.length}),
+              rethrowIt: false);
+
+          hasLoggedPhraseCount = true;
+        }
+
         setState(() => phrases = xs);
       });
     });
