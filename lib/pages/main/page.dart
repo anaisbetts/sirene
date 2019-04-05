@@ -14,12 +14,23 @@ import 'package:sirene/services/login.dart';
 import 'package:sirene/services/router.dart';
 
 class _ReplyToggle extends StatefulWidget {
+  final ValueNotifier<bool> replyModeToggle;
+
+  _ReplyToggle({@required this.replyModeToggle});
+
   @override
   _ReplyToggleState createState() => _ReplyToggleState();
 }
 
-class _ReplyToggleState extends State<_ReplyToggle> {
+class _ReplyToggleState extends BindableState<_ReplyToggle> {
   var toggle = false;
+
+  _ReplyToggleState() {
+    setupBinds([
+      () => fromValueListener(widget.replyModeToggle)
+          .listen((x) => setState(() => toggle = x)),
+    ]);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +42,7 @@ class _ReplyToggleState extends State<_ReplyToggle> {
         children: <Widget>[
           Text("Replies", style: Theme.of(context).primaryTextTheme.body1),
           Switch(
-            value: toggle,
-            onChanged: (_) => setState(() => toggle = !toggle),
-          )
+              value: toggle, onChanged: (x) => widget.replyModeToggle.value = x)
         ],
       ),
     );
@@ -67,6 +76,9 @@ class _MainPageState extends BindableState<MainPage>
   RxCommand<dynamic, dynamic> speakPaneFab = RxCommand.createSync((_) => {});
   bool speakFabCanExecute = false;
 
+  bool currentReplyMode;
+  final ValueNotifier<bool> replyMode = ValueNotifier(false);
+
   _MainPageState() {
     // NB: This code sucks so hard, how can we get rid of it
     setupBinds([
@@ -74,7 +86,9 @@ class _MainPageState extends BindableState<MainPage>
           .listen((x) => setState(() => speakPaneFab = x)),
       () => fromValueListener(controller.fabButton)
           .flatMap((x) => x.canExecute)
-          .listen((x) => setState(() => speakFabCanExecute = x))
+          .listen((x) => setState(() => speakFabCanExecute = x)),
+      () => fromValueListener(replyMode)
+          .listen((x) => setState(() => currentReplyMode = x)),
     ]);
   }
 
@@ -84,7 +98,9 @@ class _MainPageState extends BindableState<MainPage>
       NavigationItem(
           icon: Icon(Icons.record_voice_over, size: 30),
           caption: "phrases",
-          contents: PhraseListPane()),
+          contents: PhraseListPane(
+            replyMode: currentReplyMode,
+          )),
       NavigationItem(
           icon: Icon(Icons.chat_bubble_outline, size: 30),
           caption: "speak",
@@ -93,7 +109,9 @@ class _MainPageState extends BindableState<MainPage>
 
     final appBarActions =
         PagedViewSelector(controller: controller, children: <Widget>[
-      _ReplyToggle(),
+      _ReplyToggle(
+        replyModeToggle: replyMode,
+      ),
       Container(),
     ]);
 
