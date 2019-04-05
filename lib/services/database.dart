@@ -63,4 +63,24 @@ class FirebaseStorageManager implements StorageManager {
 
     await user.toDocument(userRef);
   }
+
+  Future<void> addSavedPhrase(Phrase phrase, {UserInfo forUser}) async {
+    final userInfo = forUser ?? App.locator.get<LoginManager>().currentUser;
+    final phrasesList = Firestore.instance
+        .collection('users')
+        .document(userInfo.uid)
+        .collection('phrases');
+
+    final match = await phrasesList
+        .where('text', isEqualTo: phrase.text)
+        .limit(1)
+        .getDocuments();
+
+    if (match.documents.length > 0) {
+      await phrase.toDocument(match.documents[0].reference);
+      return;
+    } else {
+      await phrase.addToCollection(phrasesList);
+    }
+  }
 }

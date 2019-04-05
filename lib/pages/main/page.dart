@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:rx_command/rx_command.dart';
+import 'package:sirene/app.dart';
 
 import 'package:sirene/components/paged-bottom-navbar.dart';
+import 'package:sirene/interfaces.dart';
 import 'package:sirene/model-lib/bindable-state.dart';
+import 'package:sirene/pages/main/add-phrase-bottom-sheet.dart';
 import 'package:sirene/pages/main/phrase-list-pane.dart';
 import 'package:sirene/pages/main/speak-pane.dart';
 import 'package:sirene/services/logging.dart';
@@ -106,7 +110,23 @@ class _MainPageState extends BindableState<MainPage>
         PagedViewSelector(controller: controller, children: <Widget>[
       FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () => {},
+        onPressed: () async {
+          // NB: This was originally envisioned as a bottom sheet but
+          // https://github.com/flutter/flutter/issues/18564 throws a spanner
+          // in that plan
+          final newPhrase = await showDialog<Phrase>(
+              context: context, builder: (ctx) => AddPhraseBottomSheet());
+
+          if (newPhrase == null) return;
+          final sm = App.locator.get<StorageManager>();
+
+          App.analytics.logEvent(name: "add_new_phrase", parameters: {
+            "length": newPhrase.text.length,
+            "isReply": newPhrase.isReply,
+          });
+
+          await sm.addSavedPhrase(newPhrase);
+        },
       ),
       FloatingActionButton(
           child: Icon(Icons.speaker),
@@ -116,19 +136,21 @@ class _MainPageState extends BindableState<MainPage>
               this.speakFabCanExecute ? () => speakPaneFab.execute() : null),
     ]);
 
-    return Scaffold(
-        appBar: AppBar(
-          title: appBarTitles,
-          actions: <Widget>[appBarActions],
-        ),
-        bottomNavigationBar: PagedViewBottomNavBar(
-          items: panes,
-          controller: controller,
-        ),
-        floatingActionButton: floatingActionButtons,
-        body: PagedViewBody(
-          items: panes,
-          controller: controller,
-        ));
+    return Theme(
+        data: Theme.of(context).copyWith(canvasColor: Colors.transparent),
+        child: Scaffold(
+            appBar: AppBar(
+              title: appBarTitles,
+              actions: <Widget>[appBarActions],
+            ),
+            bottomNavigationBar: PagedViewBottomNavBar(
+              items: panes,
+              controller: controller,
+            ),
+            floatingActionButton: floatingActionButtons,
+            body: PagedViewBody(
+              items: panes,
+              controller: controller,
+            )));
   }
 }

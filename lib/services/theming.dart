@@ -35,7 +35,8 @@ class ThemeMetrics {
         primaryColorDark: primaryColorDark,
         primaryTextTheme:
             typography.englishLike.apply(bodyColor: primaryColorText),
-        buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+        buttonTheme: ButtonThemeData(
+            textTheme: ButtonTextTheme.primary, buttonColor: primaryColor),
         backgroundColor: neutralLight,
         dialogBackgroundColor: neutralLight,
         scaffoldBackgroundColor: neutralLight,
