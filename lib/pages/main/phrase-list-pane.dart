@@ -39,11 +39,10 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
 
   presentPhrase(BuildContext ctx) {
     logAsyncException(
-        () =>
-            App.analytics.logEvent(name: "saved_phrase_presented", parameters: {
-              "length": phrase.text.length,
-              "pauseAfterFinished": false,
-            }),
+        App.analytics.logEvent(name: "saved_phrase_presented", parameters: {
+          "length": phrase.text.length,
+          "pauseAfterFinished": false,
+        }),
         rethrowIt: false);
 
     Navigator.of(ctx).pushNamed("/present",
@@ -76,10 +75,10 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
     if (shouldDelete != true) return false;
 
     logAsyncException(
-        () => App.analytics.logEvent(name: "phrase_deleted", parameters: {
-              "length": phrase.text.length,
-              "isReply": phrase.isReply,
-            }),
+        App.analytics.logEvent(name: "phrase_deleted", parameters: {
+          "length": phrase.text.length,
+          "isReply": phrase.isReply,
+        }),
         rethrowIt: false);
 
     App.locator.get<StorageManager>().deletePhrase(phrase);

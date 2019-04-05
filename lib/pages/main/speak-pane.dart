@@ -34,11 +34,10 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
 
     widget.controller.fabButton.value = RxCommand.createSync((_) {
       logAsyncException(
-          () => App.analytics
-                  .logEvent(name: "custom_phrase_presented", parameters: {
-                "length": toSpeak.text.length,
-                "pauseAfterFinished": pauseAfterFinished,
-              }),
+          App.analytics.logEvent(name: "custom_phrase_presented", parameters: {
+            "length": toSpeak.text.length,
+            "pauseAfterFinished": pauseAfterFinished,
+          }),
           rethrowIt: false);
 
       widget.replyMode.value = true;
@@ -51,7 +50,7 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
 
     final sm = App.locator.get<StorageManager>();
     logAsyncException(
-        () => sm.getCustomPhrase().then((s) => setState(() {
+        sm.getCustomPhrase().then((s) => setState(() {
               if (s != null && toSpeak.text.isEmpty) {
                 toSpeak.text = s;
                 toSpeak.selection =

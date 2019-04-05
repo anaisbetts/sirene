@@ -71,13 +71,13 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
     await logAsyncException(() async {
       await tts.speak(settings.phrase.spokenText ?? settings.phrase.text);
       await ttsCompletion.take(1).last;
-    }, rethrowIt: false, message: "Failed to utter text");
+    }(), rethrowIt: false, message: "Failed to utter text");
     isPlaying = false;
 
     // NB: This is intentionally not awaited, we don't want to block the user
     // getting back to what they're doing
     final sm = App.locator.get<StorageManager>();
-    logAsyncException(() async => sm.presentPhrase(settings.phrase),
+    logAsyncException(sm.presentPhrase(settings.phrase),
         rethrowIt: false, message: "Failed to update phrase usage info");
 
     if (isCancelled) {

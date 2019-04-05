@@ -165,10 +165,10 @@ mixin LoggerMixin {
     }
   }
 
-  logAsyncException<TRet>(Future<TRet> Function() block,
+  logAsyncException<TRet>(Future<TRet> block,
       {bool rethrowIt = true, String message}) async {
     try {
-      return await block();
+      return await block;
     } catch (e, st) {
       _ensureLogger().logError(e, st, message: message);
       if (rethrowIt) rethrow;

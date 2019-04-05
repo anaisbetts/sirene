@@ -142,10 +142,10 @@ class _MainPageState extends BindableState<MainPage>
           final sm = App.locator.get<StorageManager>();
 
           logAsyncException(
-              () => App.analytics.logEvent(name: "add_new_phrase", parameters: {
-                    "length": newPhrase.text.length,
-                    "isReply": newPhrase.isReply,
-                  }),
+              App.analytics.logEvent(name: "add_new_phrase", parameters: {
+                "length": newPhrase.text.length,
+                "isReply": newPhrase.isReply,
+              }),
               rethrowIt: false);
 
           await sm.upsertSavedPhrase(newPhrase, addOnly: true);
