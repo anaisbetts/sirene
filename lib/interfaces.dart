@@ -77,7 +77,11 @@ class Phrase implements FirebaseDocument {
   int usageCount;
 
   static Phrase fromDocument(DocumentSnapshot ds) {
-    return phraseSerializer.fromDocument(ds);
+    final ret = phraseSerializer.fromDocument(ds);
+
+    ret.usageCount ??= 0;
+    ret.recentUsages ??= [];
+    return ret;
   }
 
   Future<void> toDocument(DocumentReference dr) {
