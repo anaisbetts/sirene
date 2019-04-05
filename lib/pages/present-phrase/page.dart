@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:sirene/app.dart';
 
 import 'package:sirene/interfaces.dart';
 import 'package:sirene/services/logging.dart';
@@ -72,6 +73,12 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
       await ttsCompletion.take(1).last;
     }, rethrowIt: false, message: "Failed to utter text");
     isPlaying = false;
+
+    // NB: This is intentionally not awaited, we don't want to block the user
+    // getting back to what they're doing
+    final sm = App.locator.get<StorageManager>();
+    logAsyncException(() async => sm.presentPhrase(settings.phrase),
+        rethrowIt: false, message: "Failed to update phrase usage info");
 
     if (isCancelled) {
       return;

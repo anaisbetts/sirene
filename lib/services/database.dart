@@ -107,4 +107,21 @@ class FirebaseStorageManager implements StorageManager {
 
     return phraseRef.delete();
   }
+
+  Future<void> presentPhrase(Phrase phrase, {UserInfo forUser}) {
+    if (phrase.id == null) {
+      return saveCustomPhrase(phrase.text, forUser: forUser);
+    }
+
+    phrase.usageCount ??= 0;
+    phrase.usageCount++;
+    phrase.recentUsages ??= [];
+
+    phrase.recentUsages.add(DateTime.now());
+    while (phrase.recentUsages.length > kMaxRecentUsagesCount) {
+      phrase.recentUsages.removeAt(0);
+    }
+
+    return upsertSavedPhrase(phrase, forUser: forUser);
+  }
 }

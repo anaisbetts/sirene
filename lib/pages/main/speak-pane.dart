@@ -40,12 +40,6 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
               }),
           rethrowIt: false);
 
-      // NB: If writing the custom phrase fails, we don't care, we're just
-      // letting it go
-      final sm = App.locator.get<StorageManager>();
-      logAsyncException(() => sm.saveCustomPhrase(toSpeak.text),
-          rethrowIt: false, message: "Failed to fetch custom phrase");
-
       Navigator.of(context).pushNamed("/present",
           arguments: PresentPhraseOptions(
               phrase: Phrase(text: toSpeak.text, isReply: false),

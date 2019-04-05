@@ -26,12 +26,14 @@ abstract class StorageManager {
   Future<void> upsertSavedPhrase(Phrase phrase,
       {UserInfo forUser, bool addOnly = false});
 
+  Future<void> deletePhrase(Phrase phrase, {UserInfo forUser});
+
+  Future<void> presentPhrase(Phrase phrase, {UserInfo forUser});
+
   static isCustomPhraseExpired(DateTime forDate) {
     final expiration = forDate.add(Duration(hours: 1));
     return expiration.isBefore(DateTime.now());
   }
-
-  Future<void> deletePhrase(Phrase phrase, {UserInfo forUser});
 }
 
 abstract class FirebaseDocument {
@@ -59,7 +61,7 @@ class User implements FirebaseDocument {
   }
 }
 
-const kRecentUsagesCount = 8;
+const kMaxRecentUsagesCount = 8;
 
 class Phrase implements FirebaseDocument {
   Phrase({this.text, this.spokenText, this.isReply});
