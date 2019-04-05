@@ -64,7 +64,8 @@ class FirebaseStorageManager implements StorageManager {
     await user.toDocument(userRef);
   }
 
-  Future<void> addSavedPhrase(Phrase phrase, {UserInfo forUser}) async {
+  Future<void> upsertSavedPhrase(Phrase phrase,
+      {UserInfo forUser, bool addOnly = false}) async {
     final userInfo = forUser ?? App.locator.get<LoginManager>().currentUser;
     final phrasesList = Firestore.instance
         .collection('users')
@@ -77,7 +78,13 @@ class FirebaseStorageManager implements StorageManager {
         .getDocuments();
 
     if (match.documents.length > 0) {
-      await phrase.toDocument(match.documents[0].reference);
+      // NB: We add an addOnly feature here because otherwise,
+      // accidentally adding an already-added phrase would clear
+      // the recency information
+      if (!addOnly) {
+        await phrase.toDocument(match.documents[0].reference);
+      }
+
       return;
     } else {
       await phrase.addToCollection(phrasesList);

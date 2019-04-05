@@ -23,7 +23,7 @@ abstract class StorageManager {
   Future<void> saveCustomPhrase(String phrase, {UserInfo forUser});
   Future<String> getCustomPhrase({UserInfo forUser});
 
-  Future<void> addSavedPhrase(Phrase phrase, {UserInfo forUser});
+  Future<void> upsertSavedPhrase(Phrase phrase,
 
   static isCustomPhraseExpired(DateTime forDate) {
     final expiration = forDate.add(Duration(hours: 1));

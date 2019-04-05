@@ -127,7 +127,7 @@ class _MainPageState extends BindableState<MainPage>
                   }),
               rethrowIt: false);
 
-          await sm.addSavedPhrase(newPhrase);
+          await sm.upsertSavedPhrase(newPhrase, addOnly: true);
         },
       ),
       FloatingActionButton(
