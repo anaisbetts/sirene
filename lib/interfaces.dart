@@ -63,6 +63,10 @@ class Phrase {
   Future<void> toDocument(DocumentReference dr) {
     return phraseSerializer.toDocument(this, dr);
   }
+
+  Future<void> addToCollection(CollectionReference cr) {
+    return phraseSerializer.addToCollection(this, cr);
+  }
 }
 
 mixin FirebaseSerializerMixin<T> on Serializer<T> {
@@ -72,6 +76,10 @@ mixin FirebaseSerializerMixin<T> on Serializer<T> {
 
   Future<void> toDocument(T item, DocumentReference dr) {
     return dr.setData(this.toMap(item));
+  }
+
+  Future<void> addToCollection(T item, CollectionReference cr) {
+    return cr.add(this.toMap(item));
   }
 }
 
