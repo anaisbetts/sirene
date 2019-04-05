@@ -9,8 +9,6 @@ import 'package:sirene/pages/present-phrase/page.dart';
 import 'package:sirene/services/logging.dart';
 import 'package:sirene/services/login.dart';
 
-final TextStyle italics = TextStyle(fontStyle: FontStyle.italic);
-
 // ignore: must_be_immutable
 class PhraseCard extends StatelessWidget with LoggerMixin {
   PhraseCard({this.phrase});
@@ -34,7 +32,7 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
 
   @override
   Widget build(BuildContext context) {
-    final shadow = TextStyle(shadows: [
+    final shadow = TextStyle(fontStyle: FontStyle.italic, shadows: [
       Shadow(
           blurRadius: 4.0,
           offset: Offset(3.0, 3.0),
@@ -42,26 +40,45 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
               Theme.of(context).primaryTextTheme.title.color.withOpacity(0.15))
     ]);
 
+    final cardContents = Flex(
+        direction: Axis.vertical,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Align(
+              alignment: Alignment.topRight,
+              child: IconButton(
+                icon: Icon(
+                  Icons.delete,
+                  color: Theme.of(context).unselectedWidgetColor,
+                ),
+                onPressed: () {
+                  log("DESTROYYYYYY");
+                },
+              )),
+          Expanded(
+              child: Center(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                phrase.text,
+                overflow: TextOverflow.fade,
+                style:
+                    Theme.of(context).primaryTextTheme.display1.merge(shadow),
+              ),
+            ),
+          )),
+          SizedBox(
+            height: 48,
+          )
+        ]);
+
     return ConstrainedBox(
         constraints: BoxConstraints(minHeight: 64.0, maxHeight: 256.0),
         child: GestureDetector(
           onTap: () => presentPhrase(context),
           child: Card(
             elevation: 8,
-            child: Center(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Text(
-                  phrase.text,
-                  overflow: TextOverflow.fade,
-                  style: Theme.of(context)
-                      .primaryTextTheme
-                      .display1
-                      .merge(italics)
-                      .merge(shadow),
-                ),
-              ),
-            ),
+            child: cardContents,
           ),
         ));
   }
