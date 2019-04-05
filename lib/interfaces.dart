@@ -105,12 +105,33 @@ class Phrase implements FirebaseDocument {
      * 
      * number of usages =>
      * recency of latest usage => 
+     * alphebetical by text 
      */
 
     final ret = phrases.toList();
     ret.sort((l, r) {
       if (repliesFirst && l.isReply != r.isReply) {
         return l.isReply ? -1 : 1;
+      }
+
+      if (l.usageCount != r.usageCount) {
+        return r.usageCount.compareTo(l.usageCount);
+      }
+
+      if (l.recentUsages.length > 0 && r.recentUsages.length > 0) {
+        var latestL = l.recentUsages.fold<DateTime>(
+          DateTime.fromMicrosecondsSinceEpoch(0),
+          (acc, x) => acc.isBefore(x) ? acc : x,
+        );
+
+        var latestR = l.recentUsages.fold<DateTime>(
+          DateTime.fromMicrosecondsSinceEpoch(0),
+          (acc, x) => acc.isBefore(x) ? acc : x,
+        );
+
+        if (!latestL.isAtSameMomentAs(latestR)) {
+          return latestR.compareTo(latestL);
+        }
       }
 
       return l.text.toLowerCase().compareTo(r.text.toLowerCase());
