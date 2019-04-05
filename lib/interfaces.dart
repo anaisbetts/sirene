@@ -24,6 +24,7 @@ abstract class StorageManager {
   Future<String> getCustomPhrase({UserInfo forUser});
 
   Future<void> upsertSavedPhrase(Phrase phrase,
+      {UserInfo forUser, bool addOnly = false});
 
   static isCustomPhraseExpired(DateTime forDate) {
     final expiration = forDate.add(Duration(hours: 1));
@@ -58,6 +59,8 @@ class User implements FirebaseDocument {
   }
 }
 
+const kRecentUsagesCount = 8;
+
 class Phrase implements FirebaseDocument {
   Phrase({this.text, this.spokenText, this.isReply});
 
@@ -67,6 +70,9 @@ class Phrase implements FirebaseDocument {
   String text;
   String spokenText;
   bool isReply;
+
+  List<DateTime> recentUsages;
+  int usageCount;
 
   static Phrase fromDocument(DocumentSnapshot ds) {
     return phraseSerializer.fromDocument(ds);
