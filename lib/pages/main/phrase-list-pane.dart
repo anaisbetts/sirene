@@ -157,6 +157,8 @@ class _PhraseListPaneState extends State<PhraseListPane>
       );
     }
 
+    final sortedPhrases = Phrase.recencySort(phrases, widget.replyMode);
+
     final list = ListView.separated(
       padding: EdgeInsets.all(16),
       itemCount: phrases.length,
@@ -165,7 +167,8 @@ class _PhraseListPaneState extends State<PhraseListPane>
             child: Container(),
           ),
       itemBuilder: (ctx, i) => PhraseCard(
-            phrase: phrases[i],
+            phrase: sortedPhrases[i],
+            replyMode: widget.replyMode,
           ),
     );
 
