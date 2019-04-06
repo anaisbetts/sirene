@@ -3,9 +3,9 @@ strategy:
     linux:
       imageName: 'ubuntu-16.04'
       buildType: 'apk'
-    mac:
-      imageName: 'macos-10.13'
-      buildType: 'ios'
+      #    mac:
+      #imageName: 'macos-10.13'
+      #buildType: 'ios'
 
 trigger:
 - master
