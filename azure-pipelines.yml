@@ -2,8 +2,10 @@ strategy:
   matrix:
     linux:
       imageName: 'ubuntu-16.04'
-    mac:
-      imageName: 'macos-10.13'
+      buildType: 'apk'
+      #    mac:
+      #imageName: 'macos-10.13'
+      #buildType: 'ios'
 
 trigger:
 - master
@@ -19,7 +21,18 @@ pool:
 steps:
 - script: git submodule update --init --recursive
   displayName: 'Update submodules'
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: "google-services.json"
+- script: mv $(Agent.TempDirectory)/google-services.json ./android/app/
+  displayName: 'Move Firebase keys into place'
 - script: ./flutterw doctor
   displayName: 'Set up Flutter'
 - script: ./flutterw test
   displayName: 'Flutter Test'
+- script: ./flutterw build $(buildType)
+  displayName: 'Release build'
+- task: PublishPipelineArtifact@0
+  inputs:
+    artifactName: 'outputs'
+    targetPath: 'build/app/outputs/$(buildType)/release'
