@@ -2,8 +2,10 @@ strategy:
   matrix:
     linux:
       imageName: 'ubuntu-16.04'
+      buildType: 'apk'
     mac:
       imageName: 'macos-10.13'
+      buildType: 'ios'
 
 trigger:
 - master
@@ -23,3 +25,9 @@ steps:
   displayName: 'Set up Flutter'
 - script: ./flutterw test
   displayName: 'Flutter Test'
+- script: ./flutterw build $(buildType)
+  displayName: 'Release build - Android'
+- task: PublishPipelineArtifact@0
+  inputs:
+    artifactName: 'outputs'
+    targetPath: 'build/app/outputs/$(buildType)/release'
