@@ -21,12 +21,17 @@ pool:
 steps:
 - script: git submodule update --init --recursive
   displayName: 'Update submodules'
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: "google-services.json"
+- script: mv $(Agent.TempDirectory)/google-services.json ./android/app/
+  displayName: 'Move Firebase keys into place'
 - script: ./flutterw doctor
   displayName: 'Set up Flutter'
 - script: ./flutterw test
   displayName: 'Flutter Test'
 - script: ./flutterw build $(buildType)
-  displayName: 'Release build - Android'
+  displayName: 'Release build'
 - task: PublishPipelineArtifact@0
   inputs:
     artifactName: 'outputs'
