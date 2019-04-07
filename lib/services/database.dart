@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:flutter/services.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sirene/app.dart';
@@ -127,5 +130,18 @@ class FirebaseStorageManager implements StorageManager {
     }
 
     return upsertSavedPhrase(phrase, forUser: forUser);
+  }
+
+  Future<void> loadDefaultSavedPhrases({UserInfo forUser}) async {
+    List<dynamic> phrases = jsonDecode(
+        await rootBundle.loadString('resources/initial-phrases.json'));
+
+    final userInfo = forUser ?? App.locator.get<LoginManager>().currentUser;
+    final phraseColl = Firestore.instance
+        .collection('users')
+        .document(userInfo.uid)
+        .collection('phrases');
+
+    await Future.wait(phrases.map((x) => phraseColl.add(x)));
   }
 }
