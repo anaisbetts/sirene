@@ -5,7 +5,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
 
-import {episodeListToEpisodeURLs, episodePageToContent} from '../src/index';
+import {episodeListToEpisodeURLs, episodePageToContent, collectDataFromShowList} from '../src/index';
 
 chai.should();
 chai.use(chaiAsPromised);
@@ -40,5 +40,14 @@ describe('the episodePageToContent method', () => {
 
     console.log(JSON.stringify(output, null, 2));
     expect(output).length.to.be.greaterThan(0);
+  });
+});
+
+describe('the collectDataFromShowList method', function() {
+  this.timeout(60 * 1000);
+
+  it('collects Firefly', async () => {
+    const output = await collectDataFromShowList(['https://www.springfieldspringfield.co.uk/episode_scripts.php?tv-show=firefly']);
+    expect(output.length).to.equal(17);
   });
 });
