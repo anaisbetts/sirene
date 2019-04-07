@@ -3,15 +3,14 @@ import * as URL from 'url';
 import axios from 'axios';
 
 import * as yargs from 'yargs';
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { asyncMap } from './promise-array';
 
 async function main() {
   const args: any = yargs.argv;
 
   const shows = readFileSync(args.showList, 'utf8').split('\n').filter(x => x.length > 2);
-  //console.log(shows);
-  console.log(JSON.stringify(await collectDataFromShowList(shows), null, 2));
+  writeFileSync('./result.json', JSON.stringify(await collectDataFromShowList(shows)));
 }
 
 export async function collectDataFromShowList(shows: string[]) {
