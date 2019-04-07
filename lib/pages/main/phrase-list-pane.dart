@@ -204,12 +204,32 @@ class _PhraseListPaneState extends BindableState<PhraseListPane>
 
   @override
   Widget build(BuildContext context) {
+    final lm = App.locator.get<LoginManager>();
+
     if (phrases.length == 0) {
-      return Center(
-        child: RaisedButton(
-          child: Text("Login"),
-          onPressed: () => App.locator.get<LoginManager>().ensureNamedUser(),
-        ),
+      final login = (lm.currentUser == null || lm.currentUser.email.isEmpty)
+          ? RaisedButton(
+              child: Text("Login via Google"),
+              onPressed: () => lm.ensureNamedUser(),
+            )
+          : Container();
+
+      return Flex(
+        direction: Axis.vertical,
+        children: <Widget>[
+          Expanded(
+            child: Container(),
+          ),
+          login,
+          RaisedButton(
+            child: Text("Use initial phrases"),
+            onPressed: () =>
+                App.locator.get<StorageManager>().loadDefaultSavedPhrases(),
+          ),
+          Expanded(
+            child: Container(),
+          )
+        ],
       );
     }
 

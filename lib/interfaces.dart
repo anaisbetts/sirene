@@ -34,6 +34,8 @@ abstract class StorageManager {
     final expiration = forDate.add(Duration(hours: 1));
     return expiration.isBefore(DateTime.now());
   }
+
+  Future<void> loadDefaultSavedPhrases({UserInfo forUser});
 }
 
 abstract class FirebaseDocument {
