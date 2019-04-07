@@ -55,6 +55,8 @@ flutter:
       fonts:
          - asset: resources/GrandHotel-Regular.ttf
            weight: 400
+  assets:
+    - resources/initial-phrases.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:
