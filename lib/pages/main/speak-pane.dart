@@ -82,7 +82,20 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
               child: TextField(
             controller: toSpeak,
             focusNode: textBoxFocus,
+            autofocus: true,
+            expands: true,
+            minLines: null,
+            maxLines: null,
           )),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: RaisedButton(
+                child: Text("Clear"),
+                onPressed: () {
+                  toSpeak.clear();
+                  FocusScope.of(context).requestFocus(textBoxFocus);
+                }),
+          ),
           Flex(
               direction: Axis.horizontal,
               crossAxisAlignment: CrossAxisAlignment.center,
