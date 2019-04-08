@@ -16,6 +16,12 @@ class FirebaseLoginManager with LoggerMixin implements LoginManager {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   @override
+  Observable<UserInfo> getAuthState() {
+    return Observable(FirebaseAuth.instance.onAuthStateChanged)
+        .startWith(_currentUser);
+  }
+
+  @override
   Future<UserInfo> login() async {
     var ret = await FirebaseAuth.instance.currentUser();
 

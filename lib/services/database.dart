@@ -9,8 +9,10 @@ import 'package:sirene/interfaces.dart';
 
 class FirebaseStorageManager implements StorageManager {
   @override
-  Stream<List<Phrase>> getPhrases({Query query}) {
-    final q = query ?? allPhrasesQuery();
+  Stream<List<Phrase>> getPhrases({Query query, UserInfo forUser}) {
+    final user = forUser ?? App.locator.get<LoginManager>().currentUser;
+
+    final q = query ?? allPhrasesQuery(forUser: user);
     return q
         .snapshots()
         .map((xs) => xs.documents.map((x) => Phrase.fromDocument(x)).toList());

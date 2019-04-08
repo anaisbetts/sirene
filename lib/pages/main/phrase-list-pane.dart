@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'package:sirene/app.dart';
 import 'package:sirene/interfaces.dart';
@@ -160,43 +161,42 @@ class _PhraseListPaneState extends BindableState<PhraseListPane>
   bool hasLoggedPhraseCount = false;
 
   _PhraseListPaneState() {
+    final lm = App.locator.get<LoginManager>();
+    final sm = App.locator.get<StorageManager>();
+
     setupBinds([
       () => fromValueListener(widget.replyMode)
           .skip(1)
-          .listen((_) => scrollController.jumpTo(0.0))
+          .listen((_) => scrollController.jumpTo(0.0)),
+      () => lm
+              .getAuthState()
+              .switchMap((u) => u != null
+                  ? sm.getPhrases(forUser: u)
+                  : Observable.just(<Phrase>[]))
+              .listen((xs) {
+            if (App.traces.containsKey('app_startup')) {
+              App.traces['app_startup'].stop();
+              App.traces.remove('app_startup');
+            }
+
+            if (!hasLoggedPhraseCount && xs.length > 0) {
+              logAsyncException(
+                  App.analytics.logEvent(
+                      name: "saved_phrase_list_size",
+                      parameters: {"length": xs.length}),
+                  rethrowIt: false);
+
+              hasLoggedPhraseCount = true;
+            }
+
+            setState(() => phrases = xs);
+          })
     ]);
   }
 
   @override
   void initState() {
     super.initState();
-
-    final lm = App.locator.get<LoginManager>();
-    final sm = App.locator.get<StorageManager>();
-
-    // XXX: This code won't handle logouts properly :cry:
-    lm.ensureUser().then((_) async {
-      sm.getPhrases().listen((xs) {
-        debug("Phrase update! ${xs.length} items");
-
-        if (App.traces.containsKey('app_startup')) {
-          App.traces['app_startup'].stop();
-          App.traces.remove('app_startup');
-        }
-
-        if (!hasLoggedPhraseCount && xs.length > 0) {
-          logAsyncException(
-              App.analytics.logEvent(
-                  name: "saved_phrase_list_size",
-                  parameters: {"length": xs.length}),
-              rethrowIt: false);
-
-          hasLoggedPhraseCount = true;
-        }
-
-        setState(() => phrases = xs);
-      });
-    });
 
     // Dismiss the keyboard on this pane if it's active
     SystemChannels.textInput.invokeMethod('TextInput.hide');

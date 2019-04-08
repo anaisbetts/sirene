@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:jaguar_serializer/jaguar_serializer.dart';
+import 'package:rxdart/rxdart.dart';
 
 part 'interfaces.jser.dart';
 
@@ -8,6 +9,8 @@ enum ApplicationMode { Debug, Production, Test }
 
 abstract class LoginManager {
   UserInfo get currentUser;
+
+  Observable<UserInfo> getAuthState();
 
   Future<UserInfo> login();
   Future<void> logout();
@@ -18,7 +21,7 @@ abstract class LoginManager {
 
 abstract class StorageManager {
   Query allPhrasesQuery({UserInfo forUser});
-  Stream<List<Phrase>> getPhrases({Query query});
+  Stream<List<Phrase>> getPhrases({Query query, UserInfo forUser});
 
   Future<void> saveCustomPhrase(String phrase, {UserInfo forUser});
   Future<String> getCustomPhrase({UserInfo forUser});
