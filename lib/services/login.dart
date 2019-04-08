@@ -17,8 +17,10 @@ class FirebaseLoginManager with LoggerMixin implements LoginManager {
 
   @override
   Observable<UserInfo> getAuthState() {
-    return Observable(FirebaseAuth.instance.onAuthStateChanged)
-        .startWith(_currentUser);
+    return Observable.concat([
+      Observable.fromFuture(ensureUser()),
+      Observable(FirebaseAuth.instance.onAuthStateChanged)
+    ]);
   }
 
   @override
