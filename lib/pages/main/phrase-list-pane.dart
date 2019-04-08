@@ -107,7 +107,7 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
                   Icons.delete,
                   color: Theme.of(context).unselectedWidgetColor,
                 ),
-                onPressed: () => tryDeletePhrase,
+                onPressed: () => tryDeletePhrase(context),
               )),
           Expanded(
               child: Center(
