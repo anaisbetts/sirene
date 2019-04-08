@@ -11,8 +11,10 @@ import 'package:sirene/services/logging.dart';
 
 class FuzzyMatchChipList extends StatefulWidget {
   final TextEditingController textController;
+  final RxCommand<PresentPhraseOptions, void> presentPhrase;
 
-  FuzzyMatchChipList({@required this.textController});
+  FuzzyMatchChipList(
+      {@required this.textController, @required this.presentPhrase});
 
   @override
   _FuzzyMatchChipListState createState() => _FuzzyMatchChipListState();
@@ -58,7 +60,8 @@ class _FuzzyMatchChipListState extends BindableState<FuzzyMatchChipList> {
                   softWrap: false,
                 ),
               ),
-              onPressed: () => {},
+              onPressed: () => widget.presentPhrase.execute(
+                  PresentPhraseOptions(phrase: p, pauseAfterFinished: false)),
             ))
         .toList();
 
@@ -82,6 +85,7 @@ class SpeakPane extends StatefulWidget {
 class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
   TextEditingController toSpeak = TextEditingController(text: "");
   FocusNode textBoxFocus = FocusNode();
+  RxCommand<PresentPhraseOptions, void> quickFindPresent;
 
   bool pauseAfterFinished = false;
 
@@ -107,6 +111,19 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
               phrase: Phrase(text: toSpeak.text, isReply: false),
               pauseAfterFinished: pauseAfterFinished));
     }, canExecute: textHasContent);
+
+    quickFindPresent = RxCommand.createSync((p) {
+      logAsyncException(
+          App.analytics
+              .logEvent(name: "quickfind_phrase_presented", parameters: {
+            "length": p.phrase.text.length,
+          }),
+          rethrowIt: false);
+
+      widget.replyMode.value = true;
+
+      Navigator.of(context).pushNamed("/present", arguments: p);
+    });
 
     final sm = App.locator.get<StorageManager>();
     logAsyncException(
@@ -148,6 +165,7 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
           )),
           FuzzyMatchChipList(
             textController: toSpeak,
+            presentPhrase: quickFindPresent,
           ),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 8),
