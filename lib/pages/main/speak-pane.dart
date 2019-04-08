@@ -9,6 +9,66 @@ import 'package:sirene/model-lib/bindable-state.dart';
 import 'package:sirene/pages/present-phrase/page.dart';
 import 'package:sirene/services/logging.dart';
 
+class FuzzyMatchChipList extends StatefulWidget {
+  final TextEditingController textController;
+
+  FuzzyMatchChipList({@required this.textController});
+
+  @override
+  _FuzzyMatchChipListState createState() => _FuzzyMatchChipListState();
+}
+
+class _FuzzyMatchChipListState extends BindableState<FuzzyMatchChipList> {
+  List<Phrase> currentPhraseList = [];
+  String searchText = '';
+
+  _FuzzyMatchChipListState() {
+    final sm = App.locator.get<StorageManager>();
+
+    setupBinds([
+      () => sm
+          .getPhrases()
+          .listen((xs) => setState(() => currentPhraseList = xs)),
+      () => fromValueListener(widget.textController)
+          .listen((x) => setState(() => searchText = x.text))
+    ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (searchText.isEmpty || searchText.length < 1) return Container();
+
+    final stLower = searchText.toLowerCase();
+    final toPresent = Phrase.recencySort(
+            currentPhraseList
+                .where((p) => p.text.toLowerCase().contains(stLower))
+                .toList(),
+            true)
+        .take(4);
+
+    final chips = toPresent
+        .map((p) => ActionChip(
+              key: Key(p.text),
+              label: Container(
+                constraints:
+                    BoxConstraints(maxWidth: toPresent.length > 2 ? 128 : 512),
+                child: Text(
+                  p.text,
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
+                ),
+              ),
+              onPressed: () => {},
+            ))
+        .toList();
+
+    return Wrap(
+      children: chips,
+      spacing: 8,
+    );
+  }
+}
+
 class SpeakPane extends StatefulWidget {
   final PagedViewController controller;
   final ValueNotifier<bool> replyMode;
@@ -83,12 +143,14 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
             controller: toSpeak,
             focusNode: textBoxFocus,
             autofocus: true,
-            expands: true,
-            minLines: null,
-            maxLines: null,
+            minLines: 1,
+            maxLines: 5,
           )),
+          FuzzyMatchChipList(
+            textController: toSpeak,
+          ),
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
+            padding: EdgeInsets.symmetric(vertical: 8),
             child: RaisedButton(
                 child: Text("Clear"),
                 onPressed: () {
@@ -114,7 +176,7 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
         ]);
 
     return Padding(
-        padding: EdgeInsets.all(8),
+        padding: EdgeInsets.all(4),
         child: Flex(
           direction: Axis.vertical,
           crossAxisAlignment: CrossAxisAlignment.stretch,
