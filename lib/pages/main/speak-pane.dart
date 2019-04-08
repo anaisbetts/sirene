@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:rx_command/rx_command.dart';
 import 'package:sirene/app.dart';
@@ -173,7 +174,12 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
                 child: Text("Clear"),
                 onPressed: () {
                   toSpeak.clear();
-                  FocusScope.of(context).requestFocus(textBoxFocus);
+                  SystemChannels.textInput.invokeMethod('TextInput.show');
+
+                  // Show the keyboard even harder
+                  Future.delayed(Duration(milliseconds: 20)).then((_) {
+                    FocusScope.of(context).requestFocus(textBoxFocus);
+                  });
                 }),
           ),
           Flex(
