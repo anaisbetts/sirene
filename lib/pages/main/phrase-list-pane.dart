@@ -36,7 +36,8 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
   final Phrase phrase;
   final ValueNotifier<bool> replyMode;
 
-  PhraseCard({@required this.phrase, @required this.replyMode});
+  PhraseCard({@required this.phrase, @required this.replyMode, Key key})
+      : super(key: key);
 
   presentPhrase(BuildContext ctx) {
     logAsyncException(
@@ -246,6 +247,7 @@ class _PhraseListPaneState extends BindableState<PhraseListPane>
             child: Container(),
           ),
       itemBuilder: (ctx, i) => PhraseCard(
+            key: Key(sortedPhrases[i].text),
             phrase: sortedPhrases[i],
             replyMode: widget.replyMode,
           ),
