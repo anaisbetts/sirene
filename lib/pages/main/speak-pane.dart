@@ -84,8 +84,8 @@ class SpeakPane extends StatefulWidget {
 }
 
 class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
-  TextEditingController toSpeak = TextEditingController(text: "");
-  FocusNode textBoxFocus = FocusNode();
+  TextEditingController toSpeak;
+  FocusNode textBoxFocus;
   RxCommand<PresentPhraseOptions, void> quickFindPresent;
 
   bool pauseAfterFinished = false;
@@ -94,10 +94,13 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
   void initState() {
     super.initState();
 
+    toSpeak = TextEditingController();
+    textBoxFocus = FocusNode();
+
     final textHasContent =
         fromValueListener(toSpeak).map((x) => x.text.length > 0);
 
-    widget.controller.fabButton.value = RxCommand.createSync((_) {
+    widget.controller.fabButton.value = RxCommand.createAsync((_) async {
       logAsyncException(
           App.analytics.logEvent(name: "custom_phrase_presented", parameters: {
             "length": toSpeak.text.length,
@@ -107,13 +110,15 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
 
       widget.replyMode.value = true;
 
-      Navigator.of(context).pushNamed("/present",
+      await Navigator.of(context).pushNamed("/present",
           arguments: PresentPhraseOptions(
               phrase: Phrase(text: toSpeak.text, isReply: false),
               pauseAfterFinished: pauseAfterFinished));
+
+      FocusScope.of(context).requestFocus(textBoxFocus);
     }, canExecute: textHasContent);
 
-    quickFindPresent = RxCommand.createSync((p) {
+    quickFindPresent = RxCommand.createAsync((p) async {
       logAsyncException(
           App.analytics
               .logEvent(name: "quickfind_phrase_presented", parameters: {
@@ -123,7 +128,8 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
 
       widget.replyMode.value = true;
 
-      Navigator.of(context).pushNamed("/present", arguments: p);
+      await Navigator.of(context).pushNamed("/present", arguments: p);
+      FocusScope.of(context).requestFocus(textBoxFocus);
     });
 
     final sm = App.locator.get<StorageManager>();
@@ -146,10 +152,13 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
   void dispose() {
     super.dispose();
     widget.controller.fabButton.value.dispose();
+    toSpeak.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    FocusScope.of(this.context).reparentIfNeeded(textBoxFocus);
+
     final actualContent = Flex(
         direction: Axis.vertical,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -158,9 +167,9 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
               style: Theme.of(context).primaryTextTheme.headline),
           Expanded(
               child: TextField(
+            autofocus: true,
             controller: toSpeak,
             focusNode: textBoxFocus,
-            autofocus: true,
             minLines: 1,
             maxLines: 5,
           )),
@@ -173,13 +182,9 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
             child: RaisedButton(
                 child: Text("Clear"),
                 onPressed: () {
-                  toSpeak.clear();
                   SystemChannels.textInput.invokeMethod('TextInput.show');
-
-                  // Show the keyboard even harder
-                  Future.delayed(Duration(milliseconds: 20)).then((_) {
-                    FocusScope.of(context).requestFocus(textBoxFocus);
-                  });
+                  toSpeak.clear();
+                  FocusScope.of(this.context).requestFocus(textBoxFocus);
                 }),
           ),
           Flex(
