@@ -29,19 +29,28 @@ class ThemeMetrics {
         englishLike: Typography.englishLike2018.merge(titleFont),
         tall: Typography.tall2018);
 
-    return ThemeData(
+    final theme = ThemeData.light();
+
+    return theme.copyWith(
+        colorScheme: ColorScheme.light(
+          primary: primaryColor,
+          primaryVariant: primaryColorDark,
+          secondary: secondaryColor,
+          secondaryVariant: secondaryColorDark,
+        ),
         primaryColor: primaryColor,
         primaryColorLight: primaryColorLight,
         primaryColorDark: primaryColorDark,
         primaryTextTheme:
             typography.englishLike.apply(bodyColor: primaryColorText),
-        buttonTheme: ButtonThemeData(
+        buttonTheme: theme.buttonTheme.copyWith(
             textTheme: ButtonTextTheme.primary, buttonColor: primaryColor),
         backgroundColor: neutralLight,
         dialogBackgroundColor: neutralLight,
         scaffoldBackgroundColor: neutralLight,
         accentColor: secondaryColor,
         toggleableActiveColor: secondaryColor,
+        textSelectionColor: primaryColorLight,
         accentTextTheme:
             typography.englishLike.apply(displayColor: secondaryColorText),
         typography: typography);
