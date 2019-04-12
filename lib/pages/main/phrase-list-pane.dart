@@ -95,7 +95,7 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
           blurRadius: 4.0,
           offset: Offset(3.0, 3.0),
           color:
-              Theme.of(context).primaryTextTheme.title.color.withOpacity(0.15))
+              Theme.of(context).accentTextTheme.body1.color.withOpacity(0.15))
     ]);
 
     Widget cardContents = Flex(
@@ -112,17 +112,17 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
                 onPressed: () => tryDeletePhrase(context),
               )),
           Expanded(
-              child: Center(
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Text(
-                phrase.text,
-                overflow: TextOverflow.fade,
-                style:
-                    Theme.of(context).primaryTextTheme.display1.merge(shadow),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  phrase.text,
+                  overflow: TextOverflow.fade,
+                  style: Theme.of(context).accentTextTheme.body1.merge(shadow),
+                ),
               ),
             ),
-          )),
+          ),
           SizedBox(
             height: 48,
           )
@@ -132,17 +132,18 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
         key: Key(phrase.id),
         confirmDismiss: (_) => tryDeletePhrase(context),
         direction: DismissDirection.startToEnd,
-        child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: 64.0, maxHeight: 256.0),
-            child: GestureDetector(
-                onTap: () => presentPhrase(context),
-                child: _ReplyHighlightBox(
-                  shouldHighlight: replyMode.value && phrase.isReply,
-                  child: Card(
-                    elevation: 8,
-                    child: cardContents,
-                  ),
-                ))));
+        child: GestureDetector(
+            onTap: () => presentPhrase(context),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 8, 8, 8),
+              child: _ReplyHighlightBox(
+                shouldHighlight: replyMode.value && phrase.isReply,
+                child: Card(
+                  elevation: 16,
+                  child: cardContents,
+                ),
+              ),
+            )));
   }
 }
 
@@ -238,14 +239,13 @@ class _PhraseListPaneState extends BindableState<PhraseListPane>
 
     final sortedPhrases = Phrase.recencySort(phrases, widget.replyMode.value);
 
-    final list = ListView.separated(
+    final list = GridView.builder(
       controller: scrollController,
-      padding: EdgeInsets.all(16),
+      shrinkWrap: true,
       itemCount: phrases.length,
-      separatorBuilder: (ctx, i) => Padding(
-            padding: EdgeInsets.all(8),
-            child: Container(),
-          ),
+      padding: EdgeInsets.all(8),
+      gridDelegate:
+          new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
       itemBuilder: (ctx, i) => PhraseCard(
             key: Key(sortedPhrases[i].text),
             phrase: sortedPhrases[i],
