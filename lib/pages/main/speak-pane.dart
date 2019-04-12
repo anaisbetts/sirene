@@ -163,8 +163,7 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
         direction: Axis.vertical,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Text("Phrase to say:",
-              style: Theme.of(context).primaryTextTheme.headline),
+          Text("Phrase to say:", style: Theme.of(context).textTheme.headline),
           Expanded(
               child: TextField(
             autofocus: true,
