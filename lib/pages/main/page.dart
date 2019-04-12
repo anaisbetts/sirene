@@ -160,7 +160,7 @@ class _MainPageState extends BindableState<MainPage>
     ]);
 
     return Theme(
-        data: Theme.of(context).copyWith(canvasColor: Colors.transparent),
+        data: Theme.of(context),
         child: Scaffold(
             appBar: AppBar(
               title: appBarTitles,

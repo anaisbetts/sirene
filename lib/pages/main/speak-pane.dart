@@ -197,9 +197,6 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
                 ),
                 Text(
                   "Pause after phrase is complete",
-                  maxLines: 10,
-                  softWrap: true,
-                  style: Theme.of(context).primaryTextTheme.body1,
                 )
               ])
         ]);

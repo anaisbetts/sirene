@@ -107,7 +107,7 @@ class _PagedViewBodyState extends BindableState<PagedViewBody> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).primaryColorDark,
+      color: Theme.of(context).backgroundColor,
       child: Padding(
           padding: EdgeInsets.all(8),
           child: PageView.builder(

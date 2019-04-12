@@ -20,8 +20,11 @@ class ThemeMetrics {
   static const neutralLight = Color.fromARGB(0xff, 0xf5, 0xf5, 0xf6);
 
   static ThemeData fullTheme() {
-    final titleFont =
-        TextTheme(title: TextStyle(fontFamily: "GrandHotel", fontSize: 26.0));
+    final titleFont = TextTheme(
+        title: TextStyle(
+      fontFamily: "GrandHotel",
+      fontSize: 26.0,
+    ));
 
     final typography = Typography(
         platform: defaultTargetPlatform,
@@ -29,30 +32,16 @@ class ThemeMetrics {
         englishLike: Typography.englishLike2018.merge(titleFont),
         tall: Typography.tall2018);
 
-    final theme = ThemeData.light();
-
-    return theme.copyWith(
-        colorScheme: ColorScheme.light(
-          primary: primaryColor,
-          primaryVariant: primaryColorDark,
-          secondary: secondaryColor,
-          secondaryVariant: secondaryColorDark,
-        ),
-        primaryColor: primaryColor,
-        primaryColorLight: primaryColorLight,
-        primaryColorDark: primaryColorDark,
-        primaryTextTheme:
-            typography.englishLike.apply(bodyColor: primaryColorText),
-        buttonTheme: theme.buttonTheme.copyWith(
-            textTheme: ButtonTextTheme.primary, buttonColor: primaryColor),
-        backgroundColor: neutralLight,
-        dialogBackgroundColor: neutralLight,
-        scaffoldBackgroundColor: neutralLight,
-        accentColor: secondaryColor,
-        toggleableActiveColor: secondaryColor,
-        textSelectionColor: primaryColorLight,
-        accentTextTheme:
-            typography.englishLike.apply(displayColor: secondaryColorText),
+    final theme = ThemeData(
+        primarySwatch: Colors.deepPurple,
+        accentColor: Colors.orangeAccent,
+        primaryTextTheme: typography.englishLike,
+        buttonTheme: ButtonThemeData(
+            textTheme: ButtonTextTheme.primary,
+            buttonColor: Colors.deepPurple.shade600),
+        accentTextTheme: typography.englishLike,
         typography: typography);
+
+    return theme;
   }
 }
