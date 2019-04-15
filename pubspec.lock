@@ -92,13 +92,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.3.2"
-  catcher:
-    dependency: "direct main"
-    description:
-      name: catcher
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.4"
   charcode:
     dependency: transitive
     description:
@@ -134,13 +127,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.1"
-  cookie_jar:
-    dependency: transitive
-    description:
-      name: cookie_jar
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0"
   crypto:
     dependency: transitive
     description:
@@ -162,13 +148,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.2"
-  dart2_constant:
-    dependency: transitive
-    description:
-      name: dart2_constant
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2+dart2"
   dart_config:
     dependency: transitive
     description:
@@ -192,13 +171,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.0+1"
-  dio:
-    dependency: transitive
-    description:
-      name: dio
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.1.0"
   firebase_analytics:
     dependency: "direct main"
     description:
@@ -246,20 +218,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.7.0"
-  flutter_local_notifications:
-    dependency: transitive
-    description:
-      name: flutter_local_notifications
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.5.2"
-  flutter_mailer:
-    dependency: transitive
-    description:
-      name: flutter_mailer
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.0+1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -272,13 +230,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.4"
-  fluttertoast:
-    dependency: transitive
-    description:
-      name: fluttertoast
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.3"
   front_end:
     dependency: transitive
     description:
@@ -349,13 +300,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.7"
-  intl:
-    dependency: transitive
-    description:
-      name: intl
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.15.8"
   io:
     dependency: transitive
     description:
@@ -405,13 +349,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.11.3+2"
-  mailer:
-    dependency: transitive
-    description:
-      name: mailer
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.2.1"
   matcher:
     dependency: transitive
     description:
@@ -475,13 +412,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.1"
-  platform:
-    dependency: transitive
-    description:
-      name: platform
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.2.0"
   plugin:
     dependency: transitive
     description:
