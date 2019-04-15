@@ -15,7 +15,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  flutter_markdown: ^0.2.0
+  shared_preferences: ^0.5.2
   device_info: ^0.4.0+1
   sentry: ^2.2.0
   package_info: ^0.4.0+2
@@ -62,6 +63,7 @@ flutter:
           weight: 400
   assets:
     - resources/initial-phrases.json
+    - resources/privacy.md
   # To add assets to your application, add an assets section, like this:
   # assets:
   #  - images/a_dot_burr.jpeg
