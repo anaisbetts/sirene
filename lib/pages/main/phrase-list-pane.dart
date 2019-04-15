@@ -209,14 +209,20 @@ class _PhraseListPaneState extends BindableState<PhraseListPane>
     final lm = App.locator.get<LoginManager>();
 
     if (phrases.length == 0) {
-      final login = (lm.currentUser == null ||
+      final loginOrInitialPhrases = (lm.currentUser == null ||
               lm.currentUser.email == null ||
               lm.currentUser.email.isEmpty)
-          ? RaisedButton(
-              child: Text("Login via Google"),
+          ? RaisedButton.icon(
+              icon: Icon(Icons.account_circle),
+              label: Text("Login via Google"),
               onPressed: () => lm.ensureNamedUser(),
             )
-          : Container();
+          : RaisedButton.icon(
+              icon: Icon(Icons.playlist_add),
+              label: Text("Add initial phrases"),
+              onPressed: () =>
+                  App.locator.get<StorageManager>().loadDefaultSavedPhrases(),
+            );
 
       return Flex(
         direction: Axis.vertical,
