@@ -95,7 +95,7 @@ class FirebaseLoginManager with LoggerMixin implements LoginManager {
 mixin UserEnabledPage<T extends StatefulWidget> on State<T> {
   var userRequestError = new PublishSubject<Error>();
 
-  withNamedUser() {
+  UserInfo withNamedUser() {
     final user = App.locator<LoginManager>().currentUser;
 
     if (user != null && user.email != null && user.email.isNotEmpty) {
