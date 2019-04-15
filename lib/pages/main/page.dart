@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rx_command/rx_command.dart';
 
 import 'package:sirene/app.dart';
