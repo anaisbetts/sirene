@@ -75,6 +75,7 @@ class _MainPageState extends BindableState<MainPage>
 
   RxCommand<dynamic, dynamic> speakPaneFab = RxCommand.createSync((_) => {});
   bool speakFabCanExecute = false;
+  UserInfo user;
 
   bool currentReplyMode;
   final ValueNotifier<bool> replyMode = ValueNotifier(false);
@@ -89,6 +90,10 @@ class _MainPageState extends BindableState<MainPage>
           .listen((x) => setState(() => speakFabCanExecute = x)),
       () => fromValueListener(replyMode)
           .listen((x) => setState(() => currentReplyMode = x)),
+      () => App.locator
+          .get<LoginManager>()
+          .getAuthState()
+          .listen((u) => setState(() => user = u)),
     ]);
   }
 
@@ -130,27 +135,10 @@ class _MainPageState extends BindableState<MainPage>
     final floatingActionButtons =
         PagedViewSelector(controller: controller, children: <Widget>[
       FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () async {
-          // NB: This was originally envisioned as a bottom sheet but
-          // https://github.com/flutter/flutter/issues/18564 throws a spanner
-          // in that plan
-          final newPhrase = await showDialog<Phrase>(
-              context: context, builder: (ctx) => AddPhraseBottomSheet());
-
-          if (newPhrase == null) return;
-          final sm = App.locator.get<StorageManager>();
-
-          logAsyncException(
-              App.analytics.logEvent(name: "add_new_phrase", parameters: {
-                "length": newPhrase.text.length,
-                "isReply": newPhrase.isReply,
-              }),
-              rethrowIt: false);
-
-          await sm.upsertSavedPhrase(newPhrase, addOnly: true);
-        },
-      ),
+          child: Icon(Icons.add),
+          backgroundColor:
+              user != null ? null : Theme.of(context).disabledColor,
+          onPressed: user != null ? () => onPressedAddSavedPhraseFab() : null),
       FloatingActionButton(
           child: Icon(Icons.speaker),
           backgroundColor:
@@ -175,5 +163,25 @@ class _MainPageState extends BindableState<MainPage>
               items: panes,
               controller: controller,
             )));
+  }
+
+  onPressedAddSavedPhraseFab() async {
+    // NB: This was originally envisioned as a bottom sheet but
+    // https://github.com/flutter/flutter/issues/18564 throws a spanner
+    // in that plan
+    final newPhrase = await showDialog<Phrase>(
+        context: context, builder: (ctx) => AddPhraseBottomSheet());
+
+    if (newPhrase == null) return;
+    final sm = App.locator.get<StorageManager>();
+
+    logAsyncException(
+        App.analytics.logEvent(name: "add_new_phrase", parameters: {
+          "length": newPhrase.text.length,
+          "isReply": newPhrase.isReply,
+        }),
+        rethrowIt: false);
+
+    await sm.upsertSavedPhrase(newPhrase, addOnly: true);
   }
 }
