@@ -16,7 +16,6 @@ abstract class LoginManager {
   Future<void> logout();
 
   Future<UserInfo> ensureNamedUser();
-  Future<UserInfo> ensureUser();
 }
 
 abstract class StorageManager {
