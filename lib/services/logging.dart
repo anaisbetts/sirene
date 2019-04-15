@@ -1,7 +1,6 @@
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/foundation.dart';
 
-import 'package:catcher/catcher_plugin.dart';
 import 'package:device_info/device_info.dart';
 import 'package:package_info/package_info.dart';
 import 'package:sentry/sentry.dart' as sentry;
@@ -182,14 +181,6 @@ mixin LoggerMixin {
     trace.stop();
 
     return ret;
-  }
-}
-
-class LoggingCatcherHandler with LoggerMixin implements ReportHandler {
-  @override
-  Future<bool> handle(Report report) async {
-    logError(report.error, report.stackTrace, extras: report.deviceParameters);
-    return true;
   }
 }
 
