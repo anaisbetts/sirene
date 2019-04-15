@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:rx_command/rx_command.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:sirene/app.dart';
 import 'package:sirene/components/paged-bottom-navbar.dart';
@@ -98,6 +99,14 @@ class _MainPageState extends BindableState<MainPage>
           .getAuthState()
           .listen((u) => setState(() => user = u)),
     ]);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(Duration(milliseconds: 250))
+        .then((_) => showPrivacyDialogIfNeeded());
   }
 
   @override

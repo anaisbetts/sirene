@@ -9,6 +9,10 @@ import 'package:sirene/app.dart';
 import 'package:sirene/interfaces.dart';
 
 class FirebaseStorageManager implements StorageManager {
+  FirebaseStorageManager() {
+    Firestore.instance.settings(timestampsInSnapshotsEnabled: true);
+  }
+
   @override
   Stream<List<Phrase>> getPhrases({Query query, UserInfo forUser}) {
     final userStream = forUser != null
