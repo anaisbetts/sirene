@@ -18,7 +18,8 @@ class FirebaseLoginManager with LoggerMixin implements LoginManager {
   @override
   Observable<UserInfo> getAuthState() {
     return Observable.concat([
-      Observable.fromFuture(ensureUser()),
+      Observable.fromFuture(
+          FirebaseAuth.instance.currentUser().then((u) => _currentUser = u)),
       Observable(FirebaseAuth.instance.onAuthStateChanged)
     ]);
   }
@@ -44,15 +45,6 @@ class FirebaseLoginManager with LoggerMixin implements LoginManager {
   Future<void> logout() {
     _currentUser = null;
     return FirebaseAuth.instance.signOut();
-  }
-
-  @override
-  Future<UserInfo> ensureUser() async {
-    if (_currentUser != null) {
-      return _currentUser;
-    }
-
-    return await login();
   }
 
   @override
@@ -103,20 +95,14 @@ class FirebaseLoginManager with LoggerMixin implements LoginManager {
 mixin UserEnabledPage<T extends StatefulWidget> on State<T> {
   var userRequestError = new PublishSubject<Error>();
 
-  withUser({bool requireNamed = false}) {
+  withNamedUser() {
     final user = App.locator<LoginManager>().currentUser;
 
-    if (user != null) {
-      if (!requireNamed) return user;
-
-      if (user.email != null && user.email.isNotEmpty) {
-        return user;
-      }
+    if (user != null && user.email != null && user.email.isNotEmpty) {
+      return user;
     }
 
-    final getUser = requireNamed
-        ? App.locator<LoginManager>().ensureNamedUser()
-        : App.locator<LoginManager>().ensureUser();
+    final getUser = App.locator<LoginManager>().ensureNamedUser();
 
     getUser.then((_) {
       App.analytics.logLogin();
@@ -124,8 +110,7 @@ mixin UserEnabledPage<T extends StatefulWidget> on State<T> {
     }, onError: (e, st) {
       final log = App.locator.get<LogWriter>();
 
-      log.logError(e, st,
-          message: "Failed to ensure user, named = $requireNamed");
+      log.logError(e, st, message: "Failed to ensure user");
       userRequestError.add(e);
     });
 
