@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:rx_command/rx_command.dart';
 
 import 'package:sirene/app.dart';
@@ -164,6 +166,27 @@ class _MainPageState extends BindableState<MainPage>
               items: panes,
               controller: controller,
             )));
+  }
+
+  showPrivacyDialogIfNeeded() async {
+    const privacyKey = 'seenPrivacyScreen';
+
+    final sharedPrefs = await SharedPreferences.getInstance();
+    if (sharedPrefs.containsKey(privacyKey)) {
+      return;
+    }
+
+    sharedPrefs.setBool(privacyKey, true);
+
+    final privacyText = await rootBundle.loadString('resources/privacy.md');
+    showAboutDialog(
+        context: this.context,
+        applicationName: "Some Important Information!",
+        children: <Widget>[
+          MarkdownBody(
+            data: privacyText,
+          )
+        ]);
   }
 
   onPressedAddSavedPhraseFab() async {
