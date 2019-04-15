@@ -224,12 +224,7 @@ class _PhraseListPaneState extends BindableState<PhraseListPane>
           Expanded(
             child: Container(),
           ),
-          login,
-          RaisedButton(
-            child: Text("Use initial phrases"),
-            onPressed: () =>
-                App.locator.get<StorageManager>().loadDefaultSavedPhrases(),
-          ),
+          loginOrInitialPhrases,
           Expanded(
             child: Container(),
           )
