@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:mlkit/mlkit.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sirene/app.dart';
 
@@ -38,7 +39,7 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
     with LoggerMixin {
   FlutterTts tts;
   PublishSubject<Null> ttsCompletion;
-  Set<String> languageList;
+  Map<String, String> languageList;
 
   bool isCancelled = false;
   bool isPlaying = false;
@@ -69,7 +70,19 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
       List<dynamic> langs = await tts.getLanguages;
       final re = RegExp(r"-.*$");
 
-      languageList = langs.map((x) => x.toString().replaceAll(re, "")).toSet();
+      languageList = langs.fold(Map(), (acc, x) {
+        final langWithLocale = x.toString();
+        acc[langWithLocale.replaceAll(re, '')] = langWithLocale;
+        return acc;
+      });
+    }
+
+    final fli = FirebaseLanguageIdentification.instance;
+    final lang = await fli.identifyLanguage(settings.phrase.text);
+    if (lang != null && languageList.containsKey(lang)) {
+      await tts.setLanguage(languageList[lang]);
+    } else {
+      await tts.setLanguage('en-US');
     }
 
     if (isCancelled) {
