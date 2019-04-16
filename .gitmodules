@@ -1,3 +1,6 @@
 [submodule "vendor/flutter"]
 	path = vendor/flutter
 	url = https://github.com/flutter/flutter
+[submodule "vendor/mlkit"]
+	path = vendor/mlkit
+	url = https://github.com/paulcbetts/flutter_mlkit
