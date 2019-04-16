@@ -387,7 +387,7 @@ packages:
   mlkit:
     dependency: "direct main"
     description:
-      path: "vendor\\mlkit"
+      path: "vendor/mlkit"
       relative: true
     source: path
     version: "0.10.1"
