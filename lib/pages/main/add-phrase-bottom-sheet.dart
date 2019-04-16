@@ -38,8 +38,7 @@ class _AddPhraseBottomSheetState extends BindableState<AddPhraseBottomSheet> {
         direction: Axis.vertical,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Text("Phrase to say:",
-              style: Theme.of(context).primaryTextTheme.headline),
+          Text("Phrase to say:", style: Theme.of(context).textTheme.headline),
           TextField(
             controller: toSpeak,
             focusNode: textBoxFocus,
@@ -56,7 +55,7 @@ class _AddPhraseBottomSheetState extends BindableState<AddPhraseBottomSheet> {
                 ),
                 Text(
                   "Treat this phrase as a Reply",
-                  style: Theme.of(context).primaryTextTheme.body1,
+                  style: Theme.of(context).textTheme.body1,
                 )
               ]),
           Expanded(
