@@ -38,6 +38,7 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
     with LoggerMixin {
   FlutterTts tts;
   PublishSubject<Null> ttsCompletion;
+  Set<String> languageList;
 
   bool isCancelled = false;
   bool isPlaying = false;
@@ -62,6 +63,14 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
     }
 
     await tts.setVolume(1.0);
+
+    // TODO: Make this not suck re: locales
+    if (languageList == null) {
+      List<dynamic> langs = await tts.getLanguages;
+      final re = RegExp(r"-.*$");
+
+      languageList = langs.map((x) => x.toString().replaceAll(re, "")).toSet();
+    }
 
     if (isCancelled) {
       return;
