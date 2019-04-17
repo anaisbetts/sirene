@@ -51,6 +51,8 @@ abstract class _$UserJsonSerializer implements Serializer<User> {
     setMapValue(ret, 'lastCustomPhrase', model.lastCustomPhrase);
     setMapValue(ret, 'lastCustomPhraseCreatedOn',
         dateTimeUtcProcessor.serialize(model.lastCustomPhraseCreatedOn));
+    setMapValue(ret, 'recentlyUsedLanguages',
+        codeIterable(model.recentlyUsedLanguages, (val) => val as String));
     return ret;
   }
 
@@ -63,6 +65,8 @@ abstract class _$UserJsonSerializer implements Serializer<User> {
     obj.lastCustomPhrase = map['lastCustomPhrase'] as String;
     obj.lastCustomPhraseCreatedOn = dateTimeUtcProcessor
         .deserialize(map['lastCustomPhraseCreatedOn'] as String);
+    obj.recentlyUsedLanguages = codeIterable<String>(
+        map['recentlyUsedLanguages'] as Iterable, (val) => val as String);
     return obj;
   }
 }

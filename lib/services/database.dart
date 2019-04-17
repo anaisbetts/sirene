@@ -133,21 +133,37 @@ class FirebaseStorageManager implements StorageManager {
     return phraseRef.delete();
   }
 
-  Future<void> presentPhrase(Phrase phrase, {UserInfo forUser}) {
+  @override
+  Future<void> savePresentedPhrase(Phrase phrase, {UserInfo forUser}) async {
+    final userInfo = forUser ?? App.locator.get<LoginManager>().currentUser;
+
+    if (phrase.detectedLanguage != null) {
+      final ur = Firestore.instance.collection('users').document(userInfo.uid);
+      final user = User.fromDocument(await ur.get());
+
+      user.recentlyUsedLanguages ??= [];
+      user.recentlyUsedLanguages.add(phrase.detectedLanguage);
+      while (user.recentlyUsedLanguages.length > kMaxRecentLanguageCount) {
+        user.recentlyUsedLanguages.removeAt(0);
+      }
+
+      await user.toDocument(ur);
+    }
+
     if (phrase.id == null) {
-      return saveCustomPhrase(phrase.text, forUser: forUser);
+      await saveCustomPhrase(phrase.text, forUser: forUser);
+    } else {
+      phrase.usageCount ??= 0;
+      phrase.usageCount++;
+      phrase.recentUsages ??= [];
+
+      phrase.recentUsages.add(DateTime.now());
+      while (phrase.recentUsages.length > kMaxRecentUsagesCount) {
+        phrase.recentUsages.removeAt(0);
+      }
+
+      await upsertSavedPhrase(phrase, forUser: forUser);
     }
-
-    phrase.usageCount ??= 0;
-    phrase.usageCount++;
-    phrase.recentUsages ??= [];
-
-    phrase.recentUsages.add(DateTime.now());
-    while (phrase.recentUsages.length > kMaxRecentUsagesCount) {
-      phrase.recentUsages.removeAt(0);
-    }
-
-    return upsertSavedPhrase(phrase, forUser: forUser);
   }
 
   Future<void> loadDefaultSavedPhrases({UserInfo forUser}) async {
@@ -161,5 +177,30 @@ class FirebaseStorageManager implements StorageManager {
         .collection('phrases');
 
     await Future.wait(phrases.map((x) => phraseColl.add(x)));
+  }
+
+  @override
+  Future<String> getRecentFallbackLanguage({UserInfo forUser}) async {
+    final userInfo = forUser ?? App.locator.get<LoginManager>().currentUser;
+    final user = User.fromDocument(await Firestore.instance
+        .collection('users')
+        .document(userInfo.uid)
+        .get());
+
+    if (user.recentlyUsedLanguages == null ||
+        user.recentlyUsedLanguages.length < 1) {
+      return null;
+    }
+
+    Map<String, int> stats = user.recentlyUsedLanguages.fold(Map(), (acc, x) {
+      acc[x] ??= 0;
+      acc[x] = acc[x] + 1;
+      return acc;
+    });
+
+    return stats.entries.fold(null, (MapEntry<String, int> acc, x) {
+      if (acc == null) return x;
+      return (x.value > acc.value ? x : acc);
+    }).key;
   }
 }

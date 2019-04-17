@@ -70,7 +70,10 @@ class User implements FirebaseDocument {
 }
 
 const kMaxRecentUsagesCount = 8;
-const kMaxRecentLanguageCount = 4;
+
+// NB: We don't want this to be too long, or else we'll possibly end up using a
+// language that was frequent but a long time ago
+const kMaxRecentLanguageCount = 3;
 
 class Phrase implements FirebaseDocument {
   Phrase({this.text, this.spokenText, this.isReply});
