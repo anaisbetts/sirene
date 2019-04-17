@@ -80,8 +80,10 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
 
     if (settings.phrase.detectedLanguage == null) {
       final fli = FirebaseLanguageIdentification.instance;
-      settings.phrase.detectedLanguage =
-          await fli.identifyLanguage(settings.phrase.text);
+      final dl = await fli.identifyLanguage(settings.phrase.text);
+
+      // 'und' is MLKit's magic code for "we don't know"
+      settings.phrase.detectedLanguage = dl != "und" ? dl : null;
     }
 
     // NB: This code is trickier than it should be, because we can detect
@@ -90,12 +92,6 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
     // we don't just want to stomp away the language if we don't have a TTS
     // engine for *this device*.
     var lang = settings.phrase.detectedLanguage;
-
-    // NB: 'und' is what MLKit uses for "undetected"
-    if (lang == "und") {
-      lang = null;
-    }
-
     if (lang != null && languageList.containsKey(lang)) {
       await tts.setLanguage(languageList[lang]);
     } else {
