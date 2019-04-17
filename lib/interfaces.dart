@@ -30,7 +30,7 @@ abstract class StorageManager {
 
   Future<void> deletePhrase(Phrase phrase, {UserInfo forUser});
 
-  Future<void> presentPhrase(Phrase phrase, {UserInfo forUser});
+  Future<void> savePresentedPhrase(Phrase phrase, {UserInfo forUser});
 
   static isCustomPhraseExpired(DateTime forDate) {
     final expiration = forDate.add(Duration(hours: 1));
@@ -38,6 +38,8 @@ abstract class StorageManager {
   }
 
   Future<void> loadDefaultSavedPhrases({UserInfo forUser});
+
+  Future<String> getRecentFallbackLanguage({UserInfo forUser});
 }
 
 abstract class FirebaseDocument {
@@ -56,6 +58,8 @@ class User implements FirebaseDocument {
   String lastCustomPhrase;
   DateTime lastCustomPhraseCreatedOn;
 
+  List<String> recentlyUsedLanguages;
+
   static User fromDocument(DocumentSnapshot ds) {
     return userSerializer.fromDocument(ds);
   }
@@ -66,6 +70,7 @@ class User implements FirebaseDocument {
 }
 
 const kMaxRecentUsagesCount = 8;
+const kMaxRecentLanguageCount = 4;
 
 class Phrase implements FirebaseDocument {
   Phrase({this.text, this.spokenText, this.isReply});
@@ -76,6 +81,7 @@ class Phrase implements FirebaseDocument {
   String text;
   String spokenText;
   bool isReply;
+  String detectedLanguage;
 
   List<DateTime> recentUsages;
   int usageCount;

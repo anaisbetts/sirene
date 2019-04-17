@@ -14,6 +14,7 @@ abstract class _$PhraseJsonSerializer implements Serializer<Phrase> {
     setMapValue(ret, 'text', model.text);
     setMapValue(ret, 'spokenText', model.spokenText);
     setMapValue(ret, 'isReply', model.isReply);
+    setMapValue(ret, 'detectedLanguage', model.detectedLanguage);
     setMapValue(
         ret,
         'recentUsages',
@@ -32,6 +33,7 @@ abstract class _$PhraseJsonSerializer implements Serializer<Phrase> {
     obj.text = map['text'] as String;
     obj.spokenText = map['spokenText'] as String;
     obj.isReply = map['isReply'] as bool;
+    obj.detectedLanguage = map['detectedLanguage'] as String;
     obj.recentUsages = codeIterable<DateTime>(map['recentUsages'] as Iterable,
         (val) => dateTimeUtcProcessor.deserialize(val as String));
     obj.usageCount = map['usageCount'] as int;
