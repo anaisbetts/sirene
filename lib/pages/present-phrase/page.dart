@@ -58,6 +58,7 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
 
   Future<void> speakText() async {
     PresentPhraseOptions settings = ModalRoute.of(context).settings.arguments;
+    final sm = App.locator.get<StorageManager>();
 
     if (isCancelled) {
       return;
@@ -77,12 +78,33 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
       });
     }
 
-    final fli = FirebaseLanguageIdentification.instance;
-    final lang = await fli.identifyLanguage(settings.phrase.text);
+    if (settings.phrase.detectedLanguage == null) {
+      final fli = FirebaseLanguageIdentification.instance;
+      settings.phrase.detectedLanguage =
+          await fli.identifyLanguage(settings.phrase.text);
+    }
+
+    // NB: This code is trickier than it should be, because we can detect
+    // a language correctly, but not have a TTS engine for it. Furthermore,
+    // a user could use two devices, where one has it and one doesn't, so
+    // we don't just want to stomp away the language if we don't have a TTS
+    // engine for *this device*.
+    var lang = settings.phrase.detectedLanguage;
+
+    // NB: 'und' is what MLKit uses for "undetected"
+    if (lang == "und") {
+      lang = null;
+    }
+
     if (lang != null && languageList.containsKey(lang)) {
       await tts.setLanguage(languageList[lang]);
     } else {
-      await tts.setLanguage('en-US');
+      lang = await sm.getRecentFallbackLanguage();
+      if (lang == null || !languageList.containsKey(lang)) {
+        lang = 'en';
+      }
+
+      await tts.setLanguage(languageList[lang]);
     }
 
     if (isCancelled) {
@@ -98,8 +120,7 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
 
     // NB: This is intentionally not awaited, we don't want to block the user
     // getting back to what they're doing
-    final sm = App.locator.get<StorageManager>();
-    logAsyncException(sm.presentPhrase(settings.phrase),
+    logAsyncException(sm.savePresentedPhrase(settings.phrase),
         rethrowIt: false, message: "Failed to update phrase usage info");
 
     if (isCancelled) {

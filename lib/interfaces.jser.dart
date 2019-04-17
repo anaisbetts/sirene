@@ -14,6 +14,7 @@ abstract class _$PhraseJsonSerializer implements Serializer<Phrase> {
     setMapValue(ret, 'text', model.text);
     setMapValue(ret, 'spokenText', model.spokenText);
     setMapValue(ret, 'isReply', model.isReply);
+    setMapValue(ret, 'detectedLanguage', model.detectedLanguage);
     setMapValue(
         ret,
         'recentUsages',
@@ -32,6 +33,7 @@ abstract class _$PhraseJsonSerializer implements Serializer<Phrase> {
     obj.text = map['text'] as String;
     obj.spokenText = map['spokenText'] as String;
     obj.isReply = map['isReply'] as bool;
+    obj.detectedLanguage = map['detectedLanguage'] as String;
     obj.recentUsages = codeIterable<DateTime>(map['recentUsages'] as Iterable,
         (val) => dateTimeUtcProcessor.deserialize(val as String));
     obj.usageCount = map['usageCount'] as int;
@@ -49,6 +51,8 @@ abstract class _$UserJsonSerializer implements Serializer<User> {
     setMapValue(ret, 'lastCustomPhrase', model.lastCustomPhrase);
     setMapValue(ret, 'lastCustomPhraseCreatedOn',
         dateTimeUtcProcessor.serialize(model.lastCustomPhraseCreatedOn));
+    setMapValue(ret, 'recentlyUsedLanguages',
+        codeIterable(model.recentlyUsedLanguages, (val) => val as String));
     return ret;
   }
 
@@ -61,6 +65,8 @@ abstract class _$UserJsonSerializer implements Serializer<User> {
     obj.lastCustomPhrase = map['lastCustomPhrase'] as String;
     obj.lastCustomPhraseCreatedOn = dateTimeUtcProcessor
         .deserialize(map['lastCustomPhraseCreatedOn'] as String);
+    obj.recentlyUsedLanguages = codeIterable<String>(
+        map['recentlyUsedLanguages'] as Iterable, (val) => val as String);
     return obj;
   }
 }
