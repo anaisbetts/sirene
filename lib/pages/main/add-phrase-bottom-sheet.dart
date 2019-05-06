@@ -8,7 +8,7 @@ class AddPhraseBottomSheet extends StatefulWidget {
 }
 
 class _AddPhraseBottomSheetState extends BindableState<AddPhraseBottomSheet> {
-  TextEditingController toSpeak = TextEditingController(text: "");
+  TextEditingController toSpeak = TextEditingController(text: '');
 
   FocusNode textBoxFocus = FocusNode();
   bool isReply = false;
@@ -28,7 +28,7 @@ class _AddPhraseBottomSheetState extends BindableState<AddPhraseBottomSheet> {
 
     // NB: Make sure the keyboard gets shown once the dialog is initially
     // popped
-    Future.delayed(Duration(milliseconds: 10))
+    Future<void>.delayed(Duration(milliseconds: 10))
         .then((_) => FocusScope.of(context).requestFocus(textBoxFocus));
   }
 
@@ -38,7 +38,7 @@ class _AddPhraseBottomSheetState extends BindableState<AddPhraseBottomSheet> {
         direction: Axis.vertical,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Text("Phrase to say:", style: Theme.of(context).textTheme.headline),
+          Text('Phrase to say:', style: Theme.of(context).textTheme.headline),
           TextField(
             controller: toSpeak,
             focusNode: textBoxFocus,
@@ -54,7 +54,7 @@ class _AddPhraseBottomSheetState extends BindableState<AddPhraseBottomSheet> {
                   onChanged: (x) => setState(() => isReply = x),
                 ),
                 Text(
-                  "Treat this phrase as a Reply",
+                  'Treat this phrase as a Reply',
                   style: Theme.of(context).textTheme.body1,
                 )
               ]),
@@ -62,7 +62,7 @@ class _AddPhraseBottomSheetState extends BindableState<AddPhraseBottomSheet> {
             child: Container(),
           ),
           RaisedButton(
-              child: Text("Ok"),
+              child: const Text('Ok'),
               onPressed: !hasText
                   ? null
                   : () => Navigator.pop(
@@ -70,7 +70,7 @@ class _AddPhraseBottomSheetState extends BindableState<AddPhraseBottomSheet> {
         ]);
 
     return Dialog(
-      child: Padding(padding: EdgeInsets.all(8), child: actualContent),
+      child: Padding(padding: const EdgeInsets.all(8), child: actualContent),
     );
   }
 }

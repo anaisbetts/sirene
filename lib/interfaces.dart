@@ -32,7 +32,7 @@ abstract class StorageManager {
 
   Future<void> savePresentedPhrase(Phrase phrase, {UserInfo forUser});
 
-  static isCustomPhraseExpired(DateTime forDate) {
+  static bool isCustomPhraseExpired(DateTime forDate) {
     final expiration = forDate.add(Duration(hours: 1));
     return expiration.isBefore(DateTime.now());
   }
@@ -49,6 +49,7 @@ abstract class FirebaseDocument {
 class User implements FirebaseDocument {
   User({this.email, this.isAnonymous});
 
+  @override
   @ignore
   String id;
 
@@ -78,6 +79,7 @@ const kMaxRecentLanguageCount = 3;
 class Phrase implements FirebaseDocument {
   Phrase({this.text, this.spokenText, this.isReply});
 
+  @override
   @ignore
   String id;
 
@@ -90,10 +92,10 @@ class Phrase implements FirebaseDocument {
   int usageCount;
 
   static Phrase fromDocument(DocumentSnapshot ds) {
-    final ret = phraseSerializer.fromDocument(ds);
+    final ret = phraseSerializer.fromDocument(ds)
+      ..usageCount ??= 0
+      ..recentUsages ??= [];
 
-    ret.usageCount ??= 0;
-    ret.recentUsages ??= [];
     return ret;
   }
 
@@ -121,34 +123,34 @@ class Phrase implements FirebaseDocument {
      * alphebetical by text 
      */
 
-    final ret = phrases.toList();
-    ret.sort((l, r) {
-      if (repliesFirst && l.isReply != r.isReply) {
-        return l.isReply ? -1 : 1;
-      }
-
-      if (l.usageCount != r.usageCount) {
-        return r.usageCount.compareTo(l.usageCount);
-      }
-
-      if (l.recentUsages.length > 0 && r.recentUsages.length > 0) {
-        var latestL = l.recentUsages.fold<DateTime>(
-          DateTime.fromMicrosecondsSinceEpoch(0),
-          (acc, x) => acc.isBefore(x) ? acc : x,
-        );
-
-        var latestR = l.recentUsages.fold<DateTime>(
-          DateTime.fromMicrosecondsSinceEpoch(0),
-          (acc, x) => acc.isBefore(x) ? acc : x,
-        );
-
-        if (!latestL.isAtSameMomentAs(latestR)) {
-          return latestR.compareTo(latestL);
+    final ret = phrases.toList()
+      ..sort((l, r) {
+        if (repliesFirst && l.isReply != r.isReply) {
+          return l.isReply ? -1 : 1;
         }
-      }
 
-      return l.text.toLowerCase().compareTo(r.text.toLowerCase());
-    });
+        if (l.usageCount != r.usageCount) {
+          return r.usageCount.compareTo(l.usageCount);
+        }
+
+        if (l.recentUsages.isNotEmpty && r.recentUsages.isNotEmpty) {
+          var latestL = l.recentUsages.fold<DateTime>(
+            DateTime.fromMicrosecondsSinceEpoch(0),
+            (acc, x) => acc.isBefore(x) ? acc : x,
+          );
+
+          var latestR = l.recentUsages.fold<DateTime>(
+            DateTime.fromMicrosecondsSinceEpoch(0),
+            (acc, x) => acc.isBefore(x) ? acc : x,
+          );
+
+          if (!latestL.isAtSameMomentAs(latestR)) {
+            return latestR.compareTo(latestL);
+          }
+        }
+
+        return l.text.toLowerCase().compareTo(r.text.toLowerCase());
+      });
 
     return ret;
   }
@@ -156,18 +158,17 @@ class Phrase implements FirebaseDocument {
 
 mixin FirebaseSerializerMixin<T extends FirebaseDocument> on Serializer<T> {
   T fromDocument(DocumentSnapshot ds) {
-    final ret = this.fromMap(ds.data);
-    ret.id = ds.documentID;
+    final ret = fromMap(ds.data)..id = ds.documentID;
 
     return ret;
   }
 
   Future<void> toDocument(T item, DocumentReference dr) {
-    return dr.setData(this.toMap(item));
+    return dr.setData(toMap(item));
   }
 
   Future<void> addToCollection(T item, CollectionReference cr) {
-    return cr.add(this.toMap(item));
+    return cr.add(toMap(item));
   }
 }
 

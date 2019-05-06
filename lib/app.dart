@@ -19,7 +19,7 @@ import 'package:sirene/services/theming.dart';
 
 class App extends State<AppWidget> {
   static GetIt locator;
-  static Map<String, Trace> traces = Map();
+  static Map<String, Trace> traces = {};
 
   App() {
     traces['app_startup'] =
@@ -30,8 +30,8 @@ class App extends State<AppWidget> {
 
   static FirebaseAnalytics get analytics => App.locator<FirebaseAnalytics>();
 
-  static setupRegistration(GetIt l) {
-    final isTestMode = Platform.resolvedExecutable.contains("_tester");
+  static GetIt setupRegistration(GetIt l) {
+    final isTestMode = Platform.resolvedExecutable.contains('_tester');
     var isDebugMode = false;
 
     // NB: Assert statements are stripped from release mode. Clever!
@@ -41,29 +41,32 @@ class App extends State<AppWidget> {
         ? ApplicationMode.Test
         : isDebugMode ? ApplicationMode.Debug : ApplicationMode.Production;
 
-    l.registerSingleton<ApplicationMode>(appMode);
-    l.registerSingleton<Router>(setupRoutes(Router()));
-    l.registerSingleton<StorageManager>(FirebaseStorageManager());
+    l
+      ..registerSingleton<ApplicationMode>(appMode)
+      ..registerSingleton<Router>(setupRoutes(Router()))
+      ..registerSingleton<StorageManager>(FirebaseStorageManager());
 
     if (appMode == ApplicationMode.Production) {
-      l.registerSingleton<FirebaseAnalytics>(FirebaseAnalytics());
-      l.registerSingleton<SentryClient>(SentryClient(
-          dsn: 'https://04bfa4b9d5d34110a41b89e8d8c74649@sentry.io/1425391'));
-      l.registerSingleton<LogWriter>(new ProductionLogWriter());
+      l
+        ..registerSingleton<FirebaseAnalytics>(FirebaseAnalytics())
+        ..registerSingleton<SentryClient>(SentryClient(
+            dsn: 'https://04bfa4b9d5d34110a41b89e8d8c74649@sentry.io/1425391'))
+        ..registerSingleton<LogWriter>(ProductionLogWriter());
     } else {
-      l.registerSingleton<FirebaseAnalytics>(DebugFirebaseAnalytics());
-      l.registerSingleton<LogWriter>(new DebugLogWriter());
+      l
+        ..registerSingleton<FirebaseAnalytics>(DebugFirebaseAnalytics())
+        ..registerSingleton<LogWriter>(DebugLogWriter());
     }
 
-    l.registerSingleton<LoginManager>(new FirebaseLoginManager());
-
-    l.registerSingleton<RouteObserver>(
-        new FirebaseAnalyticsObserver(analytics: l<FirebaseAnalytics>()));
+    l
+      ..registerSingleton<LoginManager>(FirebaseLoginManager())
+      ..registerSingleton<RouteObserver>(
+          FirebaseAnalyticsObserver(analytics: l<FirebaseAnalytics>()));
 
     return l;
   }
 
-  static setupRoutes(Router r) {
+  static Router setupRoutes(Router r) {
     MainPage.setupRoutes(r);
     PresentPhrasePage.setupRoutes(r);
     return r;
@@ -85,5 +88,5 @@ class App extends State<AppWidget> {
 
 class AppWidget extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => new App();
+  State<StatefulWidget> createState() => App();
 }

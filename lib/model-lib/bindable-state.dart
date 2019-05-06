@@ -13,7 +13,7 @@ abstract class BindableState<T extends StatefulWidget> extends State<T> {
 
   void setupBinds([List<Subscriber<dynamic>> toDispose]) {
     if (_toDispose != null) {
-      throw Exception("Only initialize this once in your Constructor!");
+      throw Exception('Only initialize this once in your Constructor!');
     }
 
     _toDispose = toDispose;
@@ -30,7 +30,7 @@ abstract class BindableState<T extends StatefulWidget> extends State<T> {
     // someVar won't be set on the initial build, since setState will schedule.
     //
     // Instead, we'll change setState to setStateUnlessWeHaventInittedYet
-    if (!this.mounted) {
+    if (!mounted) {
       fn();
     } else {
       super.setState(fn);
@@ -42,10 +42,12 @@ abstract class BindableState<T extends StatefulWidget> extends State<T> {
     super.initState();
 
     if (_toDispose == null) {
-      throw Exception("Call setupBinds in your Constructor!");
+      throw Exception('Call setupBinds in your Constructor!');
     }
 
-    _toDispose.forEach((fn) => _sub.add(fn()));
+    for (var d in _toDispose) {
+      _sub.add<dynamic>(d());
+    }
   }
 
   @override
@@ -53,7 +55,9 @@ abstract class BindableState<T extends StatefulWidget> extends State<T> {
     super.didUpdateWidget(oldWidget);
 
     _sub.clear();
-    _toDispose.forEach((fn) => _sub.add(fn()));
+    for (var d in _toDispose) {
+      _sub.add<dynamic>(d());
+    }
   }
 
   @override

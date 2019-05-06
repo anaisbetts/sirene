@@ -19,66 +19,62 @@ void main() {
         return;
       }
 
-      LogWriter logger;
       try {
-        logger = App.locator.get<LogWriter>();
-        logger.logError(details.exception, details.stack);
+        App.locator.get<LogWriter>().logError(details.exception, details.stack);
       } catch (_) {
         FlutterError.dumpErrorToConsole(details);
       }
     }
   };
 
-  Isolate.current.addErrorListener(new RawReceivePort((dynamic pair) {
+  Isolate.current.addErrorListener(RawReceivePort((dynamic pair) {
     var isolateError = pair as List<dynamic>;
-    dynamic error = isolateError.first;
+    final error = isolateError.first;
     final nativeStack = isolateError.last.toString();
 
     var isDebug = false;
     assert(isDebug = true);
 
     if (isDebug) {
-      debugPrint(error);
+      debugPrint(error.toString());
       debugPrint(nativeStack);
     } else {
       if (App.locator == null) {
-        debugPrint(error);
+        debugPrint(error.toString());
         debugPrint(nativeStack);
         return;
       }
 
-      LogWriter logger;
       try {
-        logger = App.locator.get<LogWriter>();
-        logger.logError(error, null, extras: {"nativeStack": nativeStack});
+        App.locator
+            .get<LogWriter>()
+            .logError(error, null, extras: {'nativeStack': nativeStack});
       } catch (_) {
-        debugPrint(error);
+        debugPrint(error.toString());
         debugPrint(nativeStack);
       }
     }
   }).sendPort);
 
-  runZoned(() => runApp(AppWidget()), onError: (e, st) {
+  runZoned(() => runApp(AppWidget()), onError: (e, StackTrace st) {
     var isDebug = false;
     assert(isDebug = true);
 
     if (isDebug) {
-      debugPrint(e);
-      debugPrint(st);
+      debugPrint(e.toString());
+      debugPrint(st.toString());
     } else {
       if (App.locator == null) {
-        debugPrint(e);
-        debugPrint(st);
+        debugPrint(e.toString());
+        debugPrint(st.toString());
         return;
       }
 
-      LogWriter logger;
       try {
-        logger = App.locator.get<LogWriter>();
-        logger.logError(e, st);
+        App.locator.get<LogWriter>().logError(e, st);
       } catch (_) {
-        debugPrint(e);
-        debugPrint(st);
+        debugPrint(e.toString());
+        debugPrint(st.toString());
       }
     }
   });

@@ -25,8 +25,9 @@ class FirebaseStorageManager implements StorageManager {
       }
 
       final q = query ?? allPhrasesQuery(forUser: u);
-      return q.snapshots().map(
-          (xs) => xs.documents.map((x) => Phrase.fromDocument(x)).toList());
+      return q
+          .snapshots()
+          .map((xs) => xs.documents.map(Phrase.fromDocument).toList());
     });
   }
 
@@ -37,7 +38,7 @@ class FirebaseStorageManager implements StorageManager {
         .collection('phrases')
         .add({});
 
-    phrase.toDocument(dr);
+    await phrase.toDocument(dr);
   }
 
   @override
@@ -81,14 +82,15 @@ class FirebaseStorageManager implements StorageManager {
 
     final userRef =
         Firestore.instance.collection('users').document(userInfo.uid);
-    final user = User.fromDocument(await userRef.get());
 
-    user.lastCustomPhrase = phrase;
-    user.lastCustomPhraseCreatedOn = DateTime.now();
+    final user = User.fromDocument(await userRef.get())
+      ..lastCustomPhrase = phrase
+      ..lastCustomPhraseCreatedOn = DateTime.now();
 
     await user.toDocument(userRef);
   }
 
+  @override
   Future<void> upsertSavedPhrase(Phrase phrase,
       {UserInfo forUser, bool addOnly = false}) async {
     final userInfo = forUser ?? App.locator.get<LoginManager>().currentUser;
@@ -102,7 +104,7 @@ class FirebaseStorageManager implements StorageManager {
         .limit(1)
         .getDocuments();
 
-    if (match.documents.length > 0) {
+    if (match.documents.isNotEmpty) {
       // NB: We add an addOnly feature here because otherwise,
       // accidentally adding an already-added phrase would clear
       // the recency information
@@ -139,10 +141,10 @@ class FirebaseStorageManager implements StorageManager {
 
     if (phrase.detectedLanguage != null) {
       final ur = Firestore.instance.collection('users').document(userInfo.uid);
-      final user = User.fromDocument(await ur.get());
+      final user = User.fromDocument(await ur.get())
+        ..recentlyUsedLanguages ??= []
+        ..recentlyUsedLanguages.add(phrase.detectedLanguage);
 
-      user.recentlyUsedLanguages ??= [];
-      user.recentlyUsedLanguages.add(phrase.detectedLanguage);
       while (user.recentlyUsedLanguages.length > kMaxRecentLanguageCount) {
         user.recentlyUsedLanguages.removeAt(0);
       }
@@ -167,8 +169,9 @@ class FirebaseStorageManager implements StorageManager {
   }
 
   Future<void> loadDefaultSavedPhrases({UserInfo forUser}) async {
-    List<dynamic> phrases = jsonDecode(
-        await rootBundle.loadString('resources/initial-phrases.json'));
+    final phrases = jsonDecode(
+            await rootBundle.loadString('resources/initial-phrases.json'))
+        as List<Map<String, dynamic>>;
 
     final userInfo = forUser ?? App.locator.get<LoginManager>().currentUser;
     final phraseColl = Firestore.instance
@@ -176,7 +179,7 @@ class FirebaseStorageManager implements StorageManager {
         .document(userInfo.uid)
         .collection('phrases');
 
-    await Future.wait(phrases.map((x) => phraseColl.add(x)));
+    await Future.wait(phrases.map(phraseColl.add));
   }
 
   @override
@@ -188,11 +191,13 @@ class FirebaseStorageManager implements StorageManager {
         .get());
 
     if (user.recentlyUsedLanguages == null ||
-        user.recentlyUsedLanguages.length < 1) {
+        user.recentlyUsedLanguages.isEmpty) {
       return null;
     }
 
-    Map<String, int> stats = user.recentlyUsedLanguages.fold(Map(), (acc, x) {
+    // ignore: omit_local_variable_types
+    Map<String, int> stats =
+        user.recentlyUsedLanguages.fold(<String, int>{}, (acc, x) {
       acc[x] ??= 0;
       acc[x] = acc[x] + 1;
       return acc;

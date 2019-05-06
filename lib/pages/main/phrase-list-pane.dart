@@ -39,9 +39,9 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
   PhraseCard({@required this.phrase, @required this.replyMode, Key key})
       : super(key: key);
 
-  presentPhrase(BuildContext ctx) {
+  void presentPhrase(BuildContext ctx) {
     logAsyncException(
-        App.analytics.logEvent(name: "saved_phrase_presented", parameters: {
+        App.analytics.logEvent(name: 'saved_phrase_presented', parameters: {
           "length": phrase.text.length,
           "pauseAfterFinished": false,
         }),

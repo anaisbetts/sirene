@@ -21,7 +21,7 @@ class PagedViewController {
   final ValueNotifier<int> selectionChanged = ValueNotifier(0);
 
   final ValueNotifier<RxCommand<dynamic, dynamic>> fabButton =
-      ValueNotifier(RxCommand.createSync((_) => {}));
+      ValueNotifier(RxCommand.createSync<dynamic, void>((dynamic _) {}));
 }
 
 class PagedViewBottomNavBar extends StatefulWidget {
@@ -89,7 +89,7 @@ class _PagedViewBodyState extends BindableState<PagedViewBody> {
     ]);
   }
 
-  _pageChanged(int page) {
+  void _pageChanged(int page) {
     // NB: Somehow on startup this is null. How the hell that can happen,
     // I don't know.
     if (widget.controller.pageController.page == null) {
@@ -109,10 +109,10 @@ class _PagedViewBodyState extends BindableState<PagedViewBody> {
     return Container(
       color: Theme.of(context).backgroundColor,
       child: Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: PageView.builder(
             controller: widget.controller.pageController,
-            physics: AlwaysScrollableScrollPhysics(),
+            physics: const AlwaysScrollableScrollPhysics(),
             itemCount: widget.items.length,
             onPageChanged: (i) =>
                 setState(() => widget.controller.selectionChanged.value = i),

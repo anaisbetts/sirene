@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:pedantic/pedantic.dart';
 import 'package:rx_command/rx_command.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -44,7 +45,7 @@ class _ReplyToggleState extends BindableState<_ReplyToggle> {
         direction: Axis.horizontal,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Text("Replies", style: Theme.of(context).primaryTextTheme.body1),
+          Text('Replies', style: Theme.of(context).primaryTextTheme.body1),
           Switch(
               value: toggle, onChanged: (x) => widget.replyModeToggle.value = x)
         ],
@@ -54,12 +55,12 @@ class _ReplyToggleState extends BindableState<_ReplyToggle> {
 }
 
 class MainPage extends StatefulWidget {
-  static setupRoutes(Router r) {
+  static Router setupRoutes(Router r) {
     final h = Router.exactMatchFor(
         route: '/',
         builder: (_) => MainPage(),
-        bottomNavCaption: "hello",
-        bottomNavIcon: (c) => Icon(
+        bottomNavCaption: 'hello',
+        bottomNavIcon: (c) => const Icon(
               Icons.settings,
               size: 30,
             ));
@@ -105,22 +106,22 @@ class _MainPageState extends BindableState<MainPage>
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(milliseconds: 250))
-        .then((_) => showPrivacyDialogIfNeeded());
+    Future<void>.delayed(Duration(milliseconds: 250))
+        .then<void>((_) => showPrivacyDialogIfNeeded());
   }
 
   @override
   Widget build(BuildContext context) {
     final panes = <NavigationItem>[
       NavigationItem(
-          icon: Icon(Icons.record_voice_over, size: 30),
-          caption: "phrases",
+          icon: const Icon(Icons.record_voice_over, size: 30),
+          caption: 'phrases',
           contents: PhraseListPane(
             replyMode: replyMode,
           )),
       NavigationItem(
-          icon: Icon(Icons.chat_bubble_outline, size: 30),
-          caption: "speak",
+          icon: const Icon(Icons.chat_bubble_outline, size: 30),
+          caption: 'speak',
           contents: SpeakPane(
             controller: controller,
             replyMode: replyMode,
@@ -138,25 +139,24 @@ class _MainPageState extends BindableState<MainPage>
     final appBarTitles =
         PagedViewSelector(controller: controller, children: <Widget>[
       Text(
-        "Saved Phrases",
+        'Saved Phrases',
         style: Theme.of(context).primaryTextTheme.title,
       ),
-      Text("Speak text")
+      const Text('Speak text')
     ]);
 
     final floatingActionButtons =
         PagedViewSelector(controller: controller, children: <Widget>[
       FloatingActionButton(
-          child: Icon(Icons.add),
+          child: const Icon(Icons.add),
           backgroundColor:
               user != null ? null : Theme.of(context).disabledColor,
-          onPressed: user != null ? () => onPressedAddSavedPhraseFab() : null),
+          onPressed: user != null ? onPressedAddSavedPhraseFab : null),
       FloatingActionButton(
-          child: Icon(Icons.speaker),
+          child: const Icon(Icons.speaker),
           backgroundColor:
               speakFabCanExecute ? null : Theme.of(context).disabledColor,
-          onPressed:
-              this.speakFabCanExecute ? () => speakPaneFab.execute() : null),
+          onPressed: speakFabCanExecute ? () => speakPaneFab.execute() : null),
     ]);
 
     return Theme(
@@ -177,7 +177,7 @@ class _MainPageState extends BindableState<MainPage>
             )));
   }
 
-  showPrivacyDialogIfNeeded() async {
+  void showPrivacyDialogIfNeeded() async {
     const privacyKey = 'seenPrivacyScreen';
 
     final sharedPrefs = await SharedPreferences.getInstance();
@@ -185,12 +185,12 @@ class _MainPageState extends BindableState<MainPage>
       return;
     }
 
-    sharedPrefs.setBool(privacyKey, true);
+    unawaited(sharedPrefs.setBool(privacyKey, true));
 
     final privacyText = await rootBundle.loadString('resources/privacy.md');
     showAboutDialog(
-        context: this.context,
-        applicationName: "Some Important Information!",
+        context: context,
+        applicationName: 'Some Important Information!',
         children: <Widget>[
           MarkdownBody(
             data: privacyText,
@@ -198,7 +198,7 @@ class _MainPageState extends BindableState<MainPage>
         ]);
   }
 
-  onPressedAddSavedPhraseFab() async {
+  void onPressedAddSavedPhraseFab() async {
     // NB: This was originally envisioned as a bottom sheet but
     // https://github.com/flutter/flutter/issues/18564 throws a spanner
     // in that plan
@@ -209,9 +209,10 @@ class _MainPageState extends BindableState<MainPage>
     final sm = App.locator.get<StorageManager>();
 
     logAsyncException(
-        App.analytics.logEvent(name: "add_new_phrase", parameters: {
-          "length": newPhrase.text.length,
-          "isReply": newPhrase.isReply,
+        App.analytics
+            .logEvent(name: 'add_new_phrase', parameters: <String, dynamic>{
+          'length': newPhrase.text.length,
+          'isReply': newPhrase.isReply,
         }),
         rethrowIt: false);
 

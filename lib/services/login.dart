@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:pedantic/pedantic.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'package:sirene/app.dart';
@@ -11,6 +12,7 @@ import 'package:sirene/services/logging.dart';
 
 class FirebaseLoginManager with LoggerMixin implements LoginManager {
   UserInfo _currentUser;
+  @override
   UserInfo get currentUser => _currentUser;
 
   final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -32,7 +34,7 @@ class FirebaseLoginManager with LoggerMixin implements LoginManager {
       ret = await FirebaseAuth.instance.signInAnonymously();
 
       logAsyncException(
-          (new User(isAnonymous: true)).toDocument(
+          (User(isAnonymous: true)).toDocument(
               Firestore.instance.collection('users').document(ret.uid)),
           rethrowIt: false);
     }
@@ -59,10 +61,10 @@ class FirebaseLoginManager with LoggerMixin implements LoginManager {
 
     final newUser = await logAsyncException(() async {
       final ret = await _upgradeAnonymousUser();
-      App.analytics.logEvent(name: "upgrade_user", parameters: {
-        "uid": ret.uid,
-        "email": ret.email,
-      });
+      unawaited(App.analytics.logEvent(name: 'upgrade_user', parameters: {
+        'uid': ret.uid,
+        'email': ret.email,
+      }));
 
       return ret;
     }());
@@ -71,10 +73,10 @@ class FirebaseLoginManager with LoggerMixin implements LoginManager {
 
     // NB: This is intentionally not awaited, there's no reason to
     // block on this
-    logAsyncException(
-        (new User(isAnonymous: false, email: newUser.email)).toDocument(
+    unawaited(logAsyncException(
+        (User(isAnonymous: false, email: newUser.email)).toDocument(
             Firestore.instance.collection('users').document(newUser.uid)),
-        rethrowIt: false);
+        rethrowIt: false));
 
     return newUser;
   }
@@ -93,7 +95,7 @@ class FirebaseLoginManager with LoggerMixin implements LoginManager {
 }
 
 mixin UserEnabledPage<T extends StatefulWidget> on State<T> {
-  var userRequestError = new PublishSubject<Error>();
+  var userRequestError = PublishSubject<dynamic>();
 
   UserInfo withNamedUser() {
     final user = App.locator<LoginManager>().currentUser;
@@ -102,17 +104,16 @@ mixin UserEnabledPage<T extends StatefulWidget> on State<T> {
       return user;
     }
 
-    final getUser = App.locator<LoginManager>().ensureNamedUser();
-
-    getUser.then((_) {
-      App.analytics.logLogin();
-      setState(() {});
-    }, onError: (e, st) {
-      final log = App.locator.get<LogWriter>();
-
-      log.logError(e, st, message: "Failed to ensure user");
-      userRequestError.add(e);
-    });
+    App.locator<LoginManager>().ensureNamedUser()
+      ..then((_) {
+        App.analytics.logLogin();
+        setState(() {});
+      }, onError: (e, st) {
+        App.locator
+            .get<LogWriter>()
+            .logError(e, st as StackTrace, message: 'Failed to ensure user');
+        userRequestError.add(e);
+      });
 
     return user;
   }

@@ -22,7 +22,7 @@ class ThemeMetrics {
   static ThemeData fullTheme() {
     final titleFont = TextTheme(
         title: TextStyle(
-      fontFamily: "GrandHotel",
+      fontFamily: 'GrandHotel',
       fontSize: 26.0,
     ));
 

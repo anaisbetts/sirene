@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 
 import 'package:device_info/device_info.dart';
 import 'package:package_info/package_info.dart';
+import 'package:pedantic/pedantic.dart';
 import 'package:sentry/sentry.dart' as sentry;
 
 import 'package:sirene/app.dart';
@@ -14,7 +15,7 @@ import 'package:sirene/interfaces.dart';
  * Exceptions to Firebase + Sentry, dump ringbuffer
  */
 
-final Map<int, String> _typeNameMap = Map();
+final Map<int, String> _typeNameMap = {};
 
 abstract class LogWriter {
   void log(String message, {bool isDebug, Map<String, dynamic> extras});
@@ -50,7 +51,8 @@ class _LogMessage {
 const kMaxBufferSize = 16;
 
 class ProductionLogWriter implements LogWriter {
-  var _ringBuffer = <_LogMessage>[];
+  final _ringBuffer = <_LogMessage>[];
+
   PackageInfo _packageInfo;
   AndroidDeviceInfo _androidDeviceInfo;
   IosDeviceInfo _iosDeviceInfo;
@@ -87,7 +89,7 @@ class ProductionLogWriter implements LogWriter {
   @override
   void logError(dynamic ex, StackTrace st,
       {String message, Map<String, dynamic> extras}) {
-    extras ??= Map();
+    extras ??= {};
     final user = App.locator.get<LoginManager>().currentUser;
     var deviceFingerprint = '';
     var device = '';
@@ -115,16 +117,16 @@ class ProductionLogWriter implements LogWriter {
             extra: extras,
             message: message,
             tags: {
-              "device": device,
-              "deviceFingerprint": deviceFingerprint,
-              "os": os,
+              'device': device,
+              'deviceFingerprint': deviceFingerprint,
+              'os': os,
             },
             userContext: sentry.User(email: user.email, id: user.uid),
             release: _packageInfo.version));
 
     App.analytics.logEvent(name: 'app_error', parameters: {
-      "message": message ?? '',
-      "error": ex.toString(),
+      'message': message ?? '',
+      'error': ex.toString(),
     });
   }
 }
@@ -137,17 +139,17 @@ mixin LoggerMixin {
   }
 
   log(String message) {
-    final name = _typeNameMap[this.runtimeType.hashCode] ??
-        (_typeNameMap[this.runtimeType.hashCode] = this.runtimeType.toString());
+    final name = _typeNameMap[runtimeType.hashCode] ??
+        (_typeNameMap[runtimeType.hashCode] = runtimeType.toString());
 
-    _ensureLogger().log("$name: $message");
+    _ensureLogger().log('$name: $message');
   }
 
   debug(String message) {
-    final name = _typeNameMap[this.runtimeType.hashCode] ??
-        (_typeNameMap[this.runtimeType.hashCode] = this.runtimeType.toString());
+    final name = _typeNameMap[runtimeType.hashCode] ??
+        (_typeNameMap[runtimeType.hashCode] = runtimeType.toString());
 
-    _ensureLogger().log("$name: $message", isDebug: true);
+    _ensureLogger().log('$name: $message', isDebug: true);
   }
 
   logError(dynamic ex, StackTrace st,
@@ -165,10 +167,11 @@ mixin LoggerMixin {
     }
   }
 
-  logAsyncException<TRet>(Future<TRet> block,
+  Future<TRet> logAsyncException<TRet>(Future<TRet> block,
       {bool rethrowIt = true, String message}) async {
     try {
-      return await block;
+      final ret = await block;
+      return ret;
     } catch (e, st) {
       _ensureLogger().logError(e, st, message: message);
       if (rethrowIt) rethrow;
@@ -178,7 +181,7 @@ mixin LoggerMixin {
   traceAsync<TRet>(String name, Future<TRet> block) async {
     final trace = await FirebasePerformance.startTrace(name);
     final ret = await block;
-    trace.stop();
+    unawaited(trace.stop());
 
     return ret;
   }
@@ -197,7 +200,7 @@ List<T> codeIterable<T>(Iterable values, T callback(value)) =>
 
 Map<String, dynamic> androidToMap(AndroidDeviceInfo model) {
   if (model == null) return null;
-  Map<String, dynamic> ret = <String, dynamic>{};
+  final ret = <String, dynamic>{};
   setMapValue(ret, 'board', model.board);
   setMapValue(ret, 'bootloader', model.bootloader);
   setMapValue(ret, 'brand', model.brand);
@@ -222,13 +225,14 @@ Map<String, dynamic> androidToMap(AndroidDeviceInfo model) {
   setMapValue(ret, 'androidId', model.androidId);
 
   ret['version'] =
-      "Android ${model.version.sdkInt} ${model.version.release} - ${model.version.incremental} Patch Level ${model.version.securityPatch}";
+      'Android ${model.version.sdkInt} ${model.version.release} - ${model.version.incremental} Patch Level ${model.version.securityPatch}';
   return ret;
 }
 
 Map<String, dynamic> iosToMap(IosDeviceInfo model) {
   if (model == null) return null;
-  Map<String, dynamic> ret = <String, dynamic>{};
+  final ret = <String, dynamic>{};
+
   setMapValue(ret, 'name', model.name);
   setMapValue(ret, 'systemName', model.systemName);
   setMapValue(ret, 'systemVersion', model.systemVersion);

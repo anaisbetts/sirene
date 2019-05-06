@@ -48,16 +48,18 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
   void initState() {
     super.initState();
 
-    tts = FlutterTts();
+    tts = FlutterTts()
+      ..completionHandler = (() => ttsCompletion.add(null))
+      ..errorHandler = (e) => ttsCompletion.addError(e);
+
     ttsCompletion = PublishSubject();
-    tts.completionHandler = () => ttsCompletion.add(null);
-    tts.errorHandler = (e) => ttsCompletion.addError(e);
 
     Future.delayed(Duration(milliseconds: 10)).then((_) => speakText());
   }
 
   Future<void> speakText() async {
-    PresentPhraseOptions settings = ModalRoute.of(context).settings.arguments;
+    final settings =
+        ModalRoute.of(context).settings.arguments as PresentPhraseOptions;
     final sm = App.locator.get<StorageManager>();
 
     if (isCancelled) {
@@ -68,10 +70,10 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
 
     // TODO: Make this not suck re: locales
     if (languageList == null) {
-      List<dynamic> langs = await tts.getLanguages;
-      final re = RegExp(r"-.*$");
+      final langs = (await tts.getLanguages) as List<dynamic>;
+      final re = RegExp(r'-.*$');
 
-      languageList = langs.fold(Map(), (acc, x) {
+      languageList = langs.fold({}, (acc, x) {
         final langWithLocale = x.toString();
         acc[langWithLocale.replaceAll(re, '')] = langWithLocale;
         return acc;
@@ -83,7 +85,7 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
       final dl = await fli.identifyLanguage(settings.phrase.text);
 
       // 'und' is MLKit's magic code for "we don't know"
-      settings.phrase.detectedLanguage = dl != "und" ? dl : null;
+      settings.phrase.detectedLanguage = dl != 'und' ? dl : null;
     }
 
     // NB: This code is trickier than it should be, because we can detect
@@ -103,6 +105,7 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
       await tts.setLanguage(languageList[lang]);
     }
 
+    // ignore: invariant_booleans
     if (isCancelled) {
       return;
     }
@@ -111,14 +114,15 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
     await logAsyncException(() async {
       await tts.speak(settings.phrase.spokenText ?? settings.phrase.text);
       await ttsCompletion.take(1).last;
-    }(), rethrowIt: false, message: "Failed to utter text");
+    }(), rethrowIt: false, message: 'Failed to utter text');
     isPlaying = false;
 
     // NB: This is intentionally not awaited, we don't want to block the user
     // getting back to what they're doing
     logAsyncException(sm.savePresentedPhrase(settings.phrase),
-        rethrowIt: false, message: "Failed to update phrase usage info");
+        rethrowIt: false, message: 'Failed to update phrase usage info');
 
+    // ignore: invariant_booleans
     if (isCancelled) {
       return;
     }
@@ -126,6 +130,7 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
     if (!settings.pauseAfterFinished) {
       await Future.delayed(Duration(seconds: 5));
 
+      // ignore: invariant_booleans
       if (isCancelled) {
         return;
       }
@@ -141,7 +146,8 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
     final turns = isPortrait ? -1 : 0;
     final scrollAxis = isPortrait ? Axis.horizontal : Axis.vertical;
 
-    PresentPhraseOptions settings = ModalRoute.of(context).settings.arguments;
+    final settings =
+        ModalRoute.of(context).settings.arguments as PresentPhraseOptions;
 
     return Container(
       color: Theme.of(context).primaryColor,

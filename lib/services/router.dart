@@ -10,10 +10,10 @@ class RouteAffinity<T> {
 typedef RouteAffinityHandler<T> = RouteAffinity<T> Function(RouteSettings);
 
 class Router {
-  final List<RouteAffinityHandler<dynamic>> routeHandlers = List();
+  final List<RouteAffinityHandler<dynamic>> routeHandlers = [];
 
   PageRoute<T> routeFor<T>(RouteSettings routeSettings) {
-    final RouteAffinity<dynamic> aff = routeHandlers.fold(null, (acc, x) {
+    final aff = routeHandlers.fold(null, (RouteAffinity<dynamic> acc, x) {
       final result = x(routeSettings);
       if (acc == null) {
         return result;
@@ -22,11 +22,13 @@ class Router {
       return (acc.affinity >= result.affinity ? acc : result);
     });
 
-    return (aff != null && aff.affinity > 0.0) ? aff.route : null;
+    return (aff != null && aff.affinity > 0.0)
+        ? aff.route as PageRoute<T>
+        : null;
   }
 
   Route<dynamic> generator(RouteSettings settings) {
-    return this.routeFor(settings);
+    return routeFor(settings);
   }
 
   static RouteAffinityHandler<void> exactMatchFor(
@@ -39,7 +41,7 @@ class Router {
       bool fullscreenDialog = false}) {
     return (settings) {
       if (settings.name != route) {
-        return RouteAffinity(affinity: 0.0);
+        return const RouteAffinity(affinity: 0.0);
       }
 
       return RouteAffinity(
