@@ -168,6 +168,7 @@ class FirebaseStorageManager implements StorageManager {
     }
   }
 
+  @override
   Future<void> loadDefaultSavedPhrases({UserInfo forUser}) async {
     final phrases = jsonDecode(
             await rootBundle.loadString('resources/initial-phrases.json'))

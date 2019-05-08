@@ -208,13 +208,13 @@ class _MainPageState extends BindableState<MainPage>
     if (newPhrase == null) return;
     final sm = App.locator.get<StorageManager>();
 
-    logAsyncException(
+    unawaited(logAsyncException(
         App.analytics
             .logEvent(name: 'add_new_phrase', parameters: <String, dynamic>{
           'length': newPhrase.text.length,
           'isReply': newPhrase.isReply,
         }),
-        rethrowIt: false);
+        rethrowIt: false));
 
     await sm.upsertSavedPhrase(newPhrase, addOnly: true);
   }

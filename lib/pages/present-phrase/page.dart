@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:mlkit/mlkit.dart';
+import 'package:pedantic/pedantic.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sirene/app.dart';
 
@@ -21,8 +22,8 @@ class PresentPhrasePage extends StatefulWidget {
     final h = Router.exactMatchFor(
         route: '/present',
         builder: (_) => PresentPhrasePage(),
-        bottomNavCaption: "hello",
-        bottomNavIcon: (c) => Icon(
+        bottomNavCaption: 'hello',
+        bottomNavIcon: (c) => const Icon(
               Icons.settings,
               size: 30,
             ));
@@ -119,8 +120,8 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
 
     // NB: This is intentionally not awaited, we don't want to block the user
     // getting back to what they're doing
-    logAsyncException(sm.savePresentedPhrase(settings.phrase),
-        rethrowIt: false, message: 'Failed to update phrase usage info');
+    unawaited(logAsyncException(sm.savePresentedPhrase(settings.phrase),
+        rethrowIt: false, message: 'Failed to update phrase usage info'));
 
     // ignore: invariant_booleans
     if (isCancelled) {

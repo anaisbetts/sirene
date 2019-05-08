@@ -5,7 +5,7 @@ import 'package:rxdart/rxdart.dart';
 
 part 'interfaces.jser.dart';
 
-enum ApplicationMode { Debug, Production, Test }
+enum ApplicationMode { debug, production, test }
 
 abstract class LoginManager {
   UserInfo get currentUser;

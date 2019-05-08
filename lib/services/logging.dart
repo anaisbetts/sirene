@@ -176,6 +176,8 @@ mixin LoggerMixin {
       _ensureLogger().logError(e, st, message: message);
       if (rethrowIt) rethrow;
     }
+
+    return null;
   }
 
   traceAsync<TRet>(String name, Future<TRet> block) async {

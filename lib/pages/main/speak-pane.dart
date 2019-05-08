@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:rx_command/rx_command.dart';
-import 'package:sirene/app.dart';
+import 'package:pedantic/pedantic.dart';
 
+import 'package:sirene/app.dart';
 import 'package:sirene/components/paged-bottom-navbar.dart';
 import 'package:sirene/interfaces.dart';
 import 'package:sirene/model-lib/bindable-state.dart';
@@ -39,7 +40,7 @@ class _FuzzyMatchChipListState extends BindableState<FuzzyMatchChipList> {
 
   @override
   Widget build(BuildContext context) {
-    if (searchText.isEmpty || searchText.length < 1) return Container();
+    if (searchText.isEmpty || searchText.isEmpty) return Container();
 
     final stLower = searchText.toLowerCase();
     final toPresent = Phrase.recencySort(
@@ -98,19 +99,19 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
     textBoxFocus = FocusNode();
 
     final textHasContent =
-        fromValueListener(toSpeak).map((x) => x.text.length > 0);
+        fromValueListener(toSpeak).map((x) => x.text.isNotEmpty);
 
     widget.controller.fabButton.value = RxCommand.createAsync((_) async {
-      logAsyncException(
-          App.analytics.logEvent(name: "custom_phrase_presented", parameters: {
-            "length": toSpeak.text.length,
-            "pauseAfterFinished": pauseAfterFinished,
+      unawaited(logAsyncException(
+          App.analytics.logEvent(name: 'custom_phrase_presented', parameters: {
+            'length': toSpeak.text.length,
+            'pauseAfterFinished': pauseAfterFinished,
           }),
-          rethrowIt: false);
+          rethrowIt: false));
 
       widget.replyMode.value = true;
 
-      await Navigator.of(context).pushNamed("/present",
+      await Navigator.of(context).pushNamed('/present',
           arguments: PresentPhraseOptions(
               phrase: Phrase(text: toSpeak.text, isReply: false),
               pauseAfterFinished: pauseAfterFinished));
@@ -119,16 +120,16 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
     }, canExecute: textHasContent);
 
     quickFindPresent = RxCommand.createAsync((p) async {
-      logAsyncException(
+      unawaited(logAsyncException(
           App.analytics
-              .logEvent(name: "quickfind_phrase_presented", parameters: {
-            "length": p.phrase.text.length,
+              .logEvent(name: 'quickfind_phrase_presented', parameters: {
+            'length': p.phrase.text.length,
           }),
-          rethrowIt: false);
+          rethrowIt: false));
 
       widget.replyMode.value = true;
 
-      await Navigator.of(context).pushNamed("/present", arguments: p);
+      await Navigator.of(context).pushNamed('/present', arguments: p);
       FocusScope.of(context).requestFocus(textBoxFocus);
     });
 
@@ -136,13 +137,14 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
     logAsyncException(
         sm.getCustomPhrase().then((s) => setState(() {
               if (s != null && toSpeak.text.isEmpty) {
-                toSpeak.text = s;
-                toSpeak.selection =
-                    TextSelection(baseOffset: 0, extentOffset: s.length);
+                toSpeak
+                  ..text = s
+                  ..selection =
+                      TextSelection(baseOffset: 0, extentOffset: s.length);
               }
             })),
         rethrowIt: false,
-        message: "Failed to get saved custom phrase");
+        message: 'Failed to get saved custom phrase');
 
     Future.delayed(Duration(milliseconds: 5))
         .then((_) => FocusScope.of(context).requestFocus(textBoxFocus));
@@ -163,7 +165,7 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
         direction: Axis.vertical,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Text("Phrase to say:", style: Theme.of(context).textTheme.headline),
+          Text('Phrase to say:', style: Theme.of(context).textTheme.headline),
           Expanded(
               child: TextField(
             autofocus: true,
@@ -177,9 +179,9 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
             presentPhrase: quickFindPresent,
           ),
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
+            padding: const EdgeInsets.symmetric(vertical: 8),
             child: RaisedButton(
-                child: Text("Clear"),
+                child: const Text('Clear'),
                 onPressed: () {
                   SystemChannels.textInput.invokeMethod('TextInput.show');
                   toSpeak.clear();
@@ -194,14 +196,14 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
                   value: pauseAfterFinished,
                   onChanged: (x) => setState(() => pauseAfterFinished = x),
                 ),
-                Text(
-                  "Pause after phrase is complete",
+                const Text(
+                  'Pause after phrase is complete',
                 )
               ])
         ]);
 
     return Padding(
-        padding: EdgeInsets.all(4),
+        padding: const EdgeInsets.all(4),
         child: Flex(
           direction: Axis.vertical,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -209,7 +211,7 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
             Expanded(
               child: Card(
                   child: Padding(
-                      padding: EdgeInsets.all(8), child: actualContent)),
+                      padding: const EdgeInsets.all(8), child: actualContent)),
               flex: 8,
             ),
             Expanded(

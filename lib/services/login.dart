@@ -33,10 +33,10 @@ class FirebaseLoginManager with LoggerMixin implements LoginManager {
     if (ret == null) {
       ret = await FirebaseAuth.instance.signInAnonymously();
 
-      logAsyncException(
+      unawaited(logAsyncException(
           (User(isAnonymous: true)).toDocument(
               Firestore.instance.collection('users').document(ret.uid)),
-          rethrowIt: false);
+          rethrowIt: false));
     }
 
     _currentUser = ret;

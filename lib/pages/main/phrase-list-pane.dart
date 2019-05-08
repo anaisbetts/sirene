@@ -1,7 +1,8 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import 'package:pedantic/pedantic.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'package:sirene/app.dart';
@@ -26,7 +27,7 @@ class _ReplyHighlightBox extends StatelessWidget {
               color: Theme.of(context).accentColor.withOpacity(0.9),
               blurRadius: 5,
               spreadRadius: 4)
-        ], borderRadius: BorderRadius.all(Radius.circular(6))),
+        ], borderRadius: const BorderRadius.all(Radius.circular(6))),
         child: child);
   }
 }
@@ -42,12 +43,12 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
   void presentPhrase(BuildContext ctx) {
     logAsyncException(
         App.analytics.logEvent(name: 'saved_phrase_presented', parameters: {
-          "length": phrase.text.length,
-          "pauseAfterFinished": false,
+          'length': phrase.text.length,
+          'pauseAfterFinished': false,
         }),
         rethrowIt: false);
 
-    Navigator.of(ctx).pushNamed("/present",
+    Navigator.of(ctx).pushNamed('/present',
         arguments: PresentPhraseOptions(
           phrase: phrase,
           pauseAfterFinished: false,
@@ -60,30 +61,30 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
     final shouldDelete = await showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-              title: Text("Remove Phrase"),
-              content: Text(
-                "Are you sure you want to remove this phrase?",
+              title: const Text('Remove Phrase'),
+              content: const Text(
+                'Are you sure you want to remove this phrase?',
               ),
               actions: <Widget>[
                 FlatButton(
-                    child: Text("Remove"),
+                    child: const Text('Remove'),
                     onPressed: () => Navigator.of(ctx).pop(true)),
                 FlatButton(
-                    child: Text("Cancel"),
+                    child: const Text('Cancel'),
                     onPressed: () => Navigator.of(ctx).pop(false)),
               ],
             ));
 
     if (shouldDelete != true) return false;
 
-    logAsyncException(
-        App.analytics.logEvent(name: "phrase_deleted", parameters: {
-          "length": phrase.text.length,
-          "isReply": phrase.isReply,
+    unawaited(logAsyncException(
+        App.analytics.logEvent(name: 'phrase_deleted', parameters: {
+          'length': phrase.text.length,
+          'isReply': phrase.isReply,
         }),
-        rethrowIt: false);
+        rethrowIt: false));
 
-    App.locator.get<StorageManager>().deletePhrase(phrase);
+    unawaited(App.locator.get<StorageManager>().deletePhrase(phrase));
 
     return true;
   }
@@ -93,7 +94,7 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
     final shadow = TextStyle(fontStyle: FontStyle.italic, shadows: [
       Shadow(
           blurRadius: 4.0,
-          offset: Offset(3.0, 3.0),
+          offset: const Offset(3.0, 3.0),
           color:
               Theme.of(context).accentTextTheme.body1.color.withOpacity(0.15))
     ]);
@@ -123,7 +124,7 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 48,
           )
         ]);
@@ -181,12 +182,12 @@ class _PhraseListPaneState extends BindableState<PhraseListPane>
               App.traces.remove('app_startup');
             }
 
-            if (!hasLoggedPhraseCount && xs.length > 0) {
-              logAsyncException(
+            if (!hasLoggedPhraseCount && xs.isNotEmpty) {
+              unawaited(logAsyncException(
                   App.analytics.logEvent(
-                      name: "saved_phrase_list_size",
-                      parameters: {"length": xs.length}),
-                  rethrowIt: false);
+                      name: 'saved_phrase_list_size',
+                      parameters: {'length': xs.length}),
+                  rethrowIt: false));
 
               hasLoggedPhraseCount = true;
             }
@@ -208,18 +209,18 @@ class _PhraseListPaneState extends BindableState<PhraseListPane>
   Widget build(BuildContext context) {
     final lm = App.locator.get<LoginManager>();
 
-    if (phrases.length == 0) {
+    if (phrases.isEmpty) {
       final loginOrInitialPhrases = (lm.currentUser == null ||
               lm.currentUser.email == null ||
               lm.currentUser.email.isEmpty)
           ? RaisedButton.icon(
-              icon: Icon(Icons.account_circle),
-              label: Text("Login via Google"),
-              onPressed: () => lm.ensureNamedUser(),
+              icon: const Icon(Icons.account_circle),
+              label: const Text('Login via Google'),
+              onPressed: lm.ensureNamedUser,
             )
           : RaisedButton.icon(
-              icon: Icon(Icons.playlist_add),
-              label: Text("Add initial phrases"),
+              icon: const Icon(Icons.playlist_add),
+              label: const Text('Add initial phrases'),
               onPressed: () =>
                   App.locator.get<StorageManager>().loadDefaultSavedPhrases(),
             );
@@ -244,9 +245,9 @@ class _PhraseListPaneState extends BindableState<PhraseListPane>
       controller: scrollController,
       shrinkWrap: true,
       itemCount: phrases.length,
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       gridDelegate:
-          new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+          SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
       itemBuilder: (ctx, i) => PhraseCard(
             key: Key(sortedPhrases[i].text),
             phrase: sortedPhrases[i],
