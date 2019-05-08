@@ -4,13 +4,13 @@ import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:pedantic/pedantic.dart';
-import 'package:rx_command/rx_command.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sirene/rx_command/rx_command.dart';
+import 'package:when_rx/when_rx.dart';
 
 import 'package:sirene/app.dart';
 import 'package:sirene/components/paged-bottom-navbar.dart';
 import 'package:sirene/interfaces.dart';
-import 'package:sirene/model-lib/bindable-state.dart';
 import 'package:sirene/pages/main/add-phrase-bottom-sheet.dart';
 import 'package:sirene/pages/main/phrase-list-pane.dart';
 import 'package:sirene/pages/main/speak-pane.dart';
@@ -32,7 +32,7 @@ class _ReplyToggleState extends BindableState<_ReplyToggle> {
 
   _ReplyToggleState() {
     setupBinds([
-      () => fromValueListener(widget.replyModeToggle)
+      () => fromValueListenable(widget.replyModeToggle)
           .listen((x) => setState(() => toggle = x)),
     ]);
   }
@@ -88,12 +88,12 @@ class _MainPageState extends BindableState<MainPage>
   _MainPageState() {
     // NB: This code sucks so hard, how can we get rid of it
     setupBinds([
-      () => fromValueListener(controller.fabButton)
+      () => fromValueListenable(controller.fabButton)
           .listen((x) => setState(() => speakPaneFab = x)),
-      () => fromValueListener(controller.fabButton)
+      () => fromValueListenable(controller.fabButton)
           .flatMap((x) => x.canExecute)
           .listen((x) => setState(() => speakFabCanExecute = x)),
-      () => fromValueListener(replyMode)
+      () => fromValueListenable(replyMode)
           .listen((x) => setState(() => currentReplyMode = x)),
       () => App.locator
           .get<LoginManager>()

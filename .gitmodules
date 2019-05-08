@@ -4,3 +4,6 @@
 [submodule "vendor/mlkit"]
 	path = vendor/mlkit
 	url = https://github.com/paulcbetts/flutter_mlkit
+[submodule "vendor/when-flutter"]
+	path = vendor/when-flutter
+	url = https://github.com/anaisbetts/when-flutter

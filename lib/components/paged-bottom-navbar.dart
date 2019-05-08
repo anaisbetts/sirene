@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:rx_command/rx_command.dart';
-import 'package:sirene/model-lib/bindable-state.dart';
+import 'package:sirene/rx_command/rx_command.dart';
+import 'package:when_rx/when_rx.dart';
 
 class NavigationItem extends StatelessWidget {
   final Widget icon;
@@ -39,7 +39,7 @@ class _PagedViewBottomNavBarState extends BindableState<PagedViewBottomNavBar> {
 
   _PagedViewBottomNavBarState() {
     setupBinds([
-      () => fromValueListener(widget.controller.selectionChanged)
+      () => fromValueListenable(widget.controller.selectionChanged)
           .listen((x) => setState(() => selectedIndex = x))
     ]);
   }
@@ -84,7 +84,7 @@ class PagedViewBody extends StatefulWidget {
 class _PagedViewBodyState extends BindableState<PagedViewBody> {
   _PagedViewBodyState() {
     setupBinds([
-      () => fromValueListener(widget.controller.selectionChanged)
+      () => fromValueListenable(widget.controller.selectionChanged)
           .listen(_pageChanged),
     ]);
   }
@@ -139,7 +139,7 @@ class _PagedViewSelectorState extends BindableState<PagedViewSelector> {
 
   _PagedViewSelectorState() {
     setupBinds([
-      () => fromValueListener(widget.controller.selectionChanged)
+      () => fromValueListenable(widget.controller.selectionChanged)
           .listen((x) => setState(() => selectedIndex = x)),
     ]);
   }

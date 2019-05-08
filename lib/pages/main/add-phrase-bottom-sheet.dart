@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:when_rx/when_rx.dart';
 import 'package:sirene/interfaces.dart';
-import 'package:sirene/model-lib/bindable-state.dart';
 
 class AddPhraseBottomSheet extends StatefulWidget {
   @override
@@ -16,7 +16,7 @@ class _AddPhraseBottomSheetState extends BindableState<AddPhraseBottomSheet> {
 
   _AddPhraseBottomSheetState() {
     setupBinds([
-      () => fromValueListener(toSpeak)
+      () => fromValueListenable(toSpeak)
           .map((x) => x.text.isNotEmpty)
           .listen((x) => setState(() => hasText = x))
     ]);

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:rx_command/rx_command.dart';
 import 'package:pedantic/pedantic.dart';
+import 'package:when_rx/when_rx.dart';
 
 import 'package:sirene/app.dart';
 import 'package:sirene/components/paged-bottom-navbar.dart';
 import 'package:sirene/interfaces.dart';
-import 'package:sirene/model-lib/bindable-state.dart';
 import 'package:sirene/pages/present-phrase/page.dart';
+import 'package:sirene/rx_command/rx_command.dart';
 import 'package:sirene/services/logging.dart';
 
 class FuzzyMatchChipList extends StatefulWidget {
@@ -33,7 +33,7 @@ class _FuzzyMatchChipListState extends BindableState<FuzzyMatchChipList> {
       () => sm
           .getPhrases()
           .listen((xs) => setState(() => currentPhraseList = xs)),
-      () => fromValueListener(widget.textController)
+      () => fromValueListenable(widget.textController)
           .listen((x) => setState(() => searchText = x.text))
     ]);
   }
@@ -99,7 +99,7 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
     textBoxFocus = FocusNode();
 
     final textHasContent =
-        fromValueListener(toSpeak).map((x) => x.text.isNotEmpty);
+        fromValueListenable(toSpeak).map((x) => x.text.isNotEmpty);
 
     widget.controller.fabButton.value = RxCommand.createAsync((_) async {
       unawaited(logAsyncException(

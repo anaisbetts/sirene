@@ -15,6 +15,6 @@ void main() {
     var fixture = GetIt();
     App.setupRegistration(fixture);
 
-    expect(fixture<ApplicationMode>(), ApplicationMode.Test);
+    expect(fixture<ApplicationMode>(), ApplicationMode.test);
   });
 }

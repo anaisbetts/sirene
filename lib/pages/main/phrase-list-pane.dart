@@ -4,10 +4,10 @@ import 'package:flutter/services.dart';
 
 import 'package:pedantic/pedantic.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:when_rx/when_rx.dart';
 
 import 'package:sirene/app.dart';
 import 'package:sirene/interfaces.dart';
-import 'package:sirene/model-lib/bindable-state.dart';
 import 'package:sirene/pages/present-phrase/page.dart';
 import 'package:sirene/services/logging.dart';
 import 'package:sirene/services/login.dart';
@@ -168,7 +168,7 @@ class _PhraseListPaneState extends BindableState<PhraseListPane>
     final sm = App.locator.get<StorageManager>();
 
     setupBinds([
-      () => fromValueListener(widget.replyMode)
+      () => fromValueListenable(widget.replyMode)
           .skip(1)
           .listen((_) => scrollController.jumpTo(0.0)),
       () => lm
