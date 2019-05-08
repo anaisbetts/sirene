@@ -38,15 +38,15 @@ class App extends State<AppWidget> {
     assert(isDebugMode = true);
 
     final appMode = isTestMode
-        ? ApplicationMode.Test
-        : isDebugMode ? ApplicationMode.Debug : ApplicationMode.Production;
+        ? ApplicationMode.test
+        : isDebugMode ? ApplicationMode.debug : ApplicationMode.production;
 
     l
       ..registerSingleton<ApplicationMode>(appMode)
       ..registerSingleton<Router>(setupRoutes(Router()))
       ..registerSingleton<StorageManager>(FirebaseStorageManager());
 
-    if (appMode == ApplicationMode.Production) {
+    if (appMode == ApplicationMode.production) {
       l
         ..registerSingleton<FirebaseAnalytics>(FirebaseAnalytics())
         ..registerSingleton<SentryClient>(SentryClient(

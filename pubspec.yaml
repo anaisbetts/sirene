@@ -29,10 +29,12 @@ dependencies:
   mlkit:
     path: vendor/mlkit
   package_info: ^0.4.0+2
-  rx_command: ^4.1.0
-  rxdart: ^0.20.0
+  quiver: ^2.0.2
+  rxdart: ^0.22.0
   sentry: ^2.2.0
   shared_preferences: ^0.5.2
+  when_rx:
+    path: vendor/when-flutter
 
 dev_dependencies:
   flutter_test:
