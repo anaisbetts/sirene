@@ -210,7 +210,7 @@ DEPENDENCIES:
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_performance (from `.symlinks/plugins/firebase_performance/ios`)
-  - Flutter (from `.symlinks/flutter/ios`)
+  - Flutter (from `.symlinks/flutter/ios-profile`)
   - flutter_tts (from `.symlinks/plugins/flutter_tts/ios`)
   - google_sign_in (from `.symlinks/plugins/google_sign_in/ios`)
   - mlkit (from `.symlinks/plugins/mlkit/ios`)
@@ -259,7 +259,7 @@ EXTERNAL SOURCES:
   firebase_performance:
     :path: ".symlinks/plugins/firebase_performance/ios"
   Flutter:
-    :path: ".symlinks/flutter/ios"
+    :path: ".symlinks/flutter/ios-profile"
   flutter_tts:
     :path: ".symlinks/plugins/flutter_tts/ios"
   google_sign_in:
