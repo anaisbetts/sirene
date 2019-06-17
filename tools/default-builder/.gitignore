@@ -30,5 +30,4 @@ lib
 test-dist
 docs
 
-# WebStorm
-.idea/
+.vscode

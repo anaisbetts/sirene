@@ -1,0 +1,17 @@
+{
+  "dart.flutterSdkPath": "vendor/flutter",
+  "dart.analysisExcludedFolders": [
+    "vendor"
+  ],
+  "dart.doNotFormat": [
+    "vendor/**/*.dart"
+  ],
+  "dart.analysisServerFolding": false,
+  "dart.analyzeAngularTemplates": false,
+  "dart.closingLabels": false,
+  "dart.devToolsTheme": "dark",
+  "dart.evaluateGettersInDebugViews": false,
+  "dart.flutterCreateAndroidLanguage": "kotlin",
+  "dart.insertArgumentPlaceholders": false,
+  "dart.showTodos": false,
+}
