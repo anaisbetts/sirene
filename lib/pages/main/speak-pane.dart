@@ -159,8 +159,6 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
 
   @override
   Widget build(BuildContext context) {
-    FocusScope.of(this.context).reparentIfNeeded(textBoxFocus);
-
     final actualContent = Flex(
         direction: Axis.vertical,
         crossAxisAlignment: CrossAxisAlignment.stretch,
