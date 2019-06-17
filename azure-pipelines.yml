@@ -3,9 +3,11 @@ strategy:
     linux:
       imageName: 'ubuntu-16.04'
       buildType: 'appbundle'
+      buildOutDir: 'bundle'
       #    mac:
       #imageName: 'macos-10.13'
       #buildType: 'ios'
+      #buildOutDir: 'ios'
 
 trigger:
 - master
@@ -35,4 +37,4 @@ steps:
 - task: PublishPipelineArtifact@0
   inputs:
     artifactName: 'outputs'
-    targetPath: 'build/app/outputs/$(buildType)/release'
+    targetPath: 'build/app/outputs/$(buildOutDir)/release'
