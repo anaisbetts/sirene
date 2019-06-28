@@ -36,7 +36,10 @@ steps:
     keychain: 'temp'
   displayName: 'Install Developer Certificate'
   condition: eq(variables['buildType'], 'ios')
-- script: sudo gem install fastlane -NV && FASTLANE_PASSWORD="$(FASTLANE_PASSWORD)" FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD="$(FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD)" fastlane produce -u anais@anaisbetts.org -a org.anaisbetts.sirene --skip-itc && fastlane sigh
+- task: InstallAppleProvisioningProfile@1
+  inputs:
+    provisioningProfileLocation: 'secureFiles'
+    provProfileSecureFile: 'sirene.mobileprovision'
   displayName: 'Set up provisioning profiles'
   condition: eq(variables['buildType'], 'ios')
 - script: mv $(Agent.TempDirectory)/google-services.json ./android/app/
