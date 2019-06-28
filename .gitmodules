@@ -4,3 +4,6 @@
 [submodule "vendor/when-flutter"]
 	path = vendor/when-flutter
 	url = https://github.com/anaisbetts/when-flutter
+[submodule "vendor/firebase_mlkit_language"]
+	path = vendor/firebase_mlkit_language
+	url = https://github.com/anaisbetts/firebase_mlkit_language
