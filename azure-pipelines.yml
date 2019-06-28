@@ -31,10 +31,10 @@ steps:
     secureFile: "GoogleService-Info.plist"
 - task: InstallAppleCertificate@2
   inputs:
-    certSecureFile: 'distribution.p12'
+    certSecureFile: 'developer.p12'
     certPwd: '$(cert-password)'
     keychain: 'temp'
-  displayName: 'Install Distribution Certificate'
+  displayName: 'Install Developer Certificate'
   condition: eq(variables['buildType'], 'ios')
 - script: mv $(Agent.TempDirectory)/google-services.json ./android/app/
   displayName: 'Move Firebase keys into place (Android)'
