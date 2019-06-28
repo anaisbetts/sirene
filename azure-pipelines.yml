@@ -44,6 +44,9 @@ steps:
   displayName: 'Set up Flutter'
 - script: ./flutterw test
   displayName: 'Flutter Test'
+- script: cd ./ios && pod update
+  displayName: 'Try to update Cocoapods (iOS)'
+  condition: eq(variables['buildType'], 'ios')
 - script: ./flutterw build $(buildType)
   displayName: 'Release build'
 - task: PublishPipelineArtifact@0
