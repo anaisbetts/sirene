@@ -34,7 +34,16 @@ steps:
     certSecureFile: 'developer.p12'
     certPwd: '$(cert-password)'
     keychain: 'temp'
+    keychainPassword: 'sandwich'
   displayName: 'Install Developer Certificate (iOS)'
+  condition: eq(variables['buildType'], 'ios')
+- task: InstallAppleCertificate@2
+  inputs:
+    certSecureFile: 'distribution.p12'
+    certPwd: '$(cert-password)'
+    keychain: 'temp'
+    keychainPassword: 'sandwich'
+  displayName: 'Install Distribution Certificate (iOS)'
   condition: eq(variables['buildType'], 'ios')
 - task: InstallAppleProvisioningProfile@1
   inputs:
