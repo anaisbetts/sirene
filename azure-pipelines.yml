@@ -36,6 +36,9 @@ steps:
     keychain: 'temp'
   displayName: 'Install Developer Certificate'
   condition: eq(variables['buildType'], 'ios')
+- script: sudo gem install fastlane -NV && fastlane sigh
+  displayName: 'Set up provisioning profiles'
+  condition: eq(variables['buildType'], 'ios')
 - script: mv $(Agent.TempDirectory)/google-services.json ./android/app/
   displayName: 'Move Firebase keys into place (Android)'
 - script: mv $(Agent.TempDirectory)/GoogleService-Info.plist ./ios/Runner/
