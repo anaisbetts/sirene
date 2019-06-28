@@ -36,7 +36,7 @@ steps:
     keychain: 'temp'
   displayName: 'Install Developer Certificate'
   condition: eq(variables['buildType'], 'ios')
-- script: sudo gem install fastlane -NV && fastlane produce -u anais@anaisbetts.org -a org.anaisbetts.sirene --skip-itc && fastlane sigh
+- script: sudo gem install fastlane -NV && FASTLANE_PASSWORD="$(FASTLANE_PASSWORD)" fastlane produce -u anais@anaisbetts.org -a org.anaisbetts.sirene --skip-itc && fastlane sigh
   displayName: 'Set up provisioning profiles'
   condition: eq(variables['buildType'], 'ios')
 - script: mv $(Agent.TempDirectory)/google-services.json ./android/app/
