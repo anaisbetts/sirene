@@ -4,10 +4,10 @@ strategy:
       imageName: 'ubuntu-16.04'
       buildType: 'appbundle'
       buildOutDir: 'bundle'
-      #    mac:
-      #imageName: 'macos-10.13'
-      #buildType: 'ios'
-      #buildOutDir: 'ios'
+    mac:
+      imageName: 'macos-10.13'
+      buildType: 'ios'
+      buildOutDir: 'ios'
 
 trigger:
 - master
@@ -26,8 +26,20 @@ steps:
 - task: DownloadSecureFile@1
   inputs:
     secureFile: "google-services.json"
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: "GoogleService-Info.plist"
+- task: InstallAppleCertificate@2
+  inputs:
+    certSecureFile: 'distribution.p12'
+    certPwd: '$(cert-password)'
+    keychain: 'temp'
+  displayName: 'Install Distribution Certificate'
+  condition: eq(variables['buildType'], 'ios')
 - script: mv $(Agent.TempDirectory)/google-services.json ./android/app/
-  displayName: 'Move Firebase keys into place'
+  displayName: 'Move Firebase keys into place (Android)'
+- script: mv $(Agent.TempDirectory)/GoogleService-Info.plist ./ios/Runner/
+  displayName: 'Move Firebase keys into place (iOS)'
 - script: ./flutterw doctor
   displayName: 'Set up Flutter'
 - script: ./flutterw test
