@@ -29,13 +29,13 @@ steps:
 - task: DownloadSecureFile@1
   inputs:
     secureFile: "GoogleService-Info.plist"
-- task: InstallAppleCertificate@2
-  inputs:
-    certSecureFile: 'distribution.p12'
-    certPwd: '$(cert-password)'
-    keychain: 'temp'
-  displayName: 'Install Distribution Certificate'
-  condition: eq(variables['buildType'], 'ios')
+#- task: InstallAppleCertificate@2
+#  inputs:
+#    certSecureFile: 'distribution.p12'
+#    certPwd: '$(cert-password)'
+#    keychain: 'temp'
+#  displayName: 'Install Distribution Certificate'
+#  condition: eq(variables['buildType'], 'ios')
 - task: InstallAppleCertificate@2
   inputs:
     certSecureFile: 'developer.p12'
