@@ -23,7 +23,7 @@ dependencies:
   firebase_mlkit_language: ^1.1.2
   firebase_performance: ^0.3.0
   flutter_markdown: ^0.2.0
-  flutter_tts: ^0.2.4
+  flutter_tts: ^0.2.6
   get_it: ^1.0.2
   google_sign_in: ^4.0.2
   jaguar_serializer: ^2.2.12
