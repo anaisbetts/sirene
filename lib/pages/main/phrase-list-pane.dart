@@ -177,10 +177,10 @@ class _PhraseListPaneState extends BindableState<PhraseListPane>
                   ? sm.getPhrases(forUser: u)
                   : Observable.just(<Phrase>[]))
               .listen((xs) {
-            if (App.traces.containsKey('app_startup')) {
-              App.traces['app_startup'].stop();
-              App.traces.remove('app_startup');
-            }
+            //if (App.traces.containsKey('app_startup')) {
+            //  App.traces['app_startup'].stop();
+            //  App.traces.remove('app_startup');
+            //}
 
             if (!hasLoggedPhraseCount && xs.isNotEmpty) {
               unawaited(logAsyncException(
