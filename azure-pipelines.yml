@@ -1,9 +1,9 @@
 strategy:
   matrix:
-    linux:
-      imageName: 'ubuntu-16.04'
-      buildType: 'appbundle'
-      buildOutDir: 'bundle'
+  #  linux:
+  #    imageName: 'ubuntu-16.04'
+  #    buildType: 'appbundle'
+  #    buildOutDir: 'bundle'
     mac:
       imageName: 'macos-10.13'
       buildType: 'ios'
