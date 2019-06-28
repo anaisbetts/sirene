@@ -29,19 +29,12 @@ steps:
 - task: DownloadSecureFile@1
   inputs:
     secureFile: "GoogleService-Info.plist"
-#- task: InstallAppleCertificate@2
-#  inputs:
-#    certSecureFile: 'distribution.p12'
-#    certPwd: '$(cert-password)'
-#    keychain: 'temp'
-#  displayName: 'Install Distribution Certificate'
-#  condition: eq(variables['buildType'], 'ios')
 - task: InstallAppleCertificate@2
   inputs:
-    certSecureFile: 'developer.p12'
+    certSecureFile: 'distribution.p12'
     certPwd: '$(cert-password)'
     keychain: 'temp'
-  displayName: 'Install Development Certificate'
+  displayName: 'Install Distribution Certificate'
   condition: eq(variables['buildType'], 'ios')
 - script: mv $(Agent.TempDirectory)/google-services.json ./android/app/
   displayName: 'Move Firebase keys into place (Android)'
