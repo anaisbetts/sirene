@@ -3,11 +3,11 @@ strategy:
   #  linux:
   #    imageName: 'ubuntu-16.04'
   #    buildType: 'appbundle'
-  #    buildOutDir: 'bundle'
+  #    buildOutDir: 'build/app/outputs/bundle/release'
     mac:
       imageName: 'macos-10.13'
       buildType: 'ios'
-      buildOutDir: 'ios'
+      buildOutDir: 'build/ipa'
 
 trigger:
 - master
@@ -34,10 +34,10 @@ steps:
     certSecureFile: 'developer.p12'
     certPwd: '$(cert-password)'
     keychain: 'temp'
-  displayName: 'Install Developer Certificate'
+  displayName: 'Install Developer Certificate (iOS)'
   condition: eq(variables['buildType'], 'ios')
 - script: sudo gem install fastlane -NV && FASTLANE_PASSWORD="$(FASTLANE_PASSWORD)" FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD="$(FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD)" fastlane produce -u anais@anaisbetts.org -a org.anaisbetts.sirene --skip-itc && fastlane sigh
-  displayName: 'Set up provisioning profiles'
+  displayName: 'Set up provisioning profiles (iOS)'
   condition: eq(variables['buildType'], 'ios')
 - script: mv $(Agent.TempDirectory)/google-services.json ./android/app/
   displayName: 'Move Firebase keys into place (Android)'
@@ -52,7 +52,10 @@ steps:
   condition: eq(variables['buildType'], 'ios')
 - script: ./flutterw build $(buildType)
   displayName: 'Release build'
+- script: cd ./ios && xcodebuild -workspace Runner.xcworkspace -scheme Runner -sdk iphoneos -configuration Release archive -archivePath $PWD/build/Runner.xcarchive && xcodebuild -exportArchive -archivePath $PWD/build/Runner.xcarchive -exportOptionsPlist exportOptions.plist -exportPath $PWD/build/ipa/Runner.ipa
+  displayName: 'Archive (iOS)'
+  condition: eq(variables['buildType'], 'ios')
 - task: PublishPipelineArtifact@0
   inputs:
     artifactName: 'outputs'
-    targetPath: 'build/app/outputs/$(buildOutDir)/release'
+    targetPath: '$(buildOutDir)'
