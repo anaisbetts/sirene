@@ -1,7 +1,7 @@
+import 'package:firebase_mlkit_language/firebase_mlkit_language.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:mlkit/mlkit.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sirene/app.dart';
@@ -35,6 +35,8 @@ class PresentPhrasePage extends StatefulWidget {
   @override
   _PresentPhrasePageState createState() => _PresentPhrasePageState();
 }
+
+final languageIdentifier = FirebaseLanguage.instance.languageIdentifier();
 
 class _PresentPhrasePageState extends State<PresentPhrasePage>
     with LoggerMixin {
@@ -82,11 +84,9 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
     }
 
     if (settings.phrase.detectedLanguage == null) {
-      final fli = FirebaseLanguageIdentification.instance;
-      final dl = await fli.identifyLanguage(settings.phrase.text);
-
-      // 'und' is MLKit's magic code for "we don't know"
-      settings.phrase.detectedLanguage = dl != 'und' ? dl : null;
+      final dl = await languageIdentifier.processText(settings.phrase.text);
+      settings.phrase.detectedLanguage =
+          dl.isNotEmpty ? dl.first.languageCode : null;
     }
 
     // NB: This code is trickier than it should be, because we can detect
