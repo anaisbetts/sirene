@@ -36,6 +36,13 @@ steps:
     keychain: 'temp'
   displayName: 'Install Distribution Certificate'
   condition: eq(variables['buildType'], 'ios')
+- task: InstallAppleCertificate@2
+  inputs:
+    certSecureFile: 'developer.p12'
+    certPwd: '$(cert-password)'
+    keychain: 'temp'
+  displayName: 'Install Development Certificate'
+  condition: eq(variables['buildType'], 'ios')
 - script: mv $(Agent.TempDirectory)/google-services.json ./android/app/
   displayName: 'Move Firebase keys into place (Android)'
 - script: mv $(Agent.TempDirectory)/GoogleService-Info.plist ./ios/Runner/
