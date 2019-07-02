@@ -29,27 +29,16 @@ steps:
 - task: DownloadSecureFile@1
   inputs:
     secureFile: "GoogleService-Info.plist"
-- task: InstallAppleCertificate@2
+- task: DownloadSecureFile@1
   inputs:
-    certSecureFile: 'developer.p12'
-    certPwd: '$(cert-password)'
-    keychain: 'custom'
-    keychainPassword: '$(cert-password)'
-    customKeychainPath: '/tmp/the_keychain.keychain'
-    deleteCert: true
-    deleteCustomKeychain: true
-  displayName: 'Install Developer Certificates (iOS)'
+    secureFile: "developer.p12"
   condition: eq(variables['buildType'], 'ios')
-- task: InstallAppleCertificate@2
+- task: DownloadSecureFile@1
   inputs:
-    certSecureFile: 'distribution.p12'
-    certPwd: '$(cert-password)'
-    keychain: 'custom'
-    keychainPassword: '$(cert-password)'
-    customKeychainPath: '/tmp/the_keychain.keychain'
-    deleteCert: true
-    deleteCustomKeychain: false
-  displayName: 'Install Distribution Certificates (iOS)'
+    secureFile: "distribution.p12"
+ 	condition: eq(variables['buildType'], 'ios')
+- script: /usr/bin/env CERT_PASSWORD="$(cert_password)" ./install-certs.sh
+  displayName: 'Import certificates (iOS)'
   condition: eq(variables['buildType'], 'ios')
 - task: InstallAppleProvisioningProfile@1
   inputs:
@@ -73,6 +62,9 @@ steps:
 - script: cd ./ios && xcodebuild -workspace Runner.xcworkspace -scheme Runner -sdk iphoneos -configuration Release archive -archivePath $PWD/build/Runner.xcarchive && xcodebuild -exportArchive -archivePath $PWD/build/Runner.xcarchive -exportOptionsPlist exportOptions.plist -exportPath $PWD/build/ipa/Runner.ipa
   displayName: 'Archive (iOS)'
   condition: eq(variables['buildType'], 'ios')
+- script: /usr/bin/env ./uninstall-certs.sh
+  displayName: 'De-import certificates (iOS)'
+  condition: always()
 - task: PublishPipelineArtifact@0
   inputs:
     artifactName: 'outputs'
