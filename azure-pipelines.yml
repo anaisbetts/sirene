@@ -37,7 +37,7 @@ steps:
   inputs:
     secureFile: "distribution.p12"
   condition: eq(variables['buildType'], 'ios')
-- script: /usr/bin/env CERT_PASSWORD="$(cert_password)" ./install-certs.sh
+- script: CERT_PASSWORD="$(cert_password)" TEMPDIR="$(Agent.TempDirectory)" ./install-certs.sh
   displayName: 'Import certificates (iOS)'
   condition: eq(variables['buildType'], 'ios')
 - task: InstallAppleProvisioningProfile@1
