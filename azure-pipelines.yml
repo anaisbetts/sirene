@@ -33,22 +33,22 @@ steps:
   inputs:
     certSecureFile: 'developer.p12'
     certPwd: '$(cert-password)'
-  keychain: 'custom'
-  keychainPassword: '$(cert-password)'
-  customKeychainPath: '/tmp/the_keychain.keychain'
-  deleteCert: true
-  deleteCustomKeychain: true
+    keychain: 'custom'
+    keychainPassword: '$(cert-password)'
+    customKeychainPath: '/tmp/the_keychain.keychain'
+    deleteCert: true
+    deleteCustomKeychain: true
   displayName: 'Install Developer Certificates (iOS)'
   condition: eq(variables['buildType'], 'ios')
 - task: InstallAppleCertificate@2
   inputs:
     certSecureFile: 'distribution.p12'
     certPwd: '$(cert-password)'
-  keychain: 'custom'
-  keychainPassword: '$(cert-password)'
-  customKeychainPath: '/tmp/the_keychain.keychain'
-  deleteCert: true
-  deleteCustomKeychain: false
+    keychain: 'custom'
+    keychainPassword: '$(cert-password)'
+    customKeychainPath: '/tmp/the_keychain.keychain'
+    deleteCert: true
+    deleteCustomKeychain: false
   displayName: 'Install Distribution Certificates (iOS)'
   condition: eq(variables['buildType'], 'ios')
 - task: InstallAppleProvisioningProfile@1
