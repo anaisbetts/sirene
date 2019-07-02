@@ -36,7 +36,7 @@ steps:
 - task: DownloadSecureFile@1
   inputs:
     secureFile: "distribution.p12"
- 	condition: eq(variables['buildType'], 'ios')
+  condition: eq(variables['buildType'], 'ios')
 - script: /usr/bin/env CERT_PASSWORD="$(cert_password)" ./install-certs.sh
   displayName: 'Import certificates (iOS)'
   condition: eq(variables['buildType'], 'ios')
