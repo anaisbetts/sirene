@@ -21,8 +21,6 @@ pool:
   vmImage: $(imageName)
 
 steps:
-- script: git submodule update --init --recursive
-  displayName: 'Update submodules'
 - task: DownloadSecureFile@1
   inputs:
     secureFile: "google-services.json"
@@ -50,6 +48,8 @@ steps:
   displayName: 'Move Firebase keys into place (Android)'
 - script: mv $(Agent.TempDirectory)/GoogleService-Info.plist ./ios/Runner/
   displayName: 'Move Firebase keys into place (iOS)'
+- script: git submodule update --init --recursive
+  displayName: 'Update submodules'
 - script: ./flutterw doctor
   displayName: 'Set up Flutter'
 - script: ./flutterw test
