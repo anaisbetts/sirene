@@ -1,10 +1,10 @@
 #!/bin/bash
 set -exuo pipefail
 
-KEYCHAIN_FILE="$TEMPDIR/dontcare.keychain-db"
+KEYCHAIN_FILE="$TEMPDIR/dontcare.keychain"
 
 security create-keychain -p "$CERT_PASSWORD" "$KEYCHAIN_FILE"
-security default-keychain -s dontcare.keychain
+security default-keychain -s "$KEYCHAIN_FILE"
 security unlock-keychain -p "$CERT_PASSWORD" "$KEYCHAIN_FILE"
 security set-key-partition-list -S apple-tool:,apple: -s -k "$CERT_PASSWORD" "$KEYCHAIN_FILE"
 
