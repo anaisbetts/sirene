@@ -1,5 +1,5 @@
 #!/bin/bash
-set -exuo pipefail
+set -euxo pipefail
 
 KEYCHAIN_FILE="$TEMPDIR/dontcare.keychain"
 

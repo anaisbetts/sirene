@@ -62,7 +62,7 @@ steps:
 - script: cd ./ios && xcodebuild -workspace Runner.xcworkspace -scheme Runner -sdk iphoneos -configuration Release archive -archivePath $PWD/build/Runner.xcarchive && xcodebuild -exportArchive -archivePath $PWD/build/Runner.xcarchive -exportOptionsPlist exportOptions.plist -exportPath $PWD/build/ipa/Runner.ipa
   displayName: 'Archive (iOS)'
   condition: eq(variables['buildType'], 'ios')
-- script: /usr/bin/env ./uninstall-certs.sh
+- script: TEMPDIR="$(Agent.TempDirectory)" ./uninstall-certs.sh
   displayName: 'De-import certificates (iOS)'
   condition: always()
 - task: PublishPipelineArtifact@0
