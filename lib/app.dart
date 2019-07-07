@@ -30,7 +30,7 @@ class App extends State<AppWidget> {
 
   static FirebaseAnalytics get analytics => App.locator<FirebaseAnalytics>();
 
-  static GetIt setupRegistration(GetIt l) {
+  static GetIt setupRegistration(GetIt locator) {
     final isTestMode = Platform.resolvedExecutable.contains('_tester');
     var isDebugMode = false;
 
@@ -41,34 +41,35 @@ class App extends State<AppWidget> {
         ? ApplicationMode.test
         : isDebugMode ? ApplicationMode.debug : ApplicationMode.production;
 
-    l
+    locator
       ..registerSingleton<ApplicationMode>(appMode)
       ..registerSingleton<Router>(setupRoutes(Router()))
       ..registerSingleton<StorageManager>(FirebaseStorageManager());
 
     if (appMode == ApplicationMode.production) {
-      l
+      locator
         ..registerSingleton<FirebaseAnalytics>(FirebaseAnalytics())
         ..registerSingleton<SentryClient>(SentryClient(
             dsn: 'https://04bfa4b9d5d34110a41b89e8d8c74649@sentry.io/1425391'))
         ..registerSingleton<LogWriter>(ProductionLogWriter());
     } else {
-      l
+      locator
         ..registerSingleton<FirebaseAnalytics>(DebugFirebaseAnalytics())
         ..registerSingleton<LogWriter>(DebugLogWriter());
     }
 
-    l
+    locator
       ..registerSingleton<LoginManager>(FirebaseLoginManager())
       ..registerSingleton<RouteObserver>(
-          FirebaseAnalyticsObserver(analytics: l<FirebaseAnalytics>()));
+          FirebaseAnalyticsObserver(analytics: locator<FirebaseAnalytics>()));
 
-    return l;
+    return locator;
   }
 
   static Router setupRoutes(Router r) {
     MainPage.setupRoutes(r);
     PresentPhrasePage.setupRoutes(r);
+
     return r;
   }
 
