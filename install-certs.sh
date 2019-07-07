@@ -1,7 +1,7 @@
 #!/bin/bash
-set -euo pipefail
+set -exuo pipefail
 
-KEYCHAIN_FILE="$TEMPDIR/dontcare.keychain"
+KEYCHAIN_FILE="$TEMPDIR/dontcare.keychain-db"
 
 security create-keychain -p "$CERT_PASSWORD" "$KEYCHAIN_FILE"
 security default-keychain -s dontcare.keychain
