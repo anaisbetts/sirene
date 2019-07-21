@@ -1,4 +1,4 @@
-import 'package:firebase_performance/firebase_performance.dart';
+//import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:device_info/device_info.dart';
@@ -181,9 +181,9 @@ mixin LoggerMixin {
   }
 
   traceAsync<TRet>(String name, Future<TRet> block) async {
-    final trace = await FirebasePerformance.startTrace(name);
+    //final trace = await FirebasePerformance.startTrace(name);
     final ret = await block;
-    unawaited(trace.stop());
+    //unawaited(trace.stop());
 
     return ret;
   }
