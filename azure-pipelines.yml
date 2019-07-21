@@ -35,15 +35,6 @@ steps:
   inputs:
     secureFile: "distribution.p12"
   condition: eq(variables['buildType'], 'ios')
-- script: CERT_PASSWORD="$(cert-password)" TEMPDIR="$(Agent.TempDirectory)" ./install-certs.sh
-  displayName: 'Import certificates (iOS)'
-  condition: eq(variables['buildType'], 'ios')
-- task: InstallAppleProvisioningProfile@1
-  inputs:
-    provisioningProfileLocation: 'secureFiles'
-    provProfileSecureFile: 'sirene.mobileprovision'
-  displayName: 'Set up provisioning profiles (iOS)'
-  condition: eq(variables['buildType'], 'ios')
 - script: mv $(Agent.TempDirectory)/google-services.json ./android/app/
   displayName: 'Move Firebase keys into place (Android)'
 - script: mv $(Agent.TempDirectory)/GoogleService-Info.plist ./ios/Runner/
@@ -56,6 +47,15 @@ steps:
   displayName: 'Flutter Test'
 - script: cd ./ios && pod update
   displayName: 'Try to update Cocoapods (iOS)'
+  condition: eq(variables['buildType'], 'ios')
+- script: CERT_PASSWORD="$(cert-password)" TEMPDIR="$(Agent.TempDirectory)" ./install-certs.sh
+  displayName: 'Import certificates (iOS)'
+  condition: eq(variables['buildType'], 'ios')
+- task: InstallAppleProvisioningProfile@1
+  inputs:
+    provisioningProfileLocation: 'secureFiles'
+    provProfileSecureFile: 'sirene.mobileprovision'
+  displayName: 'Set up provisioning profiles (iOS)'
   condition: eq(variables['buildType'], 'ios')
 - script: ./flutterw build $(buildType) --release --no-codesign
   displayName: 'Release build'
