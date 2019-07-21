@@ -57,7 +57,7 @@ steps:
 - script: cd ./ios && pod update
   displayName: 'Try to update Cocoapods (iOS)'
   condition: eq(variables['buildType'], 'ios')
-- script: ./flutterw build $(buildType)
+- script: ./flutterw build $(buildType) --release --no-codesign
   displayName: 'Release build'
 - script: cd ./ios && xcodebuild -workspace Runner.xcworkspace -scheme Runner -sdk iphoneos -configuration Release archive -archivePath $PWD/build/Runner.xcarchive && xcodebuild -exportArchive -archivePath $PWD/build/Runner.xcarchive -exportOptionsPlist exportOptions.plist -exportPath $PWD/build/ipa/Runner.ipa
   displayName: 'Archive (iOS)'
