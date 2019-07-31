@@ -148,6 +148,21 @@ class PhraseCard extends StatelessWidget with LoggerMixin {
   }
 }
 
+class _PhraseListPaneViewModel extends ViewModel {
+  List<Phrase> _phrases;
+}
+
+mixin _PhraseListPaneViewModelNotify on _PhraseListPaneViewModel {
+  List<Phrase> get phrases => notifyAccessed('phrases', _phrases);
+  set phrases(List<Phrase> p) =>
+      notifyAndSet('phrases', _phrases, () => _phrases = p);
+}
+
+class PhraseListPaneViewModel extends _PhraseListPaneViewModel
+    with _PhraseListPaneViewModelNotify {
+  bool hasLoggedPhraseCount = false;
+}
+
 class PhraseListPane extends StatefulWidget {
   final ValueNotifier<bool> replyMode;
 
