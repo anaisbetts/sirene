@@ -11,7 +11,8 @@ void main() {
   });
 
   testWidgets('Make sure that setting up registrations ends up in test mode',
-      (_) {
+      (_) async {
+    GetIt.allowMultipleInstances = true;
     var fixture = GetIt.asNewInstance();
     App.setupRegistration(fixture);
 

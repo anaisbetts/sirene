@@ -22,6 +22,9 @@ class App extends State<AppWidget> {
   static Map<String, Trace> traces = {};
 
   App() {
+    // like y tho.
+    GetIt.allowMultipleInstances = true;
+
     traces['app_startup'] =
         FirebasePerformance.instance.newTrace('app_startup');
     traces['app_startup'].start();
