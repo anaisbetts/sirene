@@ -25,7 +25,7 @@ class App extends State<AppWidget> {
     traces['app_startup'] =
         FirebasePerformance.instance.newTrace('app_startup');
     traces['app_startup'].start();
-    locator = App.setupRegistration(GetIt());
+    locator = App.setupRegistration(GetIt.asNewInstance());
   }
 
   static FirebaseAnalytics get analytics => App.locator<FirebaseAnalytics>();
