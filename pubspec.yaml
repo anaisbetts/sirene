@@ -15,24 +15,24 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cloud_firestore: ^0.12.5
-  cupertino_icons: ^0.1.2
-  device_info: ^0.4.0+1
-  firebase_analytics: ^3.0.3
-  firebase_auth: ^0.11.1
+  cloud_firestore: '< 99.0.0'
+  cupertino_icons: '< 99.0.0'
+  device_info: '< 99.0.0'
+  firebase_analytics: '< 99.0.0'
+  firebase_auth: '< 99.0.0'
   firebase_mlkit_language:
     path: vendor/firebase_mlkit_language
-  firebase_performance: ^0.3.0
-  flutter_markdown: ^0.2.0
-  flutter_tts: ^0.2.6
-  get_it: ^1.0.2
-  google_sign_in: ^4.0.2
-  jaguar_serializer: ^2.2.12
-  package_info: ^0.4.0+2
-  quiver: ^2.0.2
-  rxdart: ^0.22.0
-  sentry: ^2.2.0
-  shared_preferences: ^0.5.2
+  firebase_performance: '< 99.0.0'
+  flutter_markdown: '< 99.0.0'
+  flutter_tts: '< 99.0.0'
+  get_it: '< 99.0.0'
+  google_sign_in: '< 99.0.0'
+  jaguar_serializer: '< 99.0.0'
+  package_info: '< 99.0.0'
+  quiver: '< 99.0.0'
+  rxdart: '< 99.0.0'
+  sentry: '< 99.0.0'
+  shared_preferences: '< 99.0.0'
   when_rx:
     path: vendor/when-flutter
 
@@ -40,9 +40,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner:
-  flutter_launcher_icons: "^0.7.0"
-  jaguar_serializer_cli: ^2.2.5
-  pedantic: ^1.5.0
+  flutter_launcher_icons: '< 99.0.0'
+  jaguar_serializer_cli: '< 99.0.0'
+  pedantic: '< 99.0.0'
 
 flutter_icons:
   android: "launcher_icon"

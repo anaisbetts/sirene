@@ -466,9 +466,11 @@ class DebugFirebaseAnalytics implements FirebaseAnalytics {
   /// viral content.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#SHARE
+  @override
   Future<void> logShare({
     @required String contentType,
     @required String itemId,
+    @required String method,
   }) {
     return logEvent(
       name: 'share',
@@ -639,6 +641,7 @@ class DebugFirebaseAnalytics implements FirebaseAnalytics {
   /// search.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#VIEW_SEARCH_RESULTS
+  @override
   Future<void> logViewSearchResults({
     @required String searchTerm,
   }) {
@@ -648,6 +651,45 @@ class DebugFirebaseAnalytics implements FirebaseAnalytics {
         _SEARCH_TERM: searchTerm,
       }),
     );
+  }
+
+  @override
+  Future<void> logLevelEnd({String levelName, int success}) {
+    return Future<void>.value();
+  }
+
+  @override
+  Future<void> logLevelStart({String levelName}) {
+    return Future<void>.value();
+  }
+
+  @override
+  Future<void> logRemoveFromCart(
+      {String itemId,
+      String itemName,
+      String itemCategory,
+      int quantity,
+      double price,
+      double value,
+      String currency,
+      String origin,
+      String itemLocationId,
+      String destination,
+      String startDate,
+      String endDate}) {
+    // TODO: implement logRemoveFromCart
+    // NB: This is broken
+    return logEvent(
+      name: 'remove_from_cart',
+      parameters: filterOutNulls(<String, dynamic>{
+        _ITEM_NAME: itemName,
+      }),
+    );
+  }
+
+  @override
+  Future<void> logSetCheckoutOption({int checkoutStep, String checkoutOption}) {
+    return Future<void>.value();
   }
 }
 

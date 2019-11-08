@@ -31,7 +31,7 @@ class FirebaseLoginManager with LoggerMixin implements LoginManager {
     var ret = await FirebaseAuth.instance.currentUser();
 
     if (ret == null) {
-      ret = await FirebaseAuth.instance.signInAnonymously();
+      ret = (await FirebaseAuth.instance.signInAnonymously()).user;
 
       unawaited(logAsyncException(
           (User(isAnonymous: true)).toDocument(
@@ -90,7 +90,7 @@ class FirebaseLoginManager with LoggerMixin implements LoginManager {
       idToken: googleAuth.idToken,
     );
 
-    return await FirebaseAuth.instance.signInWithCredential(cred);
+    return (await FirebaseAuth.instance.signInWithCredential(cred)).user;
   }
 }
 
