@@ -41,7 +41,7 @@ steps:
   displayName: 'Move Firebase keys into place (iOS)'
 - script: git submodule update --init --recursive
   displayName: 'Update submodules'
-- script: ./flutterw doctor
+- script: ./flutterw doctor && ./flutterw packages pub get
   displayName: 'Set up Flutter'
 - script: ./flutterw test
   displayName: 'Flutter Test'
