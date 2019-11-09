@@ -45,7 +45,7 @@ steps:
   displayName: 'Set up Flutter'
 - script: ./flutterw test
   displayName: 'Flutter Test'
-- script: cd ./ios && pod update
+- script: cd ./ios && && pod setup && pod update
   displayName: 'Try to update Cocoapods (iOS)'
   condition: eq(variables['buildType'], 'ios')
 - script: CERT_PASSWORD="$(cert-password)" TEMPDIR="$(Agent.TempDirectory)" ./install-certs.sh
