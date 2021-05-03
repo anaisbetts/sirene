@@ -84,6 +84,10 @@ class SpeakPane extends StatefulWidget {
   _SpeakPaneState createState() => _SpeakPaneState();
 }
 
+class SpeakIntent extends Intent {
+  const SpeakIntent() : super(const ValueKey('speakIntent'));
+}
+
 class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
   TextEditingController toSpeak;
   FocusNode textBoxFocus;
@@ -101,7 +105,7 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
     final textHasContent =
         fromValueListenable(toSpeak).map((x) => x.text.isNotEmpty);
 
-    widget.controller.fabButton.value = RxCommand.createAsync((_) async {
+    final cmd = RxCommand.createAsync((_) async {
       unawaited(logAsyncException(
           App.analytics.logEvent(name: 'custom_phrase_presented', parameters: {
             'length': toSpeak.text.length,
@@ -118,6 +122,8 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
 
       FocusScope.of(context).requestFocus(textBoxFocus);
     }, canExecute: textHasContent);
+
+    widget.controller.fabButton.value = cmd;
 
     quickFindPresent = RxCommand.createAsync((p) async {
       unawaited(logAsyncException(
@@ -146,7 +152,7 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
         rethrowIt: false,
         message: 'Failed to get saved custom phrase');
 
-    Future.delayed(Duration(milliseconds: 5))
+    Future.delayed(const Duration(milliseconds: 5))
         .then((_) => FocusScope.of(context).requestFocus(textBoxFocus));
   }
 
@@ -200,23 +206,44 @@ class _SpeakPaneState extends State<SpeakPane> with LoggerMixin {
               ])
         ]);
 
-    return Padding(
-        padding: const EdgeInsets.all(4),
-        child: Flex(
-          direction: Axis.vertical,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Expanded(
-              child: Card(
-                  child: Padding(
-                      padding: const EdgeInsets.all(8), child: actualContent)),
-              flex: 8,
-            ),
-            Expanded(
-              flex: 1,
-              child: Container(),
-            )
-          ],
-        ));
+    final actionMap = {
+      const ValueKey('speakIntent'): () =>
+          CallbackAction(const ValueKey('speakIntent'), onInvoke: (_f, _i) {
+            widget.controller.fabButton.value.execute(null);
+          })
+    };
+
+    return Shortcuts(
+      shortcuts: {
+        LogicalKeySet(LogicalKeyboardKey.controlLeft, LogicalKeyboardKey.enter):
+            const SpeakIntent(),
+        LogicalKeySet(
+                LogicalKeyboardKey.controlRight, LogicalKeyboardKey.enter):
+            const SpeakIntent(),
+        LogicalKeySet(LogicalKeyboardKey.f5): const SpeakIntent()
+      },
+      child: Actions(
+        actions: actionMap,
+        child: Padding(
+            padding: const EdgeInsets.all(4),
+            child: Flex(
+              direction: Axis.vertical,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Expanded(
+                  child: Card(
+                      child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: actualContent)),
+                  flex: 8,
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Container(),
+                )
+              ],
+            )),
+      ),
+    );
   }
 }
