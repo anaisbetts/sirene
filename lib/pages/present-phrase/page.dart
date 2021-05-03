@@ -1,6 +1,7 @@
-import 'package:firebase_mlkit_language/firebase_mlkit_language.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
+import 'package:firebase_mlkit_language/firebase_mlkit_language.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:rxdart/rxdart.dart';
@@ -37,6 +38,10 @@ class PresentPhrasePage extends StatefulWidget {
 }
 
 final languageIdentifier = FirebaseLanguage.instance.languageIdentifier();
+
+class BailIntent extends Intent {
+  const BailIntent() : super(const ValueKey('bailIntent'));
+}
 
 class _PresentPhrasePageState extends State<PresentPhrasePage>
     with LoggerMixin {
@@ -150,37 +155,53 @@ class _PresentPhrasePageState extends State<PresentPhrasePage>
     final settings =
         ModalRoute.of(context).settings.arguments as PresentPhraseOptions;
 
-    return Container(
-      color: Theme.of(context).primaryColor,
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: GestureDetector(
-          onTap: () async {
-            isCancelled = true;
-            if (isPlaying) {
-              await tts.stop();
-            }
+    final onBail = () async {
+      isCancelled = true;
+      if (isPlaying) {
+        await tts.stop();
+      }
 
-            Navigator.of(context).pop();
-          },
-          child: SingleChildScrollView(
-            scrollDirection: scrollAxis,
-            child: RotatedBox(
-                quarterTurns: turns,
-                child: Flex(
-                  direction: Axis.vertical,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      settings.phrase.text,
-                      overflow: TextOverflow.fade,
-                      style: Theme.of(context)
-                          .primaryTextTheme
-                          .headline
-                          .merge(TextStyle(fontSize: 96)),
-                    )
-                  ],
-                )),
+      Navigator.of(context).pop();
+    };
+
+    final actionMap = {
+      const ValueKey('bailIntent'): () =>
+          CallbackAction(const ValueKey('bailIntent'), onInvoke: (_f, _i) {
+            debugPrint('BYE');
+            onBail();
+          })
+    };
+
+    return Shortcuts(
+      shortcuts: {LogicalKeySet(LogicalKeyboardKey.escape): const BailIntent()},
+      child: Actions(
+        actions: actionMap,
+        child: Container(
+          color: Theme.of(context).primaryColor,
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: GestureDetector(
+              onTap: onBail,
+              child: SingleChildScrollView(
+                scrollDirection: scrollAxis,
+                child: RotatedBox(
+                    quarterTurns: turns,
+                    child: Flex(
+                      direction: Axis.vertical,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          settings.phrase.text,
+                          overflow: TextOverflow.fade,
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .headline
+                              .merge(TextStyle(fontSize: 96)),
+                        )
+                      ],
+                    )),
+              ),
+            ),
           ),
         ),
       ),
