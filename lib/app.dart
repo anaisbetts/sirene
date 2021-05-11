@@ -49,7 +49,7 @@ class App extends State<AppWidget> {
       ..registerSingleton<Router>(setupRoutes(Router()))
       ..registerSingleton<StorageManager>(FirebaseStorageManager());
 
-    if (appMode == ApplicationMode.production) {
+    if (appMode == ApplicationMode.production && false) {
       l
         ..registerSingleton<FirebaseAnalytics>(FirebaseAnalytics())
         ..registerSingleton<SentryClient>(SentryClient(
