@@ -5,7 +5,6 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:get_it/get_it.dart';
-import 'package:sentry/sentry.dart';
 
 import 'package:sirene/interfaces.dart';
 import 'package:sirene/pages/main/page.dart';
@@ -50,11 +49,13 @@ class App extends State<AppWidget> {
       ..registerSingleton<StorageManager>(FirebaseStorageManager());
 
     if (appMode == ApplicationMode.production && false) {
+      /*
       l
         ..registerSingleton<FirebaseAnalytics>(FirebaseAnalytics())
         ..registerSingleton<SentryClient>(SentryClient(
             dsn: 'https://04bfa4b9d5d34110a41b89e8d8c74649@sentry.io/1425391'))
         ..registerSingleton<LogWriter>(ProductionLogWriter());
+      */
     } else {
       l
         ..registerSingleton<FirebaseAnalytics>(DebugFirebaseAnalytics())

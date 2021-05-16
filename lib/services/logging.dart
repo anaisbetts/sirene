@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:device_info/device_info.dart';
 import 'package:package_info/package_info.dart';
 import 'package:pedantic/pedantic.dart';
-import 'package:sentry/sentry.dart' as sentry;
 
 import 'package:sirene/app.dart';
 import 'package:sirene/interfaces.dart';
@@ -110,6 +109,7 @@ class ProductionLogWriter implements LogWriter {
     }
 
     // TODO: Fork flutter/sentry to support breadcrumbs
+    /*
     App.locator.get<sentry.SentryClient>().capture(
         event: sentry.Event(
             exception: ex,
@@ -123,11 +123,14 @@ class ProductionLogWriter implements LogWriter {
             },
             userContext: sentry.User(email: user.email, id: user.uid),
             release: _packageInfo.version));
+            */
 
+    /*
     App.analytics.logEvent(name: 'app_error', parameters: {
       'message': message ?? '',
       'error': ex.toString(),
     });
+    */
   }
 }
 
