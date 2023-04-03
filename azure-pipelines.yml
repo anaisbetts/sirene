@@ -32,7 +32,7 @@ steps:
   displayName: 'Set up Flutter'
 - script: ./flutterw test
   displayName: 'Flutter Test'
-- script: ./flutterw build $(buildType)
+- script: ./flutterw build $(buildType) && ./flutterw build apk
   displayName: 'Release build'
 - task: PublishPipelineArtifact@0
   inputs:
